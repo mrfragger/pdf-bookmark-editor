@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Bookmark Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .app-layout {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* Left Panel - PDF Viewer */
+        .pdf-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #16213e;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .pdf-header {
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .pdf-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #aaa;
+        }
+        
+        .page-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-nav button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .page-nav button:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .page-nav button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .page-nav input {
+            width: 60px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .pdf-viewer-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: #0f1419;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        #pdfViewer {
+            max-width: 100%;
+            display: none;
+        }
+        
+        #pdfViewer.active {
+            display: block;
+        }
+        
+        .pdf-page {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Right Panel - Bookmarks */
+        .bookmarks-panel {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            background: #1a1a2e;
+        }
+        
+        .bookmarks-header {
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .bookmarks-header h2 {
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+        
+        .keyboard-shortcuts {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #aaa;
+        }
+        
+        .keyboard-shortcuts kbd {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #fff;
+            font-size: 11px;
+        }
+        
+        .bookmarks-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .bookmarks-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .bookmarks-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .bookmarks-list::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 4px;
+        }
+        
+        .bookmark-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            transition: all 0.2s;
+        }
+        
+        .bookmark-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .bookmark-item.level-2 {
+            border-left-color: #38ef7d;
+            margin-left: 20px;
+        }
+        
+        .bookmark-item.level-3 {
+            border-left-color: #f39c12;
+            margin-left: 40px;
+        }
+        
+        .bookmark-item-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .bookmark-page {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .bookmark-page.clickable {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .bookmark-page.clickable:hover {
+            background: rgba(102, 126, 234, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .bookmark-page.clickable:active {
+            transform: translateY(0);
+        }
+        
+        .bookmark-item input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .bookmark-item input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        
+        .bookmark-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .pdf-page {
+            display: block;
+        }
+        
+        .textLayer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            opacity: 0.4;
+            line-height: 1;
+            --scale-factor: 1.5;
+        }
+        
+        .textLayer > span {
+            color: transparent;
+            position: absolute;
+            white-space: pre;
+            cursor: text;
+            transform-origin: 0% 0%;
+        }
+        
+        .textLayer ::selection {
+            background: rgba(255, 235, 59, 0.6);
+            color: inherit;
+        }
+        
+        .textLayer ::-moz-selection {
+            background: rgba(255, 235, 59, 0.6);
+            color: inherit;
+        }
+        
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn-delete {
+            background: transparent;
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-delete:hover {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: rgba(231, 76, 60, 0.5);
+        }
+        
+        
+        .bookmarks-footer {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .footer-buttons .btn {
+            flex: 1;
+            font-size: 11px;
+            padding: 8px 10px;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+        }
+        
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
+        }
+        
+        .btn-success:disabled {
+            background: #555;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .modal.hidden {
+            display: none;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .modal-content {
+            background: #1a1a2e;
+            padding: 0;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.3em;
+        }
+        
+        .btn-close {
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .btn-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        .modal-content > p {
+            color: #aaa;
+            margin: 0;
+            padding: 15px 25px;
+            font-size: 14px;
+            background: rgba(102, 126, 234, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .merge-file-list {
+            padding: 20px 25px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .merge-file-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .merge-file-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .merge-file-list::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 4px;
+        }
+        
+        .merge-file-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: grab;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .merge-file-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .merge-file-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        
+        .merge-file-item.drag-over {
+            border-color: rgba(102, 126, 234, 0.8);
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .drag-handle {
+            color: #666;
+            font-size: 20px;
+            cursor: grab;
+            user-select: none;
+        }
+        
+        .merge-file-item.dragging .drag-handle {
+            cursor: grabbing;
+        }
+        
+        .file-order {
+            background: rgba(102, 126, 234, 0.3);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .file-pages {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .remove-file {
+            background: transparent;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .remove-file:hover {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: rgba(231, 76, 60, 0.5);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            padding: 20px 25px;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-actions .btn {
+            flex: 1;
+            padding: 12px;
+        }
+        
+        .empty-merge-list {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(102, 126, 234, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 10000; /* Increased z-index */
+            max-width: 350px;
+            word-wrap: break-word;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.error {
+            background: rgba(231, 76, 60, 0.95);
+        }
+        
+        .toast.success {
+            background: rgba(17, 153, 142, 0.95);
+        }
+        
+        .toast.info {
+            background: rgba(102, 126, 234, 0.95);
+        }
+        
+        @keyframes bookmark-highlight {
+            0% {
+                background: rgba(102, 126, 234, 0.4);
+                transform: scale(1.02);
+            }
+            100% {
+                background: rgba(255, 255, 255, 0.05);
+                transform: scale(1);
+            }
+        }
+        
+        .bookmark-item.newly-added {
+            animation: bookmark-highlight 0.6s ease-out;
+        }
+        
+        /* Loading state */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #aaa;
+            font-size: 18px;
+            pointer-events: none;
+        }
+        
+        .loading.hidden {
+            display: none;
+        }
+        
+        @media (max-width: 1024px) {
+            .app-layout {
+                flex-direction: column;
+            }
+        
+            .bookmarks-panel {
+                width: 100%;
+                max-height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <div class="pdf-panel">
+            <div class="pdf-header">
+                <div class="file-input-wrapper">
+                    <input type="file" id="pdfInput" accept=".pdf">
+                    <label for="pdfInput" class="btn btn-primary">
+                        📄 Open PDF
+                    </label>
+                </div>
+                <div class="file-input-wrapper">
+                    <input type="file" id="mergePdfInput" accept=".pdf" multiple>
+                    <label for="mergePdfInput" class="btn btn-primary">
+                        🔗 Merge PDFs
+                    </label>
+                </div>
+                <div class="pdf-info">
+                    <span id="pdfName"></span>
+                    <span id="currentPageDisplay" style="color: #667eea; font-weight: 600;"></span>
+                </div>
+            </div>
+            <div class="pdf-viewer-container" id="pdfViewerContainer">
+                <div class="loading" id="loading">Select a PDF to get started</div>
+                <canvas id="pdfViewer"></canvas>
+            </div>
+        </div>
+
+        <div class="bookmarks-panel">
+            <div class="bookmarks-header">
+                <h2>📚 Bookmarks</h2>
+                <div class="keyboard-shortcuts">
+                    <kbd>Cmd/Ctrl</kbd> + <kbd>A</kbd> Chapter (Level 1)<br>
+                    <kbd>Cmd/Ctrl</kbd> + <kbd>S</kbd> Section (Level 2)<br>
+                    <kbd>Cmd/Ctrl</kbd> + <kbd>D</kbd> Subsection (Level 3)
+                </div>
+            </div>
+            
+            <div class="bookmarks-list" id="bookmarksList">
+                <div class="empty-state">
+                    <p>📑 No bookmarks yet</p>
+                    <p style="margin-top: 10px; font-size: 13px;">
+                        Select text in PDF and use keyboard shortcuts
+                    </p>
+                </div>
+            </div>
+
+            <div class="bookmarks-footer">
+                <div class="footer-buttons">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="importInput" accept=".txt">
+                        <label for="importInput" class="btn btn-secondary btn-small">
+                             Import
+                        </label>
+                    </div>
+                    <button id="exportBtn" class="btn btn-secondary btn-small">Export</button>
+                    <button id="loadExistingBtn" class="btn btn-secondary btn-small" disabled>
+                        Load Existing
+                    </button>
+                </div>
+                <button id="applyBookmarksBtn" class="btn btn-success" disabled>
+                    Create PDF with Bookmarks
+                </button>   
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="mergeModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔗 Merge PDFs</h3>
+                <button id="closeMergeModal" class="btn-close">✕</button>
+            </div>
+            <p>Drag files to reorder them before merging</p>
+            <div id="mergeFileList" class="merge-file-list"></div>
+            <div class="modal-actions">
+                <button id="cancelMerge" class="btn btn-secondary">Cancel</button>
+                <button id="confirmMerge" class="btn btn-success">Merge PDFs</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="pdf.min.js"></script>
+    <script src="pdf-lib.min.js"></script>
+    <script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
+
+const { PDFDocument, PDFName, PDFString, PDFNumber } = PDFLib;
+
+let pdfDoc = null;
+let pdfBytes = null;
+let pdfFileName = '';
+let bookmarks = [];
+let currentPage = 1;
+let totalPages = 0;
+let pdfJsDoc = null;
+let renderTask = null;
+let originalFile = null;
+let toastTimeout = null;
+let lastTitleCaseOperation = null;
+let mergeFiles = [];
+let draggedElement = null;
+
+const pdfInput = document.getElementById('pdfInput');
+const pdfName = document.getElementById('pdfName');
+const pdfViewer = document.getElementById('pdfViewer');
+const pdfViewerContainer = document.getElementById('pdfViewerContainer');
+const loadingEl = document.getElementById('loading');
+const bookmarksList = document.getElementById('bookmarksList');
+const importInput = document.getElementById('importInput');
+const exportBtn = document.getElementById('exportBtn');
+const applyBookmarksBtn = document.getElementById('applyBookmarksBtn');
+const mergePdfInput = document.getElementById('mergePdfInput');
+const mergeModal = document.getElementById('mergeModal');
+const mergeFileList = document.getElementById('mergeFileList');
+const confirmMergeBtn = document.getElementById('confirmMerge');
+const cancelMergeBtn = document.getElementById('cancelMerge');
+const closeMergeModalBtn = document.getElementById('closeMergeModal');
+
+mergePdfInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length < 2) {
+        showToast('Please select at least 2 PDFs to merge', 'error');
+        mergePdfInput.value = '';
+        return;
+    }
+
+    try {
+        showToast('Loading PDFs...', 'info');
+        
+        mergeFiles = [];
+        for (const file of files) {
+            const arrayBuffer = await file.arrayBuffer();
+            const bytes = new Uint8Array(arrayBuffer);
+            const pdf = await PDFDocument.load(bytes);
+            mergeFiles.push({
+                file: file,
+                name: file.name,
+                pageCount: pdf.getPageCount(),
+                bytes: bytes
+            });
+        }
+
+        renderMergeFileList();
+        mergeModal.classList.remove('hidden');
+
+    } catch (error) {
+        showToast('Error loading PDFs: ' + error.message, 'error');
+        console.error(error);
+    }
+
+    mergePdfInput.value = '';
+});
+
+function renderMergeFileList() {
+    if (mergeFiles.length === 0) {
+        mergeFileList.innerHTML = `
+            <div class="empty-merge-list">
+                <p>No files to merge</p>
+            </div>
+        `;
+        return;
+    }
+
+    mergeFileList.innerHTML = '';
+    
+    mergeFiles.forEach((fileData, index) => {
+        const div = document.createElement('div');
+        div.className = 'merge-file-item';
+        div.draggable = true;
+        div.dataset.index = index;
+        
+        div.innerHTML = `
+            <span class="drag-handle">⋮⋮</span>
+            <div class="file-order">${index + 1}</div>
+            <div class="file-info">
+                <div class="file-name" title="${fileData.name}">${fileData.name}</div>
+                <div class="file-pages">${fileData.pageCount} pages</div>
+            </div>
+            <button class="remove-file" data-index="${index}">Remove</button>
+        `;
+        
+        mergeFileList.appendChild(div);
+    });
+
+    const items = mergeFileList.querySelectorAll('.merge-file-item');
+    items.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('dragenter', handleDragEnter);
+        item.addEventListener('dragleave', handleDragLeave);
+    });
+
+    mergeFileList.querySelectorAll('.remove-file').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const index = parseInt(e.target.dataset.index);
+            mergeFiles.splice(index, 1);
+            renderMergeFileList();
+            
+            if (mergeFiles.length < 2) {
+                showToast('Need at least 2 PDFs to merge', 'error');
+                if (mergeFiles.length === 0) {
+                    closeModal();
+                }
+            }
+        });
+    });
+}
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    if (this !== draggedElement) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (draggedElement !== this) {
+        const fromIndex = parseInt(draggedElement.dataset.index);
+        const toIndex = parseInt(this.dataset.index);
+
+        const movedItem = mergeFiles.splice(fromIndex, 1)[0];
+        mergeFiles.splice(toIndex, 0, movedItem);
+
+        renderMergeFileList();
+    }
+
+    return false;
+}
+
+function handleDragEnd(e) {
+    const items = mergeFileList.querySelectorAll('.merge-file-item');
+    items.forEach(item => {
+        item.classList.remove('dragging');
+        item.classList.remove('drag-over');
+    });
+}
+
+confirmMergeBtn.addEventListener('click', async () => {
+    if (mergeFiles.length < 2) {
+        showToast('Need at least 2 PDFs to merge', 'error');
+        return;
+    }
+
+    try {
+        closeModal();
+        showToast('Merging PDFs...', 'info');
+
+        const mergedPdf = await PDFDocument.create();
+        const allBookmarks = [];
+        let currentPageOffset = 0;
+
+        for (let i = 0; i < mergeFiles.length; i++) {
+            const fileData = mergeFiles[i];
+            
+            showToast(`Processing ${i + 1}/${mergeFiles.length}: ${fileData.name}`, 'info');
+            
+            const sourcePdf = await PDFDocument.load(fileData.bytes);
+            
+            const existingBookmarks = await extractExistingBookmarks(sourcePdf);
+            
+            existingBookmarks.forEach(bookmark => {
+                allBookmarks.push({
+                    ...bookmark,
+                    page: bookmark.page + currentPageOffset,
+                    id: Date.now() + Math.random()
+                });
+            });
+            
+            const pageIndices = sourcePdf.getPageIndices();
+            const copiedPages = await mergedPdf.copyPages(sourcePdf, pageIndices);
+            
+            copiedPages.forEach((page) => {
+                mergedPdf.addPage(page);
+            });
+            
+            currentPageOffset += sourcePdf.getPageCount();
+        }
+
+        showToast('Saving merged PDF...', 'info');
+
+        if (allBookmarks.length > 0) {
+            showToast('Adding bookmarks to merged PDF...', 'info');
+            
+            const context = mergedPdf.context;
+            const outlinesRef = context.nextRef();
+            const outlines = context.obj({
+                Type: 'Outlines',
+            });
+
+            const itemRefs = [];
+            const items = [];
+
+            allBookmarks.forEach((bookmark) => {
+                const page = mergedPdf.getPage(bookmark.page - 1);
+                const itemRef = context.nextRef();
+                itemRefs.push(itemRef);
+
+                const item = {
+                    Title: PDFString.of(cleanBookmarkTitle(bookmark.title)),
+                    Parent: outlinesRef,
+                    Dest: [
+                        page.ref,
+                        'XYZ',
+                        null,
+                        null,
+                        null
+                    ]
+                };
+
+                items.push(item);
+            });
+
+            items.forEach((item, index) => {
+                if (index > 0) {
+                    item.Prev = itemRefs[index - 1];
+                }
+                if (index < items.length - 1) {
+                    item.Next = itemRefs[index + 1];
+                }
+            });
+
+            items.forEach((item, index) => {
+                context.assign(itemRefs[index], context.obj(item));
+            });
+
+            if (itemRefs.length > 0) {
+                outlines.set(PDFName.of('First'), itemRefs[0]);
+                outlines.set(PDFName.of('Last'), itemRefs[itemRefs.length - 1]);
+                outlines.set(PDFName.of('Count'), PDFNumber.of(itemRefs.length));
+            }
+
+            context.assign(outlinesRef, outlines);
+            mergedPdf.catalog.set(PDFName.of('Outlines'), outlinesRef);
+        }
+
+        const mergedPdfBytes = await mergedPdf.save();
+
+        const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'merged.pdf';
+        a.click();
+        URL.revokeObjectURL(url);
+
+        const totalPages = mergedPdf.getPageCount();
+        const bookmarkMsg = allBookmarks.length > 0 ? ` with ${allBookmarks.length} bookmarks` : '';
+        showToast(`Successfully merged ${mergeFiles.length} PDFs (${totalPages} pages${bookmarkMsg})!`, 'success');
+
+        mergeFiles = [];
+
+    } catch (error) {
+        showToast('Error merging PDFs: ' + error.message, 'error');
+        console.error('Merge error details:', error);
+    }
+});
+
+function closeModal() {
+    mergeModal.classList.add('hidden');
+}
+
+cancelMergeBtn.addEventListener('click', () => {
+    mergeFiles = [];
+    closeModal();
+});
+
+closeMergeModalBtn.addEventListener('click', () => {
+    mergeFiles = [];
+    closeModal();
+});
+
+mergeModal.addEventListener('click', (e) => {
+    if (e.target === mergeModal) {
+        mergeFiles = [];
+        closeModal();
+    }
+});
+
+async function loadPdfFile(file) {
+    try {
+        originalFile = file;
+        pdfFileName = file.name;
+        const arrayBuffer = await file.arrayBuffer();
+        pdfBytes = new Uint8Array(arrayBuffer);
+        
+        pdfDoc = await PDFDocument.load(pdfBytes);
+        
+        const loadingTask = pdfjsLib.getDocument({ data: pdfBytes });
+        pdfJsDoc = await loadingTask.promise;
+        totalPages = pdfJsDoc.numPages;
+        
+        pdfName.textContent = file.name;
+        applyBookmarksBtn.disabled = false;
+        
+        const loadExistingBtn = document.getElementById('loadExistingBtn');
+        loadExistingBtn.disabled = false;
+        
+        await renderAllPages();
+        
+        renderBookmarks();
+        
+        showToast('PDF loaded successfully', 'success');
+    } catch (error) {
+        showToast('Error loading PDF: ' + error.message, 'error');
+        console.error(error);
+    }
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    
+    if (toastTimeout) {
+        clearTimeout(toastTimeout);
+    }
+    
+    toast.classList.remove('show');
+    
+    setTimeout(() => {
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.classList.add('show');
+        
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+            toastTimeout = null;
+        }, 3000);
+    }, 50);
+}
+
+function toTitleCase(str) {
+    const smallWords = ['the', 'and', 'of', 'in', 'on', 'at', 'by', 'to', 'for', 
+                        'with', 'from', 'or', 'a', 'an', 'but', 'nor', 'as', 'if'];
+    
+    const words = str.toLowerCase().split(' ');
+    let firstWordIdx = 0;
+    
+    if (words[0].match(/^\d+[.\)]?$/) && words.length > 1) {
+        firstWordIdx = 1;
+    }
+    
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        if (i === firstWordIdx || i === words.length - 1 || !smallWords.includes(word)) {
+            words[i] = word.charAt(0).toUpperCase() + word.slice(1);
+        }
+    }
+    
+    return words.join(' ');
+}
+
+async function extractExistingBookmarks(pdfLibDoc) {
+    try {
+        const catalog = pdfLibDoc.catalog;
+        const outlinesRef = catalog.lookup(PDFName.of('Outlines'));
+        
+        if (!outlinesRef) {
+            return [];
+        }
+
+        const existingBookmarks = [];
+        const pages = pdfLibDoc.getPages();
+        
+        const pageRefToNum = new Map();
+        pages.forEach((page, index) => {
+            const refStr = page.ref.toString();
+            pageRefToNum.set(refStr, index + 1);
+        });
+        
+        const firstItemRef = outlinesRef.get(PDFName.of('First'));
+        
+        if (!firstItemRef) {
+            return [];
+        }
+        
+        function traverseOutline(itemRef, level = 1) {
+            if (!itemRef) return;
+            
+            const item = pdfLibDoc.context.lookup(itemRef);
+            if (!item) return;
+
+            const titleObj = item.get(PDFName.of('Title'));
+            
+            if (!titleObj) {
+                const nextRef = item.get(PDFName.of('Next'));
+                if (nextRef) traverseOutline(nextRef, level);
+                return;
+            }
+            
+            const title = titleObj.decodeText ? titleObj.decodeText() : titleObj.toString();
+            
+            let pageNum = 1;
+            const destObj = item.get(PDFName.of('Dest'));
+            
+            if (destObj) {
+                try {
+                    let destArray = destObj;
+                    
+                    if (destArray.array && destArray.array.length > 0) {
+                        const pageRefObj = destArray.array[0];
+                        
+                        let pageRefStr;
+                        if (pageRefObj && pageRefObj.toString) {
+                            pageRefStr = pageRefObj.toString();
+                        } else if (typeof pageRefObj === 'object' && pageRefObj.objectNumber !== undefined) {
+                            pageRefStr = `${pageRefObj.objectNumber} ${pageRefObj.generationNumber} R`;
+                        }
+                        
+                        if (pageRefStr && pageRefToNum.has(pageRefStr)) {
+                            pageNum = pageRefToNum.get(pageRefStr);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error extracting page number for bookmark:', title, e);
+                }
+            }
+
+            existingBookmarks.push({
+                id: Date.now() + Math.random(),
+                title: title,
+                page: pageNum,
+                level: Math.min(level, 3)
+            });
+
+            const firstRef = item.get(PDFName.of('First'));
+            if (firstRef) {
+                traverseOutline(firstRef, level + 1);
+            }
+
+            const nextRef = item.get(PDFName.of('Next'));
+            if (nextRef) {
+                traverseOutline(nextRef, level);
+            }
+        }
+
+        traverseOutline(firstItemRef, 1);
+
+        return existingBookmarks;
+        
+    } catch (error) {
+        console.warn('Could not extract bookmarks:', error);
+        return [];
+    }
+}
+
+async function renderAllPages() {
+    if (!pdfJsDoc) return;
+
+    pdfViewerContainer.innerHTML = '';
+    loadingEl.classList.add('hidden');
+
+    const scale = 1.5;
+
+    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+        const page = await pdfJsDoc.getPage(pageNumber);
+        const viewport = page.getViewport({ scale: scale });
+
+        const pageContainer = document.createElement('div');
+        pageContainer.className = 'pdf-page-container';
+        pageContainer.dataset.pageNumber = pageNumber;
+
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-page';
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const textLayerDiv = document.createElement('div');
+        textLayerDiv.className = 'textLayer';
+        textLayerDiv.style.width = viewport.width + 'px';
+        textLayerDiv.style.height = viewport.height + 'px';
+        textLayerDiv.style.setProperty('--scale-factor', scale);
+
+        pageContainer.appendChild(canvas);
+        pageContainer.appendChild(textLayerDiv);
+        pdfViewerContainer.appendChild(pageContainer);
+
+        await page.render({
+            canvasContext: context,
+            viewport: viewport
+        }).promise;
+
+        const textContent = await page.getTextContent();
+        pdfjsLib.renderTextLayer({
+            textContentSource: textContent,
+            container: textLayerDiv,
+            viewport: viewport,
+            textDivs: []
+        });
+    }
+    
+    updateCurrentPage();
+}
+
+function updateCurrentPage() {
+    const container = pdfViewerContainer;
+    const containerRect = container.getBoundingClientRect();
+    const centerY = containerRect.top + containerRect.height / 2;
+
+    let currentPageNum = 1;
+    const pages = document.querySelectorAll('.pdf-page-container');
+    
+    pages.forEach(page => {
+        const rect = page.getBoundingClientRect();
+        if (rect.top <= centerY && rect.bottom >= centerY) {
+            currentPageNum = parseInt(page.dataset.pageNumber);
+        }
+    });
+
+    currentPage = currentPageNum;
+    
+    const pageDisplay = document.getElementById('currentPageDisplay');
+    if (pageDisplay) {
+        pageDisplay.textContent = `Page ${currentPage} of ${totalPages}`;
+    }
+}
+
+pdfViewerContainer.addEventListener('scroll', () => {
+    updateCurrentPage();
+});
+
+function getPageFromSelection() {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return currentPage;
+
+    const range = selection.getRangeAt(0);
+    const container = range.startContainer;
+
+    let element = container.parentElement;
+    while (element) {
+        if (element.classList && element.classList.contains('pdf-page-container')) {
+            return parseInt(element.dataset.pageNumber);
+        }
+        element = element.parentElement;
+    }
+
+    return currentPage;
+}
+
+pdfInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    await loadPdfFile(file);
+});
+
+const loadExistingBtn = document.getElementById('loadExistingBtn');
+
+loadExistingBtn.addEventListener('click', async () => {
+    if (!pdfDoc) {
+        showToast('No PDF loaded', 'error');
+        return;
+    }
+
+    try {
+        const existingBookmarks = await extractExistingBookmarks(pdfDoc);
+        
+        if (existingBookmarks.length === 0) {
+            showToast('No existing bookmarks found in PDF', 'info');
+            return;
+        }
+        
+        const shouldReplace = confirm(
+            `Found ${existingBookmarks.length} existing bookmarks.\n\n` +
+            `Click OK to REPLACE current bookmarks (${bookmarks.length})\n` +
+            `Click Cancel to MERGE with current bookmarks`
+        );
+        
+        if (shouldReplace) {
+            bookmarks = existingBookmarks;
+            showToast(`Loaded ${existingBookmarks.length} bookmarks`, 'success');
+        } else {
+            let addedCount = 0;
+            existingBookmarks.forEach(existing => {
+                const duplicate = bookmarks.find(b => 
+                    b.page === existing.page && b.title === existing.title
+                );
+                if (!duplicate) {
+                    bookmarks.push(existing);
+                    addedCount++;
+                }
+            });
+            bookmarks.sort((a, b) => a.page - b.page);
+            const skipped = existingBookmarks.length - addedCount;
+            showToast(`Merged ${addedCount} bookmarks${skipped > 0 ? ` (${skipped} duplicates skipped)` : ''}`, 'success');
+        }
+        
+        renderBookmarks();
+        
+    } catch (error) {
+        showToast('Error loading bookmarks: ' + error.message, 'error');
+        console.error(error);
+    }
+});
+
+function cleanBookmarkTitle(title) {
+    return title
+        .replace(/➝|→|➔|➞|➟|➠|➡|➢|➣|➤|➥|➦|➧|➨/g, '->') 
+        .replace(/š/g, 's')
+        .replace(/ž/g, 'z')
+        .replace(/['']/g, "'")
+        .replace(/[""]/g, '"')
+        .replace(/[—–]/g, '-')
+        .replace(/…/g, '...')
+        .replace(/[\u2000-\u206F]/g, ' ')  // General punctuation spaces
+        .replace(/[\u2190-\u21FF]/g, '->')  // All arrow characters
+        .replace(/[^\x00-\x7F]/g, (char) => {
+            // For any remaining non-ASCII, try to keep if it's common
+            const code = char.charCodeAt(0);
+            if (code < 256) return char;  // Keep Latin-1 supplement
+            return ''; 
+        })
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function addBookmark(level = 1) {
+    let title = '';
+    let selectedText = window.getSelection().toString().trim();
+    
+    if (selectedText) {
+        title = selectedText.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
+        if (title.length > 100) {
+            title = title.substring(0, 100);
+        }
+        title = cleanBookmarkTitle(title);
+    } else {
+        const labels = { 1: 'Chapter', 2: 'Section', 3: 'Subsection' };
+        title = labels[level];
+    }
+
+    const pageNumber = getPageFromSelection();
+
+    const bookmark = {
+        id: Date.now() + Math.random(),
+        title: title,
+        page: pageNumber,
+        level: level
+    };
+    
+    bookmarks.push(bookmark);
+    
+    bookmarks.sort((a, b) => a.page - b.page);
+    
+    renderBookmarks();
+    
+    scrollToBookmark(bookmark.id);
+    
+    showToast(`Added ${level === 1 ? 'Chapter' : level === 2 ? 'Section' : 'Subsection'} on page ${pageNumber}`, 'success');
+}
+
+function scrollToBookmark(bookmarkId) {
+    setTimeout(() => {
+        const bookmarkElements = bookmarksList.querySelectorAll('.bookmark-item');
+        
+        bookmarkElements.forEach(el => {
+            const input = el.querySelector('input[data-id]');
+            if (input && parseFloat(input.dataset.id) === bookmarkId) {
+                el.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+                
+                el.classList.add('newly-added');
+                setTimeout(() => {
+                    el.classList.remove('newly-added');
+                }, 600);
+            }
+        });
+    }, 100);
+}
+
+document.addEventListener('keydown', (e) => {
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    const modifier = isMac ? e.metaKey : e.ctrlKey;
+
+    if (modifier && e.key === 'a') {
+        e.preventDefault();
+        addBookmark(1);
+    } else if (modifier && e.key === 's') {
+        e.preventDefault();
+        addBookmark(2);
+    } else if (modifier && e.key === 'd') {
+        e.preventDefault();
+        addBookmark(3);
+    }
+});
+
+function deleteBookmark(id) {
+    bookmarks = bookmarks.filter(b => b.id !== id);
+    renderBookmarks();
+}
+
+function titleCaseBookmark(id) {
+    const bookmark = bookmarks.find(b => b.id === id);
+    if (!bookmark || !bookmark.title) return;
+    
+    if (lastTitleCaseOperation && 
+        lastTitleCaseOperation.id === id && 
+        bookmark.title === lastTitleCaseOperation.newTitle) {
+        bookmark.title = lastTitleCaseOperation.oldTitle;
+        lastTitleCaseOperation = null;
+        showToast('Title case undone', 'info');
+    } else {
+        const oldTitle = bookmark.title;
+        const newTitle = toTitleCase(bookmark.title);
+        bookmark.title = newTitle;
+        
+        lastTitleCaseOperation = {
+            id: id,
+            oldTitle: oldTitle,
+            newTitle: newTitle
+        };
+        
+        showToast('Title case applied', 'success');
+    }
+    
+    renderBookmarks();
+}
+
+function scrollToPage(pageNumber) {
+    const pageContainer = document.querySelector(`.pdf-page-container[data-page-number="${pageNumber}"]`);
+    if (pageContainer) {
+        pageContainer.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+        
+        currentPage = pageNumber;
+        updateCurrentPage();
+        
+        pageContainer.style.outline = '3px solid rgba(102, 126, 234, 0.6)';
+        setTimeout(() => {
+            pageContainer.style.outline = '';
+        }, 1000);
+        
+        showToast(`Navigated to page ${pageNumber}`, 'info');
+    }
+}
+
+function renderBookmarks() {
+    if (bookmarks.length === 0) {
+        bookmarksList.innerHTML = `
+            <div class="empty-state">
+                <p>📑 No bookmarks yet</p>
+                <p style="margin-top: 10px; font-size: 13px;">
+                    Select text in PDF and use keyboard shortcuts
+                </p>
+            </div>
+        `;
+        return;
+    }
+
+    bookmarks.sort((a, b) => a.page - b.page);
+
+    bookmarksList.innerHTML = '';
+    
+    bookmarks.forEach(bookmark => {
+        const div = document.createElement('div');
+        div.className = `bookmark-item level-${bookmark.level}`;
+        
+        const levelLabels = { 1: 'Chapter', 2: 'Section', 3: 'Subsection' };
+        
+        div.innerHTML = `
+            <div class="bookmark-item-header">
+                <div class="bookmark-header-left">
+                    <span class="bookmark-page clickable" data-page="${bookmark.page}">Page ${bookmark.page}</span>
+                    <span style="color: #888; font-size: 12px;">${levelLabels[bookmark.level]}</span>
+                </div>
+                <div class="bookmark-actions">
+                    <button class="btn btn-secondary btn-small ${lastTitleCaseOperation && lastTitleCaseOperation.id === bookmark.id ? 'undo-available' : ''}" data-id="${bookmark.id}" data-action="titlecase" title="${lastTitleCaseOperation && lastTitleCaseOperation.id === bookmark.id ? 'Click to undo' : 'Apply title case'}">Aa</button>
+                    <button class="btn btn-delete btn-small" data-id="${bookmark.id}" data-action="delete">🗑️</button>
+                </div>
+            </div>
+            <input 
+                type="text" 
+                placeholder="Bookmark title" 
+                value="${bookmark.title}"
+                data-id="${bookmark.id}"
+                data-field="title"
+            />
+        `;
+        
+        bookmarksList.appendChild(div);
+    });
+    
+    bookmarksList.querySelectorAll('.bookmark-page.clickable').forEach(pageEl => {
+        pageEl.addEventListener('click', (e) => {
+            const pageNumber = parseInt(e.target.dataset.page);
+            scrollToPage(pageNumber);
+        });
+    });
+    
+    bookmarksList.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', (e) => {
+            const id = parseFloat(e.target.dataset.id);
+            const bookmark = bookmarks.find(b => b.id === id);
+            if (bookmark) {
+                bookmark.title = e.target.value;
+                
+                if (lastTitleCaseOperation && lastTitleCaseOperation.id === id) {
+                    lastTitleCaseOperation = null;
+                }
+            }
+        });
+    });
+    
+    bookmarksList.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = parseFloat(e.target.dataset.id);
+            const action = e.target.dataset.action;
+            
+            if (action === 'delete') {
+                deleteBookmark(id);
+            } else if (action === 'titlecase') {
+                titleCaseBookmark(id);
+            }
+        });
+    });
+}
+
+importInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+        const text = await file.text();
+        const lines = text.split('\n');
+        
+        bookmarks = [];
+        
+        lines.forEach(line => {
+            line = line.trim();
+            if (!line) return;
+            
+            const match = line.match(/"([^"]+)"\s+(\d+)\s+(\d+)/);
+            if (match) {
+                bookmarks.push({
+                    id: Date.now() + Math.random(),
+                    title: match[1],
+                    page: parseInt(match[2]),
+                    level: parseInt(match[3])
+                });
+            }
+        });
+        
+        renderBookmarks();
+        showToast(`Imported ${bookmarks.length} bookmarks`, 'success');
+    } catch (error) {
+        showToast('Error importing bookmarks: ' + error.message, 'error');
+        console.error(error);
+    }
+
+    importInput.value = '';
+});
+
+exportBtn.addEventListener('click', () => {
+    if (bookmarks.length === 0) {
+        showToast('No bookmarks to export', 'error');
+        return;
+    }
+
+    const content = bookmarks
+        .map(b => `"${b.title}" ${b.page} ${b.level}`)
+        .join('\n');
+    
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bookmarks.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast('Bookmarks exported', 'success');
+});
+
+applyBookmarksBtn.addEventListener('click', async () => {
+    if (!originalFile) {
+        showToast('No PDF loaded', 'error');
+        return;
+    }
+
+    if (bookmarks.length === 0) {
+        showToast('No bookmarks to apply', 'error');
+        return;
+    }
+
+    try {
+        showToast('Creating PDF with bookmarks...', 'info');
+
+        const freshArrayBuffer = await originalFile.arrayBuffer();
+        const freshPdfBytes = new Uint8Array(freshArrayBuffer);
+        const newPdfDoc = await PDFDocument.load(freshPdfBytes);
+
+        let maxLevel = 1;
+        for (let bookmark of bookmarks) {
+            bookmark.title = cleanBookmarkTitle(bookmark.title);
+            
+            if (bookmark.level > maxLevel + 1) {
+                bookmark.level = maxLevel + 1;
+            }
+            maxLevel = Math.max(maxLevel, bookmark.level);
+        }
+
+        const sortedBookmarks = [...bookmarks].sort((a, b) => a.page - b.page);
+
+        const context = newPdfDoc.context;
+        const outlinesRef = context.nextRef();
+        const outlines = context.obj({
+            Type: 'Outlines',
+        });
+
+        const itemRefs = [];
+        const items = [];
+
+        sortedBookmarks.forEach((bookmark) => {
+            const page = newPdfDoc.getPage(bookmark.page - 1);
+            const itemRef = context.nextRef();
+            itemRefs.push(itemRef);
+
+            const item = {
+                Title: PDFString.of(bookmark.title),
+                Parent: outlinesRef,
+                Dest: [
+                    page.ref,
+                    'XYZ',
+                    null,
+                    null,
+                    null
+                ]
+            };
+
+            items.push(item);
+        });
+
+        items.forEach((item, index) => {
+            if (index > 0) {
+                item.Prev = itemRefs[index - 1];
+            }
+            if (index < items.length - 1) {
+                item.Next = itemRefs[index + 1];
+            }
+        });
+
+        items.forEach((item, index) => {
+            context.assign(itemRefs[index], context.obj(item));
+        });
+
+        if (itemRefs.length > 0) {
+            outlines.set(PDFName.of('First'), itemRefs[0]);
+            outlines.set(PDFName.of('Last'), itemRefs[itemRefs.length - 1]);
+            outlines.set(PDFName.of('Count'), PDFNumber.of(itemRefs.length));
+        }
+
+        context.assign(outlinesRef, outlines);
+        newPdfDoc.catalog.set(PDFName.of('Outlines'), outlinesRef);
+
+        const pdfBytesWithBookmarks = await newPdfDoc.save();
+
+        const blob = new Blob([pdfBytesWithBookmarks], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = pdfFileName.replace('.pdf', '_bookmarked.pdf');
+        a.click();
+        URL.revokeObjectURL(url);
+
+        showToast('PDF with bookmarks created successfully!', 'success');
+
+    } catch (error) {
+        showToast('Error creating PDF: ' + error.message, 'error');
+        console.error('Full error:', error);
+    }
+});
+
+renderBookmarks();
+    </script>
+</body>
+</html>
+</body>
+</html>
