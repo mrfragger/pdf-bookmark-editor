@@ -24,7 +24,6 @@
             height: 100vh;
         }
         
-        /* Left Panel - PDF Viewer */
         .pdf-panel {
             flex: 1;
             display: flex;
@@ -347,7 +346,7 @@
         }
         
         .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             width: 100%;
             padding: 14px;
@@ -356,7 +355,7 @@
         
         .btn-success:hover:not(:disabled) {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
         
         .btn-success:disabled {
@@ -371,7 +370,6 @@
             color: #666;
         }
         
-        /* Modal Styles */
         .modal {
             position: fixed;
             top: 0;
@@ -642,7 +640,6 @@
             animation: bookmark-highlight 0.6s ease-out;
         }
         
-        /* Loading state */
         .loading {
             position: absolute;
             top: 50%;
@@ -772,6 +769,8 @@ let toastTimeout = null;
 let lastTitleCaseOperation = null;
 let mergeFiles = [];
 let draggedElement = null;
+let visiblePages = new Set();
+let pageCache = new Map();
 
 const pdfInput = document.getElementById('pdfInput');
 const pdfName = document.getElementById('pdfName');
@@ -788,6 +787,8 @@ const mergeFileList = document.getElementById('mergeFileList');
 const confirmMergeBtn = document.getElementById('confirmMerge');
 const cancelMergeBtn = document.getElementById('cancelMerge');
 const closeMergeModalBtn = document.getElementById('closeMergeModal');
+const PAGES_TO_RENDER_AHEAD = 2;
+const INITIAL_PAGES_TO_LOAD = 3;
 
 mergePdfInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
@@ -804,7 +805,8 @@ mergePdfInput.addEventListener('change', async (e) => {
         for (const file of files) {
             const arrayBuffer = await file.arrayBuffer();
             const bytes = new Uint8Array(arrayBuffer);
-            const pdf = await PDFDocument.load(bytes);
+            const pdf = await PDFDocument.load(bytes, { ignoreEncryption: true });
+            
             mergeFiles.push({
                 file: file,
                 name: file.name,
@@ -949,7 +951,8 @@ confirmMergeBtn.addEventListener('click', async () => {
             
             showToast(`Processing ${i + 1}/${mergeFiles.length}: ${fileData.name}`, 'info');
             
-            const sourcePdf = await PDFDocument.load(fileData.bytes);
+            const sourcePdf = await PDFDocument.load(fileData.bytes, { ignoreEncryption: true });
+            
             
             const existingBookmarks = await extractExistingBookmarks(sourcePdf);
             
@@ -1078,7 +1081,7 @@ async function loadPdfFile(file) {
         const arrayBuffer = await file.arrayBuffer();
         pdfBytes = new Uint8Array(arrayBuffer);
         
-        pdfDoc = await PDFDocument.load(pdfBytes);
+        pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
         
         const loadingTask = pdfjsLib.getDocument({ data: pdfBytes });
         pdfJsDoc = await loadingTask.promise;
@@ -1242,6 +1245,8 @@ async function renderAllPages() {
 
     pdfViewerContainer.innerHTML = '';
     loadingEl.classList.add('hidden');
+    pageCache.clear();
+    visiblePages.clear();
 
     const scale = 1.5;
 
@@ -1252,6 +1257,37 @@ async function renderAllPages() {
         const pageContainer = document.createElement('div');
         pageContainer.className = 'pdf-page-container';
         pageContainer.dataset.pageNumber = pageNumber;
+        pageContainer.style.minHeight = viewport.height + 'px';
+        pageContainer.style.width = viewport.width + 'px';
+        pageContainer.style.marginBottom = '20px';
+        pageContainer.style.position = 'relative';
+        pageContainer.style.background = '#1a1a1a';
+
+        pdfViewerContainer.appendChild(pageContainer);
+    }
+
+    for (let i = 1; i <= Math.min(INITIAL_PAGES_TO_LOAD, totalPages); i++) {
+        await renderPage(i, scale);
+    }
+
+    setupLazyLoading(scale);
+    
+    updateCurrentPage();
+}
+
+async function renderPage(pageNumber, scale) {
+    if (pageCache.has(pageNumber)) {
+        return;
+    }
+
+    const pageContainer = document.querySelector(`.pdf-page-container[data-page-number="${pageNumber}"]`);
+    if (!pageContainer) return;
+
+    try {
+        const page = await pdfJsDoc.getPage(pageNumber);
+        const viewport = page.getViewport({ scale: scale });
+
+        pageContainer.innerHTML = '';
 
         const canvas = document.createElement('canvas');
         canvas.className = 'pdf-page';
@@ -1267,7 +1303,6 @@ async function renderAllPages() {
 
         pageContainer.appendChild(canvas);
         pageContainer.appendChild(textLayerDiv);
-        pdfViewerContainer.appendChild(pageContainer);
 
         await page.render({
             canvasContext: context,
@@ -1281,12 +1316,68 @@ async function renderAllPages() {
             viewport: viewport,
             textDivs: []
         });
+
+        pageCache.set(pageNumber, true);
+        visiblePages.add(pageNumber);
+
+    } catch (error) {
+        console.error(`Error rendering page ${pageNumber}:`, error);
     }
-    
-    updateCurrentPage();
 }
 
-function updateCurrentPage() {
+function unrenderPage(pageNumber) {
+    const pageContainer = document.querySelector(`.pdf-page-container[data-page-number="${pageNumber}"]`);
+    if (!pageContainer) return;
+
+    const canvas = pageContainer.querySelector('canvas');
+    const textLayer = pageContainer.querySelector('.textLayer');
+    
+    if (canvas) canvas.remove();
+    if (textLayer) textLayer.remove();
+
+    pageCache.delete(pageNumber);
+    visiblePages.delete(pageNumber);
+}
+
+function setupLazyLoading(scale) {
+    const observerOptions = {
+        root: pdfViewerContainer,
+        rootMargin: '500px',
+        threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const pageNumber = parseInt(entry.target.dataset.pageNumber);
+
+            if (entry.isIntersecting) {
+                renderPage(pageNumber, scale);
+                
+                for (let i = 1; i <= PAGES_TO_RENDER_AHEAD; i++) {
+                    if (pageNumber + i <= totalPages) {
+                        renderPage(pageNumber + i, scale);
+                    }
+                    if (pageNumber - i >= 1) {
+                        renderPage(pageNumber - i, scale);
+                    }
+                }
+            } else {
+                const currentPage = getCurrentVisiblePage();
+                const distance = Math.abs(pageNumber - currentPage);
+                
+                if (distance > PAGES_TO_RENDER_AHEAD + 3) {
+                    unrenderPage(pageNumber);
+                }
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.pdf-page-container').forEach(container => {
+        observer.observe(container);
+    });
+}
+
+function getCurrentVisiblePage() {
     const container = pdfViewerContainer;
     const containerRect = container.getBoundingClientRect();
     const centerY = containerRect.top + containerRect.height / 2;
@@ -1301,17 +1392,17 @@ function updateCurrentPage() {
         }
     });
 
-    currentPage = currentPageNum;
+    return currentPageNum;
+}
+
+function updateCurrentPage() {
+    currentPage = getCurrentVisiblePage();
     
     const pageDisplay = document.getElementById('currentPageDisplay');
     if (pageDisplay) {
         pageDisplay.textContent = `Page ${currentPage} of ${totalPages}`;
     }
 }
-
-pdfViewerContainer.addEventListener('scroll', () => {
-    updateCurrentPage();
-});
 
 function getPageFromSelection() {
     const selection = window.getSelection();
@@ -1685,7 +1776,8 @@ applyBookmarksBtn.addEventListener('click', async () => {
 
         const freshArrayBuffer = await originalFile.arrayBuffer();
         const freshPdfBytes = new Uint8Array(freshArrayBuffer);
-        const newPdfDoc = await PDFDocument.load(freshPdfBytes);
+        const newPdfDoc = await PDFDocument.load(freshPdfBytes, { ignoreEncryption: true });
+        
 
         let maxLevel = 1;
         for (let bookmark of bookmarks) {
