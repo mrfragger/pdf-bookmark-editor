@@ -270,6 +270,257 @@
         .pdf-page {
             display: block;
         }
+
+        .page-editor-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.2s ease;
+            padding: 10px 0;
+            overflow: hidden;
+        }
+        
+        .page-editor-modal.hidden {
+            display: none;
+        }
+        
+        .page-editor-content {
+            background: #1a1a2e;
+            border-radius: 12px;
+            width: 95%;
+            height: calc(100vh - 20px);
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .page-editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .page-editor-toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding-right: 15px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .toolbar-group:last-child {
+            border-right: none;
+        }
+        
+        .toolbar-label {
+            font-size: 12px;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .page-grid-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: #0f1419;
+        }
+        
+        .page-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .page-thumbnail {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .page-thumbnail:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .page-thumbnail.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .page-thumbnail.dragging {
+            opacity: 0.5;
+        }
+        
+        .page-thumbnail.drag-over {
+            border-color: #38ef7d;
+            background: rgba(56, 239, 125, 0.1);
+        }
+        
+        .page-thumbnail-canvas {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            background: white;
+            display: block;
+        }
+        
+        .page-thumbnail-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        
+        .page-number {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .page-size {
+            color: #888;
+            font-size: 11px;
+        }
+        
+        .page-checkbox {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .page-thumbnail.deleted {
+            pointer-events: none;
+            opacity: 0.4;
+            position: relative;
+        }
+        
+        .page-thumbnail.deleted::before {
+            content: '🗑️';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            z-index: 100;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+        }
+        
+        .page-thumbnail.deleted::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+            z-index: 99;
+            pointer-events: none;
+        }
+        
+        .rotation-indicator {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .page-editor-actions {
+            display: flex;
+            gap: 12px;
+            padding: 12px 25px;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            align-items: center;
+        }
+
+       .page-editor-actions .btn {
+           padding: 10px 16px;
+           font-size: 14px;
+           white-space: nowrap;
+       }
+        
+        .selection-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            color: #888;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        
+        .selection-info strong {
+            color: #667eea;
+            margin: 0 4px;
+        }
+        
+        .btn-icon {
+            padding: 8px 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .split-range-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 200px;
+        }
+        
+        .split-range-input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        
+        .split-range-input::placeholder {
+            color: #666;
+        }
         
         .textLayer {
             position: absolute;
@@ -673,18 +924,21 @@
                 <div class="file-input-wrapper">
                     <input type="file" id="pdfInput" accept=".pdf">
                     <label for="pdfInput" class="btn btn-primary">
-                        📄 Open PDF
+                        Open PDF
                     </label>
                 </div>
                 <div class="file-input-wrapper">
                     <input type="file" id="mergePdfInput" accept=".pdf" multiple>
                     <label for="mergePdfInput" class="btn btn-primary">
-                        🔗 Merge PDFs
+                        Merge PDFs
                     </label>
                 </div>
+                <button id="openPageEditor" class="btn btn-primary" disabled>
+                    Edit Pages
+                </button>
                 <div class="pdf-info">
                     <span id="pdfName"></span>
-                    <span id="currentPageDisplay" style="color: #667eea; font-weight: 600;"></span>
+                    <div id="currentPageDisplay" style="color: #667eea; font-weight: 600; line-height: 1.3; text-align: right; min-width: 80px;"></div>
                 </div>
             </div>
             <div class="pdf-viewer-container" id="pdfViewerContainer">
@@ -729,6 +983,60 @@
                     Create PDF with Bookmarks
                 </button>   
             </div>
+
+            <div id="pageEditorModal" class="page-editor-modal hidden">
+                <div class="page-editor-content">
+                    <div class="page-editor-toolbar">
+                        <div class="toolbar-group">
+                            <span class="toolbar-label">Select</span>
+                            <button id="selectAllPages" class="btn btn-secondary btn-small">All</button>
+                            <button id="selectNonePages" class="btn btn-secondary btn-small">None</button>
+                            <button id="selectEvenPages" class="btn btn-secondary btn-small">Even</button>
+                            <button id="selectOddPages" class="btn btn-secondary btn-small">Odd</button>
+                            <button id="selectInvertPages" class="btn btn-secondary btn-small">Invert</button>
+                        </div>
+                        
+                        <div class="toolbar-group">
+                            <span class="toolbar-label">Rotate</span>
+                            <button id="rotateLeft" class="btn btn-secondary btn-small btn-icon" title="Rotate 90° Left">↺ 90°</button>
+                            <button id="rotateRight" class="btn btn-secondary btn-small btn-icon" title="Rotate 90° Right">↻ 90°</button>
+                            <button id="rotate180" class="btn btn-secondary btn-small btn-icon" title="Rotate 180°">↻ 180°</button>
+                        </div>
+                        
+                        <div class="toolbar-group">
+                            <span class="toolbar-label">Actions</span>
+                            <button id="deleteSelected" class="btn btn-delete btn-small btn-icon">🗑️ Delete</button>
+                        </div>
+                        
+                        <div class="toolbar-group">
+                            <span class="toolbar-label">Range</span>
+                            <input type="text" id="splitRangeInput" class="split-range-input" placeholder="e.g., 1-5, 10, 15-20">
+                            <button id="selectRange" class="btn btn-secondary btn-small">Select</button>
+                            <button id="splitExtract" class="btn btn-primary btn-small">Extract</button>
+                        </div>
+            
+                        <div style="flex: 1;"></div>
+                        
+                        <button id="closePageEditor" class="btn btn-secondary btn-small">✕ Close</button>
+                    </div>
+            
+                    <div class="page-grid-container" id="pageGridContainer">
+                        <div id="pageGrid" class="page-grid"></div>
+                    </div>
+            
+                    <div class="page-editor-actions">
+                        <div class="selection-info">
+                            <span id="selectionCount">0 pages selected</span>
+                        </div>
+                        <button id="cancelPageEdit" class="btn btn-secondary">Cancel</button>
+                        <button id="undoButton" class="btn btn-secondary" disabled>
+                            ↶ Undo <kbd>Cmd/Ctrl+Z</kbd>
+                        </button>
+                        <button id="applyPageChanges" class="btn btn-success">Apply Changes</button>
+                    </div>
+                </div>
+            </div>
+            </div>
         </div>
     </div>
 
@@ -771,6 +1079,7 @@ let mergeFiles = [];
 let draggedElement = null;
 let visiblePages = new Set();
 let pageCache = new Map();
+let undoStack = [];
 
 const pdfInput = document.getElementById('pdfInput');
 const pdfName = document.getElementById('pdfName');
@@ -789,6 +1098,65 @@ const cancelMergeBtn = document.getElementById('cancelMerge');
 const closeMergeModalBtn = document.getElementById('closeMergeModal');
 const PAGES_TO_RENDER_AHEAD = 2;
 const INITIAL_PAGES_TO_LOAD = 3;
+const MAX_UNDO_STACK = 50;
+
+function saveUndoState(action) {
+    const state = {
+        action: action,
+        pages: JSON.parse(JSON.stringify(pageEditorState.reorderedPages)),
+        selectedPages: new Set(pageEditorState.selectedPages),
+        timestamp: Date.now()
+    };
+    
+    undoStack.push(state);
+    
+    if (undoStack.length > MAX_UNDO_STACK) {
+        undoStack.shift();
+    }
+    
+    updateUndoButton();
+}
+
+function undo() {
+    if (undoStack.length === 0) {
+        showToast('Nothing to undo', 'info');
+        return;
+    }
+    
+    const previousState = undoStack.pop();
+    
+    pageEditorState.reorderedPages = JSON.parse(JSON.stringify(previousState.pages));
+    pageEditorState.selectedPages = new Set(previousState.selectedPages);
+    
+    const container = document.getElementById('pageGridContainer');
+    const scrollPos = container.scrollTop;
+    
+    renderPageGrid().then(() => {
+        container.scrollTop = scrollPos;
+        syncCheckboxes();
+        updateSelectionInfo();
+    });
+    
+    showToast(`Undid: ${previousState.action}`, 'success');
+    
+    updateUndoButton();
+}
+
+function updateUndoButton() {
+    const btn = document.getElementById('undoButton');
+    btn.disabled = undoStack.length === 0;
+}
+
+document.getElementById('undoButton').addEventListener('click', undo);
+
+document.addEventListener('keydown', (e) => {
+    const modifier = (navigator.platform.toUpperCase().indexOf('MAC') >= 0) ? e.metaKey : e.ctrlKey;
+    
+    if (modifier && e.key === 'z' && !pageEditorModal.classList.contains('hidden')) {
+        e.preventDefault();
+        undo();
+    }
+});
 
 mergePdfInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
@@ -1089,6 +1457,7 @@ async function loadPdfFile(file) {
         
         pdfName.textContent = file.name;
         applyBookmarksBtn.disabled = false;
+        openPageEditorBtn.disabled = false;
         
         const loadExistingBtn = document.getElementById('loadExistingBtn');
         loadExistingBtn.disabled = false;
@@ -1138,7 +1507,10 @@ function toTitleCase(str) {
     
     for (let i = 0; i < words.length; i++) {
         const word = words[i];
-        if (i === firstWordIdx || i === words.length - 1 || !smallWords.includes(word)) {
+        
+        const previousWordEndsWithColon = i > 0 && words[i - 1].endsWith(':');
+        
+        if (i === firstWordIdx || i === words.length - 1 || previousWordEndsWithColon || !smallWords.includes(word)) {
             words[i] = word.charAt(0).toUpperCase() + word.slice(1);
         }
     }
@@ -1273,6 +1645,9 @@ async function renderAllPages() {
     setupLazyLoading(scale);
     
     updateCurrentPage();
+    
+    pdfViewerContainer.removeEventListener('scroll', updateCurrentPage); // Remove old listener first
+    pdfViewerContainer.addEventListener('scroll', updateCurrentPage);
 }
 
 async function renderPage(pageNumber, scale) {
@@ -1400,7 +1775,7 @@ function updateCurrentPage() {
     
     const pageDisplay = document.getElementById('currentPageDisplay');
     if (pageDisplay) {
-        pageDisplay.textContent = `Page ${currentPage} of ${totalPages}`;
+        pageDisplay.innerHTML = `Page ${currentPage}<br>of ${totalPages}`;
     }
 }
 
@@ -1421,6 +1796,20 @@ function getPageFromSelection() {
 
     return currentPage;
 }
+
+document.getElementById('selectInvertPages').addEventListener('click', () => {
+    const newSelection = new Set();
+    
+    pageEditorState.reorderedPages.forEach((page, index) => {
+        if (!page.deleted && !pageEditorState.selectedPages.has(index)) {
+            newSelection.add(index);
+        }
+    });
+    
+    pageEditorState.selectedPages = newSelection;
+    syncCheckboxes();
+    updateSelectionInfo();
+});
 
 pdfInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
@@ -1861,6 +2250,650 @@ applyBookmarksBtn.addEventListener('click', async () => {
 });
 
 renderBookmarks();
+
+let pageEditorState = {
+    pages: [],
+    selectedPages: new Set(),
+    rotations: new Map(),
+    deletedPages: new Set(),
+    reorderedPages: []
+};
+
+const openPageEditorBtn = document.getElementById('openPageEditor');
+const pageEditorModal = document.getElementById('pageEditorModal');
+const closePageEditorBtn = document.getElementById('closePageEditor');
+const pageGrid = document.getElementById('pageGrid');
+const selectionCount = document.getElementById('selectionCount');
+
+openPageEditorBtn.addEventListener('click', async () => {
+    if (!pdfDoc || !pdfJsDoc) {
+        showToast('No PDF loaded', 'error');
+        return;
+    }
+
+    showToast('Loading page editor...', 'info');
+    
+    pageEditorState = {
+        pages: [],
+        selectedPages: new Set(),
+        rotations: new Map(),
+        deletedPages: new Set(),
+        reorderedPages: []
+    };
+    
+    undoStack = [];
+    updateUndoButton();
+
+    for (let i = 1; i <= totalPages; i++) {
+        pageEditorState.pages.push({
+            number: i,
+            rotation: 0,
+            deleted: false
+        });
+    }
+
+    pageEditorState.reorderedPages = [...pageEditorState.pages];
+
+    await renderPageGrid();
+    pageEditorModal.classList.remove('hidden');
+    updateSelectionInfo();
+});
+
+closePageEditorBtn.addEventListener('click', () => {
+    pageEditorModal.classList.add('hidden');
+});
+
+document.getElementById('cancelPageEdit').addEventListener('click', () => {
+    pageEditorModal.classList.add('hidden');
+});
+
+async function renderPageGrid() {
+    pageGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">Loading thumbnails...</div>';
+
+    const thumbnails = [];
+
+    for (let i = 0; i < pageEditorState.reorderedPages.length; i++) {
+        const pageData = pageEditorState.reorderedPages[i];
+        if (pageData.deleted) continue;
+
+        const page = await pdfJsDoc.getPage(pageData.number);
+        const scale = 0.5;
+        const viewport = page.getViewport({ scale, rotation: pageData.rotation });
+
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        await page.render({
+            canvasContext: context,
+            viewport: viewport
+        }).promise;
+
+        thumbnails.push({
+            canvas,
+            pageData,
+            index: i,
+            viewport
+        });
+    }
+
+    pageGrid.innerHTML = '';
+
+    thumbnails.forEach(({ canvas, pageData, index, viewport }) => {
+        const div = document.createElement('div');
+        div.className = pageData.deleted ? 'page-thumbnail deleted' : 'page-thumbnail';
+        div.dataset.index = index;
+        div.draggable = !pageData.deleted;
+    
+        const rotation = pageData.rotation !== 0 ? `<span class="rotation-indicator">${pageData.rotation}°</span>` : '';
+        
+        const actualWidth = Math.round(viewport.width * 2);
+        const actualHeight = Math.round(viewport.height * 2);
+        
+        div.innerHTML = `
+            <input type="checkbox" class="page-checkbox" data-index="${index}" ${pageData.deleted ? 'disabled' : ''}>
+            ${rotation}
+            <canvas class="page-thumbnail-canvas"></canvas>
+            <div class="page-thumbnail-info">
+                <span class="page-number">Page ${pageData.number}</span>
+                <span class="page-size">${actualWidth} × ${actualHeight}</span>
+            </div>
+        `;
+    
+        const thumbnailCanvas = div.querySelector('.page-thumbnail-canvas');
+        const ctx = thumbnailCanvas.getContext('2d');
+        thumbnailCanvas.width = canvas.width;
+        thumbnailCanvas.height = canvas.height;
+        ctx.drawImage(canvas, 0, 0);
+    
+        pageGrid.appendChild(div);
+    });
+
+    setupPageGridEvents();
+}
+
+function setupPageGridEvents() {
+    pageGrid.querySelectorAll('.page-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            if (e.target.checked) {
+                pageEditorState.selectedPages.add(index);
+                e.target.closest('.page-thumbnail').classList.add('selected');
+            } else {
+                pageEditorState.selectedPages.delete(index);
+                e.target.closest('.page-thumbnail').classList.remove('selected');
+            }
+            updateSelectionInfo();
+        });
+    });
+
+    pageGrid.querySelectorAll('.page-thumbnail').forEach(thumb => {
+        thumb.addEventListener('click', (e) => {
+            if (e.target.classList.contains('page-checkbox')) return;
+            const checkbox = thumb.querySelector('.page-checkbox');
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event('change'));
+        });
+    });
+
+    const thumbnails = pageGrid.querySelectorAll('.page-thumbnail');
+    thumbnails.forEach(thumb => {
+        thumb.addEventListener('dragstart', handlePageDragStart);
+        thumb.addEventListener('dragover', handlePageDragOver);
+        thumb.addEventListener('drop', handlePageDrop);
+        thumb.addEventListener('dragend', handlePageDragEnd);
+        thumb.addEventListener('dragenter', handlePageDragEnter);
+        thumb.addEventListener('dragleave', handlePageDragLeave);
+    });
+}
+
+let draggedPageElement = null;
+
+function handlePageDragStart(e) {
+    draggedPageElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handlePageDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handlePageDragEnter(e) {
+    if (this !== draggedPageElement) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handlePageDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handlePageDrop(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (draggedPageElement !== this) {
+        const fromIndex = parseInt(draggedPageElement.dataset.index);
+        const toIndex = parseInt(this.dataset.index);
+
+        saveUndoState('Reorder Pages');
+
+        const container = document.getElementById('pageGridContainer');
+        const scrollPos = container.scrollTop;
+
+        const movedPage = pageEditorState.reorderedPages.splice(fromIndex, 1)[0];
+        pageEditorState.reorderedPages.splice(toIndex, 0, movedPage);
+
+        const fromElement = pageGrid.querySelector(`[data-index="${fromIndex}"]`);
+        const toElement = pageGrid.querySelector(`[data-index="${toIndex}"]`);
+        
+        if (fromIndex < toIndex) {
+            toElement.parentNode.insertBefore(fromElement, toElement.nextSibling);
+        } else {
+            toElement.parentNode.insertBefore(fromElement, toElement);
+        }
+
+        const thumbnails = pageGrid.querySelectorAll('.page-thumbnail');
+        thumbnails.forEach((thumb, newIndex) => {
+            thumb.dataset.index = newIndex;
+            const checkbox = thumb.querySelector('.page-checkbox');
+            if (checkbox) {
+                checkbox.dataset.index = newIndex;
+            }
+        });
+
+        const newSelectedPages = new Set();
+        pageEditorState.selectedPages.forEach(oldIndex => {
+            if (oldIndex === fromIndex) {
+                newSelectedPages.add(toIndex);
+            } else if (fromIndex < toIndex) {
+                if (oldIndex > fromIndex && oldIndex <= toIndex) {
+                    newSelectedPages.add(oldIndex - 1);
+                } else {
+                    newSelectedPages.add(oldIndex);
+                }
+            } else {
+                if (oldIndex >= toIndex && oldIndex < fromIndex) {
+                    newSelectedPages.add(oldIndex + 1);
+                } else {
+                    newSelectedPages.add(oldIndex);
+                }
+            }
+        });
+        pageEditorState.selectedPages = newSelectedPages;
+
+        container.scrollTop = scrollPos;
+        syncCheckboxes();
+    }
+
+    return false;
+}
+
+function handlePageDragEnd(e) {
+    pageGrid.querySelectorAll('.page-thumbnail').forEach(thumb => {
+        thumb.classList.remove('dragging');
+        thumb.classList.remove('drag-over');
+    });
+}
+
+document.getElementById('selectAllPages').addEventListener('click', () => {
+    pageEditorState.selectedPages.clear();
+    pageEditorState.reorderedPages.forEach((_, index) => {
+        pageEditorState.selectedPages.add(index);
+    });
+    pageGrid.querySelectorAll('.page-checkbox').forEach(cb => {
+        cb.checked = true;
+        cb.closest('.page-thumbnail').classList.add('selected');
+    });
+    updateSelectionInfo();
+});
+
+document.getElementById('selectNonePages').addEventListener('click', () => {
+    pageEditorState.selectedPages.clear();
+    pageGrid.querySelectorAll('.page-checkbox').forEach(cb => {
+        cb.checked = false;
+        cb.closest('.page-thumbnail').classList.remove('selected');
+    });
+    updateSelectionInfo();
+});
+
+document.getElementById('selectEvenPages').addEventListener('click', () => {
+    pageEditorState.selectedPages.clear();
+    pageEditorState.reorderedPages.forEach((page, index) => {
+        if (page.number % 2 === 0) {
+            pageEditorState.selectedPages.add(index);
+        }
+    });
+    syncCheckboxes();
+    updateSelectionInfo();
+});
+
+document.getElementById('selectOddPages').addEventListener('click', () => {
+    pageEditorState.selectedPages.clear();
+    pageEditorState.reorderedPages.forEach((page, index) => {
+        if (page.number % 2 === 1) {
+            pageEditorState.selectedPages.add(index);
+        }
+    });
+    syncCheckboxes();
+    updateSelectionInfo();
+});
+
+document.getElementById('selectRange').addEventListener('click', () => {
+    const rangeInput = document.getElementById('splitRangeInput').value.trim();
+    if (!rangeInput) {
+        showToast('Enter page range (e.g., 1-5, 10, 15-20)', 'error');
+        return;
+    }
+
+    try {
+        const pageNumbers = parsePageRange(rangeInput);
+        if (pageNumbers.length === 0) {
+            showToast('Invalid page range', 'error');
+            return;
+        }
+
+        pageEditorState.selectedPages.clear();
+
+        pageEditorState.reorderedPages.forEach((page, index) => {
+            if (!page.deleted && pageNumbers.includes(page.number)) {
+                pageEditorState.selectedPages.add(index);
+            }
+        });
+
+        syncCheckboxes();
+        updateSelectionInfo();
+        
+        showToast(`Selected ${pageEditorState.selectedPages.size} page(s)`, 'success');
+
+    } catch (error) {
+        showToast('Error parsing range: ' + error.message, 'error');
+    }
+});
+
+function syncCheckboxes() {
+    pageGrid.querySelectorAll('.page-checkbox').forEach(cb => {
+        const index = parseInt(cb.dataset.index);
+        cb.checked = pageEditorState.selectedPages.has(index);
+        if (cb.checked) {
+            cb.closest('.page-thumbnail').classList.add('selected');
+        } else {
+            cb.closest('.page-thumbnail').classList.remove('selected');
+        }
+    });
+}
+
+document.getElementById('rotateLeft').addEventListener('click', async () => {
+    if (pageEditorState.selectedPages.size === 0) {
+        showToast('No pages selected', 'error');
+        return;
+    }
+    
+    saveUndoState('Rotate Left');
+    
+    const indicesToUpdate = Array.from(pageEditorState.selectedPages);
+    
+    for (const index of indicesToUpdate) {
+        const page = pageEditorState.reorderedPages[index];
+        page.rotation = (page.rotation - 90 + 360) % 360;
+        await updateSingleThumbnail(index);
+    }
+    
+    showToast(`Rotated ${pageEditorState.selectedPages.size} page(s) left`, 'success');
+});
+
+document.getElementById('rotateRight').addEventListener('click', async () => {
+    if (pageEditorState.selectedPages.size === 0) {
+        showToast('No pages selected', 'error');
+        return;
+    }
+    
+    saveUndoState('Rotate Right');
+    
+    const indicesToUpdate = Array.from(pageEditorState.selectedPages);
+    
+    for (const index of indicesToUpdate) {
+        const page = pageEditorState.reorderedPages[index];
+        page.rotation = (page.rotation + 90) % 360;
+        await updateSingleThumbnail(index);
+    }
+    
+    showToast(`Rotated ${pageEditorState.selectedPages.size} page(s) right`, 'success');
+});
+
+document.getElementById('rotate180').addEventListener('click', async () => {
+    if (pageEditorState.selectedPages.size === 0) {
+        showToast('No pages selected', 'error');
+        return;
+    }
+    
+    saveUndoState('Rotate 180°');
+    
+    const indicesToUpdate = Array.from(pageEditorState.selectedPages);
+    
+    for (const index of indicesToUpdate) {
+        const page = pageEditorState.reorderedPages[index];
+        page.rotation = (page.rotation + 180) % 360;
+        await updateSingleThumbnail(index);
+    }
+    
+    showToast(`Rotated ${pageEditorState.selectedPages.size} page(s) 180°`, 'success');
+});
+
+async function updateSingleThumbnail(index) {
+    const pageData = pageEditorState.reorderedPages[index];
+    const thumbnail = pageGrid.querySelector(`[data-index="${index}"]`);
+    if (!thumbnail || pageData.deleted) return;
+
+    const page = await pdfJsDoc.getPage(pageData.number);
+    const scale = 0.5;
+    const viewport = page.getViewport({ scale, rotation: pageData.rotation });
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    await page.render({
+        canvasContext: context,
+        viewport: viewport
+    }).promise;
+
+    const thumbnailCanvas = thumbnail.querySelector('.page-thumbnail-canvas');
+    thumbnailCanvas.width = canvas.width;
+    thumbnailCanvas.height = canvas.height;
+    const ctx = thumbnailCanvas.getContext('2d');
+    ctx.drawImage(canvas, 0, 0);
+
+    const oldIndicator = thumbnail.querySelector('.rotation-indicator');
+    if (oldIndicator) oldIndicator.remove();
+    
+    if (pageData.rotation !== 0) {
+        const indicator = document.createElement('span');
+        indicator.className = 'rotation-indicator';
+        indicator.textContent = `${pageData.rotation}°`;
+        thumbnail.insertBefore(indicator, thumbnail.querySelector('.page-thumbnail-canvas'));
+    }
+
+    const actualWidth = Math.round(viewport.width * 2);
+    const actualHeight = Math.round(viewport.height * 2);
+    const sizeSpan = thumbnail.querySelector('.page-size');
+    if (sizeSpan) {
+        sizeSpan.textContent = `${actualWidth} × ${actualHeight}`;
+    }
+}
+
+document.getElementById('deleteSelected').addEventListener('click', () => {
+    if (pageEditorState.selectedPages.size === 0) {
+        showToast('No pages selected', 'error');
+        return;
+    }
+    
+    const remainingPages = pageEditorState.reorderedPages.filter(p => !p.deleted).length - pageEditorState.selectedPages.size;
+    if (remainingPages === 0) {
+        showToast('Cannot delete all pages', 'error');
+        return;
+    }
+
+    if (!confirm(`Delete ${pageEditorState.selectedPages.size} page(s)?`)) {
+        return;
+    }
+
+    saveUndoState('Delete Pages');
+
+    const indicesToDelete = Array.from(pageEditorState.selectedPages);
+    indicesToDelete.forEach(index => {
+        pageEditorState.reorderedPages[index].deleted = true;
+        
+        const thumbnail = pageGrid.querySelector(`[data-index="${index}"]`);
+        if (thumbnail) {
+            thumbnail.classList.add('deleted');
+            const checkbox = thumbnail.querySelector('.page-checkbox');
+            if (checkbox) {
+                checkbox.checked = false;
+                checkbox.disabled = true;
+            }
+        }
+    });
+
+    pageEditorState.selectedPages.clear();
+    updateSelectionInfo();
+    
+    showToast(`Marked ${indicesToDelete.length} page(s) for deletion`, 'success');
+});
+
+document.getElementById('splitExtract').addEventListener('click', async () => {
+    const rangeInput = document.getElementById('splitRangeInput').value.trim();
+    if (!rangeInput) {
+        showToast('Enter page range (e.g., 1-5, 10, 15-20)', 'error');
+        return;
+    }
+
+    try {
+        const pageNumbers = parsePageRange(rangeInput);
+        if (pageNumbers.length === 0) {
+            showToast('Invalid page range', 'error');
+            return;
+        }
+
+        showToast('Extracting pages...', 'info');
+
+        const newPdf = await PDFDocument.create();
+        
+        for (const pageNum of pageNumbers) {
+            if (pageNum < 1 || pageNum > totalPages) {
+                showToast(`Page ${pageNum} out of range`, 'error');
+                return;
+            }
+            const [copiedPage] = await newPdf.copyPages(pdfDoc, [pageNum - 1]);
+            newPdf.addPage(copiedPage);
+        }
+
+        const pdfBytes = await newPdf.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = pdfFileName.replace('.pdf', `_pages_${rangeInput.replace(/[,\s]/g, '_')}.pdf`);
+        a.click();
+        URL.revokeObjectURL(url);
+
+        showToast(`Extracted ${pageNumbers.length} page(s)`, 'success');
+        document.getElementById('splitRangeInput').value = '';
+
+    } catch (error) {
+        showToast('Error extracting pages: ' + error.message, 'error');
+        console.error(error);
+    }
+});
+
+function parsePageRange(rangeStr) {
+    const pages = new Set();
+    const parts = rangeStr.split(',');
+    
+    for (const part of parts) {
+        const trimmed = part.trim();
+        if (trimmed.includes('-')) {
+            const [start, end] = trimmed.split('-').map(s => parseInt(s.trim()));
+            if (isNaN(start) || isNaN(end)) continue;
+            for (let i = Math.min(start, end); i <= Math.max(start, end); i++) {
+                pages.add(i);
+            }
+        } else {
+            const num = parseInt(trimmed);
+            if (!isNaN(num)) {
+                pages.add(num);
+            }
+        }
+    }
+    
+    return Array.from(pages).sort((a, b) => a - b);
+}
+
+function updateSelectionInfo() {
+    const count = pageEditorState.selectedPages.size;
+    selectionCount.textContent = count === 0 ? 'No pages selected' : 
+                                 count === 1 ? '1 page selected' : 
+                                 `${count} pages selected`;
+}
+
+document.getElementById('applyPageChanges').addEventListener('click', async () => {
+    try {
+        showToast('Applying changes...', 'info');
+
+        const newPdf = await PDFDocument.create();
+        
+        const finalPages = pageEditorState.reorderedPages.filter(p => !p.deleted);
+        
+        if (finalPages.length === 0) {
+            showToast('Cannot create PDF with no pages', 'error');
+            return;
+        }
+
+        for (const pageData of finalPages) {
+            const [copiedPage] = await newPdf.copyPages(pdfDoc, [pageData.number - 1]);
+            
+            if (pageData.rotation !== 0) {
+                copiedPage.setRotation({ angle: pageData.rotation, type: 'degrees' });
+            }
+            
+            newPdf.addPage(copiedPage);
+        }
+
+        if (bookmarks.length > 0) {
+            const pageMapping = new Map();
+            finalPages.forEach((pageData, newIndex) => {
+                pageMapping.set(pageData.number, newIndex + 1);
+            });
+
+            const adjustedBookmarks = bookmarks
+                .filter(b => pageMapping.has(b.page))
+                .map(b => ({
+                    ...b,
+                    page: pageMapping.get(b.page)
+                }));
+
+            if (adjustedBookmarks.length > 0) {
+                const context = newPdf.context;
+                const outlinesRef = context.nextRef();
+                const outlines = context.obj({ Type: 'Outlines' });
+
+                const itemRefs = [];
+                const items = [];
+
+                adjustedBookmarks.forEach((bookmark) => {
+                    const page = newPdf.getPage(bookmark.page - 1);
+                    const itemRef = context.nextRef();
+                    itemRefs.push(itemRef);
+
+                    items.push({
+                        Title: PDFString.of(cleanBookmarkTitle(bookmark.title)),
+                        Parent: outlinesRef,
+                        Dest: [page.ref, 'XYZ', null, null, null]
+                    });
+                });
+
+                items.forEach((item, index) => {
+                    if (index > 0) item.Prev = itemRefs[index - 1];
+                    if (index < items.length - 1) item.Next = itemRefs[index + 1];
+                });
+
+                items.forEach((item, index) => {
+                    context.assign(itemRefs[index], context.obj(item));
+                });
+
+                if (itemRefs.length > 0) {
+                    outlines.set(PDFName.of('First'), itemRefs[0]);
+                    outlines.set(PDFName.of('Last'), itemRefs[itemRefs.length - 1]);
+                    outlines.set(PDFName.of('Count'), PDFNumber.of(itemRefs.length));
+                }
+
+                context.assign(outlinesRef, outlines);
+                newPdf.catalog.set(PDFName.of('Outlines'), outlinesRef);
+            }
+        }
+
+        const pdfBytes = await newPdf.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = pdfFileName.replace('.pdf', '_edited.pdf');
+        a.click();
+        URL.revokeObjectURL(url);
+
+        showToast(`PDF saved with ${finalPages.length} page(s)`, 'success');
+        pageEditorModal.classList.add('hidden');
+
+    } catch (error) {
+        showToast('Error applying changes: ' + error.message, 'error');
+        console.error(error);
+    }
+});
     </script>
 </body>
 </html>
