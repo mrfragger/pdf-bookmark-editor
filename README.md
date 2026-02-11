@@ -12,6 +12,8 @@ Add / Edit bookmarks for a PDF
 - select ranges 22-34, 38, 42, 44-56
 - visually drag thumbnails to reorder
 - undo
+- PWA (progressive web app), installs offline
+- Librewolf/Firefox bookmark and it'll be cached
 
 https://mrfragger.github.io/pdf-bookmark-editor/
 
@@ -20,3 +22,4 @@ https://mrfragger.github.io/pdf-bookmark-editor/
 Doesn't do vertical position within PDFs (pretty much requires python pymupdf) but allows one to easily modify bookmarks for pages.  Add bookmarks (chapter, section or subsection) by selecting text within PDF and using shortcut keys. 
 
 ![](pdfbookmarkeditor.jpg)
+![](pdfbookmarkpages.jpg)
