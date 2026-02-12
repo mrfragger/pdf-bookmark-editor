@@ -36,20 +36,14 @@ pdf-lib.min.js 525KB
 pdf.min.js 320KB
 index.min.js 19KB
 ```
-Doesn't do vertical position within PDFs (pretty much requires python pymupdf) but allows one to easily modify bookmarks for pages. Can't add crop function nor compression function since that pretty much requires ghostscript (gs).  For annotation, adding text, highlightning open PDF in Firefox.
+Doesn't do vertical position (jumping to exact location of text in a page) within PDFs (as that requires pymupdf and python) but allows one to easily modify bookmarks for pages. Crop function isn't practical in this app nor is  a compression function since that requires ghostscript (gs).  For annotation, adding text, highlightning open PDF in Firefox.
 
 ### Use Ghostscript (free AGPL) for PDF compression:
 ```bash
 brew install gs         sudo apt install gs      choco install gs
 
-# Smallest size (72 dpi, lower quality)
+# /screen smallest size (72 dpi, lower quality) or /ebook balance size and quality (150 dpi) or /printer high quality (300 dpi)
 gs -sDEVICE=pdfwrite -dPDFSETTINGS=/screen -dNOPAUSE -dBATCH -sOutputFile=compressed.pdf input.pdf
-
-# Good balance of size and quality (150 dpi)
-gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -dNOPAUSE -dBATCH -sOutputFile=compressed.pdf input.pdf
-
-# High quality (300 dpi)
-gs -sDEVICE=pdfwrite -dPDFSETTINGS=/printer -dNOPAUSE -dBATCH -sOutputFile=compressed.pdf input.pdf
 ```
 
 
