@@ -49,10 +49,11 @@
         .file-input-wrapper {
             display: inline-block;
         }
-        
+
         .file-input-wrapper label {
             margin: 0;
             display: inline-block;
+            line-height: normal;
         }
         
         input[type="file"] {
@@ -71,7 +72,7 @@
         
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: #e8e8e8;
         }
         
         .btn-primary:hover {
@@ -121,6 +122,14 @@
             border-radius: 4px;
             text-align: center;
         }
+
+       .pdf-page.dark-mode {
+           filter: invert(1) hue-rotate(180deg);
+       }
+       
+       .pdf-page.grayscale-mode {
+           filter: grayscale(85%) invert(85%);
+       }
         
         .pdf-viewer-container {
             flex: 1;
@@ -148,9 +157,8 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
         
-        /* Right Panel - Bookmarks */
         .bookmarks-panel {
-            width: 400px;
+            width: 350px;
             display: flex;
             flex-direction: column;
             background: #1a1a2e;
@@ -621,10 +629,16 @@
             font-size: 11px;
             padding: 8px 10px;
         }
+
+        .footer-buttons label.btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
         
         .btn-success {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: #e8e8e8;
             width: 100%;
             padding: 14px;
             font-size: 16px;
@@ -1063,6 +1077,7 @@
                     <div id="zoomControls" style="display: none; margin-left: 15px; display: flex; gap: 8px;">
                     <button id="zoomOut" class="btn btn-secondary" style="padding: 6px 12px; font-size: 18px; line-height: 1;" title="Zoom out">−</button>
                     <button id="zoomIn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 18px; line-height: 1;" title="Zoom in">+</button>
+                    <button id="togglePdfDarkMode" class="btn btn-secondary" style="padding: 6px 12px; font-size: 14px; line-height: 1;" title="Toggle PDF color mode">🌙</button>
                 </div>
                 </div>
             </div>
@@ -1119,12 +1134,10 @@
                     <button id="openSearchBtn" class="btn btn-secondary btn-small" disabled title="Search PDF ( / )">
                         Search
                     </button>
-                    <div class="file-input-wrapper" style="display: inline-block;">
-                        <input type="file" id="importInput" accept=".txt">
-                        <label for="importInput" class="btn btn-secondary btn-small" style="margin: 0; display: inline-block;">
-                            Import
-                        </label>
-                    </div>
+                    <input type="file" id="importInput" accept=".txt" style="display: none;">
+                    <label for="importInput" class="btn btn-secondary btn-small" style="cursor: pointer; margin: 0;">
+                        Import
+                    </label>
                     <button id="exportBtn" class="btn btn-secondary btn-small">Export</button>
                     <button id="loadExistingBtn" class="btn btn-secondary btn-small" disabled>
                         Load Existing
@@ -1808,8 +1821,13 @@ async function renderAllPages() {
         pageContainer.style.marginBottom = '20px';
         pageContainer.style.position = 'relative';
 
-        const canvas = document.createElement('canvas');
-        canvas.className = 'pdf-page';
+       const canvas = document.createElement('canvas');
+       canvas.className = 'pdf-page';
+       if (pdfColorMode === 'dark') {
+           canvas.classList.add('dark-mode');
+       } else if (pdfColorMode === 'grayscale') {
+           canvas.classList.add('grayscale-mode');
+       }
         const context = canvas.getContext('2d');
         canvas.height = viewport.height;
         canvas.width = viewport.width;
@@ -1851,24 +1869,35 @@ async function renderAllPages() {
 async function reRenderAllPages() {
     if (!pdfJsDoc) return;
 
-    const scrollPos = pdfViewerContainer.scrollTop;
-    const scrollPercentage = scrollPos / pdfViewerContainer.scrollHeight;
-
-    pdfViewerContainer.innerHTML = '';
-    loadingEl.classList.add('hidden');
-
+    const pageToScrollTo = currentPage;
+    
+    const existingContainers = pdfViewerContainer.querySelectorAll('.pdf-page-container');
+    
     for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
         const page = await pdfJsDoc.getPage(pageNumber);
         const viewport = page.getViewport({ scale: currentZoomScale });
 
-        const pageContainer = document.createElement('div');
-        pageContainer.className = 'pdf-page-container';
-        pageContainer.dataset.pageNumber = pageNumber;
+        let pageContainer = existingContainers[pageNumber - 1];
+        
+        if (!pageContainer) {
+            pageContainer = document.createElement('div');
+            pageContainer.className = 'pdf-page-container';
+            pageContainer.dataset.pageNumber = pageNumber;
+            pdfViewerContainer.appendChild(pageContainer);
+        }
+        
         pageContainer.style.marginBottom = '20px';
         pageContainer.style.position = 'relative';
+        
+        pageContainer.innerHTML = '';
 
         const canvas = document.createElement('canvas');
         canvas.className = 'pdf-page';
+        if (pdfColorMode === 'dark') {
+            canvas.classList.add('dark-mode');
+        } else if (pdfColorMode === 'grayscale') {
+            canvas.classList.add('grayscale-mode');
+        }
         const context = canvas.getContext('2d');
         canvas.height = viewport.height;
         canvas.width = viewport.width;
@@ -1881,7 +1910,6 @@ async function reRenderAllPages() {
 
         pageContainer.appendChild(canvas);
         pageContainer.appendChild(textLayerDiv);
-        pdfViewerContainer.appendChild(pageContainer);
 
         await page.render({
             canvasContext: context,
@@ -1902,12 +1930,7 @@ async function reRenderAllPages() {
     }
     
     updateCurrentPage();
-    
-    setTimeout(() => {
-        pdfViewerContainer.scrollTop = scrollPercentage * pdfViewerContainer.scrollHeight;
-    }, 100);
 }
-
 async function renderPage(pageNumber, scale) {
     const actualScale = scale !== undefined ? scale : currentZoomScale;
     
@@ -1926,6 +1949,11 @@ async function renderPage(pageNumber, scale) {
 
         const canvas = document.createElement('canvas');
         canvas.className = 'pdf-page';
+        if (pdfColorMode === 'dark') {
+            canvas.classList.add('dark-mode');
+        } else if (pdfColorMode === 'grayscale') {
+            canvas.classList.add('grayscale-mode');
+        }
         const context = canvas.getContext('2d');
         canvas.height = viewport.height;
         canvas.width = viewport.width;
@@ -2014,22 +2042,31 @@ function setupLazyLoading(scale) {
 
 function getCurrentVisiblePage() {
     const container = pdfViewerContainer;
-    const containerRect = container.getBoundingClientRect();
-    const centerY = containerRect.top + containerRect.height / 2;
+    const scrollTop = container.scrollTop;
+    const containerHeight = container.clientHeight;
+    const scrollCenter = scrollTop + (containerHeight / 2);
 
     let currentPageNum = 1;
+    let closestDistance = Infinity;
+    
     const pages = document.querySelectorAll('.pdf-page-container');
     
     pages.forEach(page => {
-        const rect = page.getBoundingClientRect();
-        if (rect.top <= centerY && rect.bottom >= centerY) {
-            currentPageNum = parseInt(page.dataset.pageNumber);
+        const pageNum = parseInt(page.dataset.pageNumber);
+        const pageTop = page.offsetTop;
+        const pageHeight = page.offsetHeight;
+        const pageCenter = pageTop + (pageHeight / 2);
+        
+        const distance = Math.abs(scrollCenter - pageCenter);
+        
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            currentPageNum = pageNum;
         }
     });
 
     return currentPageNum;
 }
-
 function updateCurrentPage() {
     currentPage = getCurrentVisiblePage();
     
@@ -3514,6 +3551,54 @@ async function highlightSearchTermsOnPage(pageNum, terms) {
 function escapeRegex(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+let pdfColorMode = 'grayscale'; // 'light', 'dark', 'grayscale'
+
+const togglePdfDarkModeBtn = document.getElementById('togglePdfDarkMode');
+
+togglePdfDarkModeBtn.addEventListener('click', () => {
+    if (pdfColorMode === 'grayscale') {
+        pdfColorMode = 'dark';
+    } else if (pdfColorMode === 'dark') {
+        pdfColorMode = 'light';
+    } else {
+        pdfColorMode = 'grayscale';
+    }
+    
+    applyPdfColorMode();
+});
+
+function applyPdfColorMode() {
+    const allCanvases = pdfViewerContainer.querySelectorAll('.pdf-page');
+    
+    allCanvases.forEach(canvas => {
+        canvas.classList.remove('dark-mode', 'grayscale-mode');
+        
+        if (pdfColorMode === 'dark') {
+            canvas.classList.add('dark-mode');
+        } else if (pdfColorMode === 'grayscale') {
+            canvas.classList.add('grayscale-mode');
+        }
+    });
+    
+    if (pdfColorMode === 'dark') {
+        togglePdfDarkModeBtn.textContent = '🌙';
+        togglePdfDarkModeBtn.title = 'Dark mode (click for light)';
+        showToast('PDF dark mode enabled', 'info');
+    } else if (pdfColorMode === 'grayscale') {
+        togglePdfDarkModeBtn.textContent = '🌗';
+        togglePdfDarkModeBtn.title = 'Grayscale mode (click for dark)';
+        showToast('PDF grayscale mode enabled', 'info');
+    } else {
+        togglePdfDarkModeBtn.textContent = '☀️';
+        togglePdfDarkModeBtn.title = 'Light mode (click for grayscale)';
+        showToast('PDF light mode enabled', 'info');
+    }
+}
+
+togglePdfDarkModeBtn.textContent = '🌗';
+togglePdfDarkModeBtn.title = 'Grayscale mode (click for dark)';
+
 
     </script>
 </body>

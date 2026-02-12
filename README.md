@@ -7,6 +7,8 @@
 - select text in pdf to use for bookmark title
 - load existing bookmarks
 - import or export bookmarks to a text file
+- grayscale (default), dark and light modes
+- zoom in/out and zooms to page width by default
 - Titlelize chapter titles Aa (see example)
 - Chapter 2: Parts Of Speech ---> Chapter 2: Parts of Speech
 - merge PDFS retaining existing bookmarks
@@ -27,7 +29,7 @@
 
  There should be a free PDF editor for bookmarks without ads, freemium or a subscription.  I looked but never could find one.  Just a few python command line ones that work great for advanced users. This app is all local.  No cdn (content delivery networks) either just 5 files loaded ~3MB total.
  ```
-index.html 91KB
+index.html 113KB
 pdf.worker.min.js 1.1MB
 pdf-lib.min.js 525KB
 pdf.min.js 320KB
