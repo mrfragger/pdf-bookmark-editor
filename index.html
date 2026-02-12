@@ -38,12 +38,12 @@
         }
         
         .pdf-header {
-            padding: 15px 20px;
+            padding: 8px 15px;
             background: rgba(0, 0, 0, 0.2);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
         }
         
         .file-input-wrapper {
@@ -84,14 +84,28 @@
             flex: 1;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             color: #aaa;
+            font-size: 13px;
+            margin-left: 10px;
+        }
+
+        #pdfName {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
         }
         
         .page-nav {
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        #zoomControls {
+            display: none;
+            gap: 6px;
         }
         
         .page-nav button {
@@ -535,6 +549,13 @@
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        .btn-icon-only {
+            padding: 8px 12px;
+            font-size: 18px;
+            line-height: 1;
+            min-width: auto;
         }
         
         .split-range-input {
@@ -1058,27 +1079,27 @@
             <div class="pdf-header">
                 <div class="file-input-wrapper">
                     <input type="file" id="pdfInput" accept=".pdf">
-                    <label for="pdfInput" class="btn btn-primary">
-                        Open PDF
+                    <label for="pdfInput" class="btn btn-primary btn-icon-only" title="Open PDF">
+                        📄
                     </label>
                 </div>
                 <div class="file-input-wrapper">
                     <input type="file" id="mergePdfInput" accept=".pdf" multiple>
-                    <label for="mergePdfInput" class="btn btn-primary">
-                        Merge PDFs
+                    <label for="mergePdfInput" class="btn btn-primary btn-icon-only" title="Merge PDFs">
+                        🔗
                     </label>
                 </div>
-                <button id="openPageEditor" class="btn btn-primary" disabled>
-                    Edit Pages
+                <button id="openPageEditor" class="btn btn-primary btn-icon-only" disabled title="Edit Pages">
+                    ✂️
                 </button>
                 <div class="pdf-info">
                     <span id="pdfName"></span>
                     <div id="currentPageDisplay" style="color: #667eea; font-weight: 600; line-height: 1.3; text-align: right; min-width: 80px;"></div>
-                    <div id="zoomControls" style="display: none; margin-left: 15px; gap: 8px;">
-                    <button id="zoomOut" class="btn btn-secondary" style="padding: 6px 12px; font-size: 18px; line-height: 1;" title="Zoom out">−</button>
-                    <button id="zoomIn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 18px; line-height: 1;" title="Zoom in">+</button>
-                    <button id="togglePdfDarkMode" class="btn btn-secondary" style="padding: 6px 12px; font-size: 14px; line-height: 1;" title="Toggle PDF color mode">🌙</button>
-                </div>
+                    <div id="zoomControls" style="display: none; gap: 8px;">
+                        <button id="zoomOut" class="btn btn-secondary btn-icon-only" title="Zoom out">−</button>
+                        <button id="zoomIn" class="btn btn-secondary btn-icon-only" title="Zoom in">+</button>
+                        <button id="togglePdfDarkMode" class="btn btn-secondary btn-icon-only" title="Toggle PDF color mode">🌙</button>
+                    </div>
                 </div>
             </div>
             <div class="pdf-viewer-container" id="pdfViewerContainer">
@@ -1099,7 +1120,7 @@
 
             <div class="pdf-search-section" id="pdfSearchSection" style="display: none;">
                 <div class="search-header">
-                    <h3>🔍 Search PDF <span id="searchPageIndicator" style="color: #888; font-size: 0.9em; font-weight: normal;"></span></h3>
+                    <h3>🔍 Search <span id="searchPageIndicator" style="color: #888; font-size: 0.9em; font-weight: normal;"></span></h3>
                     <div style="display: flex; gap: 8px; align-items: center;">
                         <button id="searchHelp" class="btn-small" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); padding: 4px 10px; color: #fff; font-size: 14px; cursor: pointer; border-radius: 4px; font-weight: bold;" title="&quot;feet hands&quot; finds exact phrase&#10;&quot;here&quot; or 'here' finds only &quot;here&quot; (not &quot;there&quot; or &quot;hereafter&quot;)&#10;Fuzzy match — fet finds &quot;feet&quot;, &quot;fetter&quot;&#10;Prefix search — here finds &quot;here&quot;, &quot;there&quot;, &quot;hereafter&quot;">?</button>
                         <button id="clearSearch" class="btn-small" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; color: #fff; font-size: 13px; cursor: pointer; border-radius: 4px;" title="Clear results ( Cmd/Ctrl+/ )">Clear</button>
@@ -1122,7 +1143,7 @@
             
             <div class="bookmarks-list" id="bookmarksList">
                 <div class="empty-state">
-                    <p>📑 No bookmarks yet</p>
+                    <p>No bookmarks yet</p>
                     <p style="margin-top: 10px; font-size: 13px;">
                         Select text in PDF and use keyboard shortcuts
                     </p>
@@ -1780,7 +1801,7 @@ async function extractExistingBookmarks(pdfLibDoc) {
     }
 }
 
-let currentZoomScale = 1.5; // Default scale
+let currentZoomScale = 1.5;
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 3.0;
 const SCALE_STEP = 0.25;
@@ -1791,15 +1812,25 @@ const zoomControls = document.getElementById('zoomControls');
 
 zoomInBtn.addEventListener('click', () => {
     if (currentZoomScale < MAX_SCALE) {
+        const container = pdfViewerContainer;
+        const scrollRatio = container.scrollTop / container.scrollHeight;
+        
         currentZoomScale = Math.min(MAX_SCALE, currentZoomScale + SCALE_STEP);
-        reRenderAllPages();
+        reRenderAllPages().then(() => {
+            container.scrollTop = scrollRatio * container.scrollHeight;
+        });
     }
 });
 
 zoomOutBtn.addEventListener('click', () => {
     if (currentZoomScale > MIN_SCALE) {
+        const container = pdfViewerContainer;
+        const scrollRatio = container.scrollTop / container.scrollHeight;
+        
         currentZoomScale = Math.max(MIN_SCALE, currentZoomScale - SCALE_STEP);
-        reRenderAllPages();
+        reRenderAllPages().then(() => {
+            container.scrollTop = scrollRatio * container.scrollHeight;
+        });
     }
 });
 
@@ -1953,68 +1984,44 @@ function unrenderSinglePage(pageNumber) {
 async function reRenderAllPages() {
     if (!pdfJsDoc) return;
 
-    const pageToScrollTo = currentPage;
+    const container = pdfViewerContainer;
+    const currentPageNum = getCurrentVisiblePage();
     
-    const existingContainers = pdfViewerContainer.querySelectorAll('.pdf-page-container');
+    renderedPagesQueue = [];
     
+    container.innerHTML = '';
+    
+    const scale = currentZoomScale;
+
     for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
         const page = await pdfJsDoc.getPage(pageNumber);
-        const viewport = page.getViewport({ scale: currentZoomScale });
+        const viewport = page.getViewport({ scale: scale });
 
-        let pageContainer = existingContainers[pageNumber - 1];
-        
-        if (!pageContainer) {
-            pageContainer = document.createElement('div');
-            pageContainer.className = 'pdf-page-container';
-            pageContainer.dataset.pageNumber = pageNumber;
-            pdfViewerContainer.appendChild(pageContainer);
-        }
-        
+        const pageContainer = document.createElement('div');
+        pageContainer.className = 'pdf-page-container';
+        pageContainer.dataset.pageNumber = pageNumber;
         pageContainer.style.marginBottom = '20px';
         pageContainer.style.position = 'relative';
+        pageContainer.style.minHeight = viewport.height + 'px';
+        pageContainer.style.width = viewport.width + 'px';
+
+        container.appendChild(pageContainer);
         
-        pageContainer.innerHTML = '';
-
-        const canvas = document.createElement('canvas');
-        canvas.className = 'pdf-page';
-        if (pdfColorMode === 'dark') {
-            canvas.classList.add('dark-mode');
-        } else if (pdfColorMode === 'grayscale') {
-            canvas.classList.add('grayscale-mode');
-        }
-        const context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-
-        const textLayerDiv = document.createElement('div');
-        textLayerDiv.className = 'textLayer';
-        textLayerDiv.style.width = viewport.width + 'px';
-        textLayerDiv.style.height = viewport.height + 'px';
-        textLayerDiv.style.setProperty('--scale-factor', currentZoomScale);
-
-        pageContainer.appendChild(canvas);
-        pageContainer.appendChild(textLayerDiv);
-
-        await page.render({
-            canvasContext: context,
-            viewport: viewport
-        }).promise;
-
-        const textContent = await page.getTextContent();
-        pdfjsLib.renderTextLayer({
-            textContentSource: textContent,
-            container: textLayerDiv,
-            viewport: viewport,
-            textDivs: []
-        });
-
-        if (pageNumber % 10 === 0) {
+        if (pageNumber % 50 === 0) {
             await new Promise(resolve => setTimeout(resolve, 0));
         }
     }
     
+    setupSmartRendering();
+    
+    const pageToScrollTo = document.querySelector(`.pdf-page-container[data-page-number="${currentPageNum}"]`);
+    if (pageToScrollTo) {
+        pageToScrollTo.scrollIntoView({ block: 'start' });
+    }
+    
     updateCurrentPage();
 }
+
 async function renderPage(pageNumber, scale) {
     const actualScale = scale !== undefined ? scale : currentZoomScale;
     
@@ -2411,7 +2418,7 @@ function renderBookmarks() {
     if (bookmarks.length === 0) {
         bookmarksList.innerHTML = `
             <div class="empty-state">
-                <p>📑 No bookmarks yet</p>
+                <p>No bookmarks yet</p>
                 <p style="margin-top: 10px; font-size: 13px;">
                     Select text in PDF and use keyboard shortcuts
                 </p>
@@ -3636,7 +3643,7 @@ function escapeRegex(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-let pdfColorMode = 'grayscale'; // 'light', 'dark', 'grayscale'
+let pdfColorMode = localStorage.getItem('pdfColorMode') || 'grayscale';
 
 const togglePdfDarkModeBtn = document.getElementById('togglePdfDarkMode');
 
@@ -3649,6 +3656,7 @@ togglePdfDarkModeBtn.addEventListener('click', () => {
         pdfColorMode = 'grayscale';
     }
     
+    localStorage.setItem('pdfColorMode', pdfColorMode);
     applyPdfColorMode();
 });
 
@@ -3668,20 +3676,29 @@ function applyPdfColorMode() {
     if (pdfColorMode === 'dark') {
         togglePdfDarkModeBtn.textContent = '🌙';
         togglePdfDarkModeBtn.title = 'Dark mode (click for light)';
-        showToast('PDF dark mode enabled', 'info');
     } else if (pdfColorMode === 'grayscale') {
         togglePdfDarkModeBtn.textContent = '🌗';
         togglePdfDarkModeBtn.title = 'Grayscale mode (click for dark)';
-        showToast('PDF grayscale mode enabled', 'info');
     } else {
         togglePdfDarkModeBtn.textContent = '☀️';
         togglePdfDarkModeBtn.title = 'Light mode (click for grayscale)';
-        showToast('PDF light mode enabled', 'info');
     }
 }
 
-togglePdfDarkModeBtn.textContent = '🌗';
-togglePdfDarkModeBtn.title = 'Grayscale mode (click for dark)';
+function initializeColorMode() {
+    if (pdfColorMode === 'dark') {
+        togglePdfDarkModeBtn.textContent = '🌙';
+        togglePdfDarkModeBtn.title = 'Dark mode (click for light)';
+    } else if (pdfColorMode === 'grayscale') {
+        togglePdfDarkModeBtn.textContent = '🌗';
+        togglePdfDarkModeBtn.title = 'Grayscale mode (click for dark)';
+    } else {
+        togglePdfDarkModeBtn.textContent = '☀️';
+        togglePdfDarkModeBtn.title = 'Light mode (click for grayscale)';
+    }
+}
+
+initializeColorMode();
 
     </script>
 </body>
