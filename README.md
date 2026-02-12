@@ -12,7 +12,6 @@
 - Titlelize chapter titles Aa (see example below)
 - Who is the author of the treatise?
 - Who Is the Author of the Treatise?
-
 - merge PDFS retaining existing bookmarks
 - rearrange order of PDFs to merge
 - rotate, delete pages
