@@ -36,7 +36,7 @@ pdf-lib.min.js 525KB
 pdf.min.js 320KB
 index.min.js 19KB
 ```
-Doesn't do vertical position (jumping to exact location of text in a page) within PDFs (as that requires pymupdf and python) but allows one to easily modify bookmarks for pages. Crop function isn't practical in this app nor is  a compression function since that requires ghostscript (gs).  For annotation, adding text, highlightning open PDF in Firefox.
+Doesn't do vertical position (jumping to exact location of text in a page) within PDFs (as that requires pymupdf and python) but allows one to easily modify bookmarks for pages. Crop function isn't practical in this app nor is  a compression function since that requires ghostscript (gs).  For annotation, adding text, highlighting just open PDF in Firefox.
 
 ### Use Ghostscript (free AGPL) for PDF compression:
 ```bash
