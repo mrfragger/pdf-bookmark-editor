@@ -29,13 +29,13 @@
 
  There should be a free PDF editor for bookmarks without ads, freemium or a subscription.  I looked but never could find one.  Just a few python command line ones that work great for advanced users. This app is all local.  No cdn (content delivery networks) either just 5 files loaded ~3MB total.
  ```
-index.html 113KB
+index.html 116KB
 pdf.worker.min.js 1.1MB
 pdf-lib.min.js 525KB
 pdf.min.js 320KB
 index.min.js 19KB
 ```
-Doesn't do vertical position within PDFs (pretty much requires python pymupdf) but allows one to easily modify bookmarks for pages. Can't put compression since that pretty much requires ghostscript (gs) and crop.  Those are the two functions I'd like to implement but it's not practical for this small little app. For annotation, adding text, highlightning open PDF in firefox.
+Doesn't do vertical position within PDFs (pretty much requires python pymupdf) but allows one to easily modify bookmarks for pages. Can't put compression since that pretty much requires ghostscript (gs) and crop.  Those are the two functions I'd like to implement but it's not practical for this small little app. For annotation, adding text, highlightning open PDF in Firefox.
 
 ### Use Ghostscript (free AGPL) for PDF compression:
 ```bash

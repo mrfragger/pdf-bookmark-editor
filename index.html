@@ -1074,7 +1074,7 @@
                 <div class="pdf-info">
                     <span id="pdfName"></span>
                     <div id="currentPageDisplay" style="color: #667eea; font-weight: 600; line-height: 1.3; text-align: right; min-width: 80px;"></div>
-                    <div id="zoomControls" style="display: none; margin-left: 15px; display: flex; gap: 8px;">
+                    <div id="zoomControls" style="display: none; margin-left: 15px; gap: 8px;">
                     <button id="zoomOut" class="btn btn-secondary" style="padding: 6px 12px; font-size: 18px; line-height: 1;" title="Zoom out">−</button>
                     <button id="zoomIn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 18px; line-height: 1;" title="Zoom in">+</button>
                     <button id="togglePdfDarkMode" class="btn btn-secondary" style="padding: 6px 12px; font-size: 14px; line-height: 1;" title="Toggle PDF color mode">🌙</button>
@@ -1803,6 +1803,9 @@ zoomOutBtn.addEventListener('click', () => {
     }
 });
 
+const MAX_RENDERED_PAGES = 15;
+let renderedPagesQueue = [];
+
 async function renderAllPages() {
     if (!pdfJsDoc) return;
 
@@ -1820,14 +1823,71 @@ async function renderAllPages() {
         pageContainer.dataset.pageNumber = pageNumber;
         pageContainer.style.marginBottom = '20px';
         pageContainer.style.position = 'relative';
+        pageContainer.style.minHeight = viewport.height + 'px';
+        pageContainer.style.width = viewport.width + 'px';
 
-       const canvas = document.createElement('canvas');
-       canvas.className = 'pdf-page';
-       if (pdfColorMode === 'dark') {
-           canvas.classList.add('dark-mode');
-       } else if (pdfColorMode === 'grayscale') {
-           canvas.classList.add('grayscale-mode');
-       }
+        pdfViewerContainer.appendChild(pageContainer);
+        
+        if (pageNumber % 50 === 0) {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        }
+    }
+    
+    setupSmartRendering();
+    
+    updateCurrentPage();
+    pdfViewerContainer.removeEventListener('scroll', updateCurrentPage);
+    pdfViewerContainer.addEventListener('scroll', updateCurrentPage);
+}
+
+function setupSmartRendering() {
+    const observerOptions = {
+        root: pdfViewerContainer,
+        rootMargin: '1000px',
+        threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const pageNumber = parseInt(entry.target.dataset.pageNumber);
+
+            if (entry.isIntersecting) {
+                renderSinglePage(pageNumber);
+            } else {
+                const rect = entry.target.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                const distance = Math.min(
+                    Math.abs(rect.top),
+                    Math.abs(rect.bottom - viewportHeight)
+                );
+                
+                if (distance > 2000) {
+                    unrenderSinglePage(pageNumber);
+                }
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.pdf-page-container').forEach(container => {
+        observer.observe(container);
+    });
+}
+
+async function renderSinglePage(pageNumber) {
+    const pageContainer = document.querySelector(`.pdf-page-container[data-page-number="${pageNumber}"]`);
+    if (!pageContainer || pageContainer.querySelector('canvas')) return;
+
+    try {
+        const page = await pdfJsDoc.getPage(pageNumber);
+        const viewport = page.getViewport({ scale: currentZoomScale });
+
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-page';
+        if (pdfColorMode === 'dark') {
+            canvas.classList.add('dark-mode');
+        } else if (pdfColorMode === 'grayscale') {
+            canvas.classList.add('grayscale-mode');
+        }
         const context = canvas.getContext('2d');
         canvas.height = viewport.height;
         canvas.width = viewport.width;
@@ -1836,11 +1896,10 @@ async function renderAllPages() {
         textLayerDiv.className = 'textLayer';
         textLayerDiv.style.width = viewport.width + 'px';
         textLayerDiv.style.height = viewport.height + 'px';
-        textLayerDiv.style.setProperty('--scale-factor', scale);
+        textLayerDiv.style.setProperty('--scale-factor', currentZoomScale);
 
         pageContainer.appendChild(canvas);
         pageContainer.appendChild(textLayerDiv);
-        pdfViewerContainer.appendChild(pageContainer);
 
         await page.render({
             canvasContext: context,
@@ -1855,15 +1914,40 @@ async function renderAllPages() {
             textDivs: []
         });
 
-        if (pageNumber % 10 === 0) {
-            await new Promise(resolve => setTimeout(resolve, 0));
+        renderedPagesQueue.push(pageNumber);
+        
+        if (renderedPagesQueue.length > MAX_RENDERED_PAGES) {
+            const oldestPage = renderedPagesQueue.shift();
+            const currentPage = getCurrentVisiblePage();
+            
+            if (Math.abs(oldestPage - currentPage) > 5) {
+                unrenderSinglePage(oldestPage);
+            }
         }
+
+    } catch (error) {
+        console.error(`Error rendering page ${pageNumber}:`, error);
+    }
+}
+
+function unrenderSinglePage(pageNumber) {
+    const pageContainer = document.querySelector(`.pdf-page-container[data-page-number="${pageNumber}"]`);
+    if (!pageContainer) return;
+
+    const canvas = pageContainer.querySelector('canvas');
+    const textLayer = pageContainer.querySelector('.textLayer');
+    
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = 0;
+        canvas.height = 0;
+        canvas.remove();
     }
     
-    updateCurrentPage();
+    if (textLayer) textLayer.remove();
     
-    pdfViewerContainer.removeEventListener('scroll', updateCurrentPage);
-    pdfViewerContainer.addEventListener('scroll', updateCurrentPage);
+    renderedPagesQueue = renderedPagesQueue.filter(p => p !== pageNumber);
 }
 
 async function reRenderAllPages() {
@@ -3598,7 +3682,6 @@ function applyPdfColorMode() {
 
 togglePdfDarkModeBtn.textContent = '🌗';
 togglePdfDarkModeBtn.title = 'Grayscale mode (click for dark)';
-
 
     </script>
 </body>
