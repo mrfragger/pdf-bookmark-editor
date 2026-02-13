@@ -38,16 +38,17 @@ index.min.js 19KB
 ```
 Doesn't do vertical position (jumping to exact location of text in a page) within PDFs (as that requires pymupdf and python) but allows one to easily modify bookmarks for pages. Crop function isn't practical in this app nor is  a compression function since that requires ghostscript (gs).  For annotation, adding text, highlighting just open PDF in Firefox.
 
-Use Ghostscript (free AGPL) for PDF compression:
+Use Ghostscript (free AGPL) for PDF compression: [Windows](https://www.ghostscript.com/download/gsdnld.html)
 ```bash
-brew install gs         sudo apt install gs      choco install gs [Windows](https://www.ghostscript.com/download/gsdnld.html)
+brew install gs         sudo apt install gs      choco install gs 
 
-# /screen smallest size (72 dpi, lower quality) or /ebook balance size and quality (150 dpi) or /printer high quality (300 dpi)
+# /screen smallest size (72 dpi, lower quality) or /ebook balance size
+# and quality (150 dpi) or /printer high quality (300 dpi)
 gs -sDEVICE=pdfwrite -dPDFSETTINGS=/screen -dNOPAUSE -dBATCH -sOutputFile=compressed.pdf input.pdf
 
-# -dSubsetFonts=true  add this which removes unused glpyhs in fonts to save even more file size
+# -dSubsetFonts=true  add this which removes unused glpyhs 
+#in fonts to save even more file size
 gs -sDEVICE=pdfwrite -dSubsetFonts=true -dPDFSETTINGS=/screen -dNOPAUSE -dBATCH -sOutputFile=compressed.pdf input.pdf
-
 ```
 
 
