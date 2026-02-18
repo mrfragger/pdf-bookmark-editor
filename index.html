@@ -2365,7 +2365,46 @@ function updateCurrentPage() {
     
     const pageDisplay = document.getElementById('currentPageDisplay');
     if (pageDisplay) {
-        pageDisplay.innerHTML = `Page ${currentPage}<br>of ${totalPages}`;
+        pageDisplay.innerHTML = `<span id="currentPageLink" style="cursor: pointer; text-decoration: underline; text-decoration-style: dotted;">Page ${currentPage}</span><br>of ${totalPages}`;
+        
+        document.getElementById('currentPageLink').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.min = 1;
+            input.max = totalPages;
+            input.value = currentPage;
+            input.style.cssText = 'width: 60px; background: rgba(0,0,0,0.3); border: 1px solid rgba(102,126,234,0.5); color: #667eea; padding: 4px; border-radius: 4px; text-align: center; font-size: 13px; font-weight: 600;';
+            
+            pageDisplay.innerHTML = '';
+            pageDisplay.appendChild(input);
+            
+            const label = document.createElement('span');
+            label.innerHTML = `<br>of ${totalPages}`;
+            pageDisplay.appendChild(label);
+            
+            input.focus();
+            input.select();
+            
+            const navigate = () => {
+                const pageNum = parseInt(input.value);
+                if (pageNum >= 1 && pageNum <= totalPages) {
+                    scrollToPage(pageNum);
+                }
+            };
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    navigate();
+                } else if (e.key === 'Escape') {
+                    updateCurrentPage();
+                }
+            });
+            
+            input.addEventListener('blur', () => {
+                updateCurrentPage();
+            });
+        });
     }
     
     const searchIndicator = document.getElementById('searchPageIndicator');
