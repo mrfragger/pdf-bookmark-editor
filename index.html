@@ -171,7 +171,7 @@
         }
         
         .bookmarks-panel {
-            width: 350px;
+            width: 400px;
             display: flex;
             flex-direction: column;
             background: #1a1a2e;
@@ -236,14 +236,16 @@
             background: rgba(102, 126, 234, 0.5);
             border-radius: 4px;
         }
-        
+
         .bookmark-item {
             background: rgba(255, 255, 255, 0.05);
-            padding: 10px 12px;
-            margin-bottom: 8px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
             border-radius: 6px;
             border-left: 3px solid #667eea;
             transition: all 0.2s;
+            min-width: 0;
+            overflow: hidden;
         }
         
         .bookmark-item:hover {
@@ -252,26 +254,51 @@
         
         .bookmark-item.level-2 {
             border-left-color: #38ef7d;
-            margin-left: 20px;
+            margin-left: 5px;
         }
         
         .bookmark-item.level-3 {
             border-left-color: #f39c12;
-            margin-left: 40px;
+            margin-left: 10px;
         }
         
         .bookmark-item-header {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+        }
+
+        .bookmark-item textarea {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            resize: none;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            font-family: inherit;
+            line-height: 1.4;
+            overflow: hidden;
+            display: block;
+        }
+        
+        .bookmark-item textarea:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
         }
         
         .bookmark-page {
             background: rgba(102, 126, 234, 0.2);
-            padding: 4px 8px;
+            padding: 3px 6px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
         }
         
@@ -290,24 +317,38 @@
             transform: translateY(0);
         }
         
-        .bookmark-item input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 8px;
-            border-radius: 4px;
-            font-size: 14px;
+        .bookmark-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            transition: all 0.2s;
         }
         
         .bookmark-item input:focus {
             outline: none;
             border-color: rgba(102, 126, 234, 0.5);
         }
+
+        .bookmark-item input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
         
         .bookmark-actions {
             display: flex;
             gap: 6px;
+        }
+
+        .bookmark-actions .btn.btn-small {
+            padding: 2px 6px;
+            font-size: 11px;
         }
         
         .pdf-page {
@@ -626,6 +667,23 @@
         
         .split-range-input::placeholder {
             color: #666;
+        }
+
+        .title-diff {
+            font-size: 12px;
+            font-family: inherit;
+            padding: 4px 6px;
+            letter-spacing: normal;
+            color: #ccc;
+            background: rgba(56, 239, 125, 0.05);
+            border-radius: 4px;
+            border-left: 2px solid rgba(56, 239, 125, 0.3);
+            display: none;
+            margin-top: 4px;
+        }
+        
+        .title-diff.visible {
+            display: block;
         }
         
         .textLayer {
@@ -1241,9 +1299,9 @@
                         Import
                     </label>
                     <button id="exportBtn" class="btn btn-secondary btn-small">Export</button>
-                    <button id="loadExistingBtn" class="btn btn-secondary btn-small" disabled>
-                        Load Existing
-                    </button>
+                     <button id="loadExistingBtn" class="btn btn-secondary btn-small" disabled title="Load Existing Bookmarks ( L )">
+                            Load Existing
+                        </button>
                 </div>
             </div>
 
@@ -1712,12 +1770,20 @@ async function loadPdfFile(file) {
         pdfFileName = file.name;
         const arrayBuffer = await file.arrayBuffer();
         pdfBytes = new Uint8Array(arrayBuffer);
+
+        bookmarks = [];
+        renderBookmarks();
         
         pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
         
         const loadingTask = pdfjsLib.getDocument({ data: pdfBytes });
         pdfJsDoc = await loadingTask.promise;
         totalPages = pdfJsDoc.numPages;
+
+        const firstPage = await pdfJsDoc.getPage(1);
+        const viewport = firstPage.getViewport({ scale: 1 });
+        const containerWidth = pdfViewerContainer.clientWidth - 40;
+        currentZoomScale = containerWidth / viewport.width;
         
         pdfName.textContent = file.name;
         applyBookmarksBtn.disabled = false;
@@ -1762,13 +1828,17 @@ function showToast(message, type = 'info', duration = 3000) {
 }
 
 function toTitleCase(str) {
+    str = str.replace(/ {2,}/g, (match) => ' '.repeat(match.length - 1));
+    
     const smallWords = ['the', 'and', 'of', 'in', 'on', 'at', 'by', 'to', 'for', 
                         'with', 'from', 'or', 'a', 'an', 'but', 'nor', 'as', 'if'];
+    
+    const romanNumeralRegex = /^(M{0,3})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/i;
     
     const words = str.toLowerCase().split(' ');
     let firstWordIdx = 0;
     
-    if (words[0].match(/^\d+[.\)]?$/) && words.length > 1) {
+    if (words[0].match(/^\d+([.\)]\d*)*[.\)]?$/) && words.length > 1) {
         firstWordIdx = 1;
     }
     
@@ -1776,14 +1846,40 @@ function toTitleCase(str) {
         const word = words[i];
         
         const previousWordEndsWithColon = i > 0 && words[i - 1].endsWith(':');
-        const startsWithOpenParen = word.startsWith('('); // NEW
+        const previousWordIsDash = i > 0 && words[i - 1] === '-';
+        const startsWithOpenParen = word.startsWith('(');
+        const isRomanNumeral = word.length > 0 && romanNumeralRegex.test(word) && word !== 'i';
         
-        if (i === firstWordIdx || i === words.length - 1 || previousWordEndsWithColon || startsWithOpenParen || !smallWords.includes(word)) {
+        if (i === firstWordIdx || i === words.length - 1 || previousWordEndsWithColon || previousWordIsDash || startsWithOpenParen || !smallWords.includes(word)) {
             words[i] = word.charAt(0).toUpperCase() + word.slice(1);
+        }
+        
+        if (isRomanNumeral) {
+            words[i] = word.toUpperCase();
         }
     }
     
     return words.join(' ').replace(/\(([a-z])/g, (_, c) => '(' + c.toUpperCase());
+}
+
+function renderTitleDiff(originalTitle, newTitle, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const normalizedOriginal = originalTitle.replace(/ {2,}/g, (match) => ' '.repeat(match.length - 1));
+    
+    let html = '';
+    for (let i = 0; i < newTitle.length; i++) {
+        if (i < normalizedOriginal.length && normalizedOriginal[i] !== newTitle[i]) {
+            html += `<span style="color: #38ef7d; font-weight: bold;">${newTitle[i]}</span>`;
+        } else if (i >= normalizedOriginal.length) {
+            html += `<span style="color: #38ef7d; font-weight: bold;">${newTitle[i]}</span>`;
+        } else {
+            html += `<span>${newTitle[i]}</span>`;
+        }
+    }
+    
+    container.innerHTML = html;
 }
 
 async function extractExistingBookmarks(pdfLibDoc) {
@@ -1827,24 +1923,51 @@ async function extractExistingBookmarks(pdfLibDoc) {
             const title = titleObj.decodeText ? titleObj.decodeText() : titleObj.toString();
             
             let pageNum = 1;
+            let destArray = null;
+
             const destObj = item.get(PDFName.of('Dest'));
-            
             if (destObj) {
+                destArray = destObj;
+            }
+
+            if (!destArray) {
+                const actionObj = item.get(PDFName.of('A'));
+                if (actionObj) {
+                    const actionDest = actionObj.get(PDFName.of('D'));
+                    if (actionDest) {
+                        destArray = actionDest;
+                    }
+                }
+            }
+
+            if (destArray) {
                 try {
-                    let destArray = destObj;
-                    
-                    if (destArray.array && destArray.array.length > 0) {
+                    if (typeof destArray === 'string' || (destArray.constructor && destArray.constructor.name === 'PDFString')) {
+                    } else if (destArray.array && destArray.array.length > 0) {
                         const pageRefObj = destArray.array[0];
                         
-                        let pageRefStr;
-                        if (pageRefObj && pageRefObj.toString) {
-                            pageRefStr = pageRefObj.toString();
-                        } else if (typeof pageRefObj === 'object' && pageRefObj.objectNumber !== undefined) {
-                            pageRefStr = `${pageRefObj.objectNumber} ${pageRefObj.generationNumber} R`;
+                        let resolvedRef = pageRefObj;
+                        if (pageRefObj && pageRefObj.objectNumber !== undefined) {
+                            resolvedRef = pdfLibDoc.context.lookup(pageRefObj);
                         }
                         
-                        if (pageRefStr && pageRefToNum.has(pageRefStr)) {
-                            pageNum = pageRefToNum.get(pageRefStr);
+                        let matched = false;
+                        for (const [refStr, num] of pageRefToNum) {
+                            if (pageRefObj && pageRefObj.toString && pageRefObj.toString() === refStr) {
+                                pageNum = num;
+                                matched = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!matched && resolvedRef) {
+                            pages.forEach((page, index) => {
+                                if (page.ref === pageRefObj || 
+                                    (pageRefObj && page.ref.objectNumber === pageRefObj.objectNumber)) {
+                                    pageNum = index + 1;
+                                    matched = true;
+                                }
+                            });
                         }
                     }
                 } catch (e) {
@@ -2409,8 +2532,8 @@ function scrollToBookmark(bookmarkId) {
         const bookmarkElements = bookmarksList.querySelectorAll('.bookmark-item');
         
         bookmarkElements.forEach(el => {
-            const input = el.querySelector('input[data-id]');
-            if (input && parseFloat(input.dataset.id) === bookmarkId) {
+            const textarea = el.querySelector('textarea[data-id]');
+            if (textarea && parseFloat(textarea.dataset.id) === bookmarkId) {
                 el.scrollIntoView({ 
                     behavior: 'smooth', 
                     block: 'center' 
@@ -2527,16 +2650,21 @@ function renderBookmarks() {
                     <button class="btn btn-delete btn-small" data-id="${bookmark.id}" data-action="delete">🗑️</button>
                 </div>
             </div>
-            <input 
-                type="text" 
+            <textarea 
                 placeholder="Bookmark title" 
-                value="${bookmark.title}"
                 data-id="${bookmark.id}"
                 data-field="title"
-            />
+                rows="1"
+            >${bookmark.title}</textarea>
+            <div class="title-diff" id="diff-${bookmark.id}"></div>
         `;
         
         bookmarksList.appendChild(div);
+        
+        if (lastTitleCaseOperation && lastTitleCaseOperation.id === bookmark.id) {
+            renderTitleDiff(lastTitleCaseOperation.oldTitle, lastTitleCaseOperation.newTitle, `diff-${bookmark.id}`);
+            document.getElementById(`diff-${bookmark.id}`).classList.add('visible');
+        }
     });
     
     bookmarksList.querySelectorAll('.bookmark-page.clickable').forEach(pageEl => {
@@ -2546,13 +2674,18 @@ function renderBookmarks() {
         });
     });
     
-    bookmarksList.querySelectorAll('input').forEach(input => {
-        input.addEventListener('input', (e) => {
+    bookmarksList.querySelectorAll('textarea[data-field]').forEach(textarea => {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+        
+        textarea.addEventListener('input', (e) => {
+            e.target.style.height = 'auto';
+            e.target.style.height = e.target.scrollHeight + 'px';
+            
             const id = parseFloat(e.target.dataset.id);
             const bookmark = bookmarks.find(b => b.id === id);
             if (bookmark) {
                 bookmark.title = e.target.value;
-                
                 if (lastTitleCaseOperation && lastTitleCaseOperation.id === id) {
                     lastTitleCaseOperation = null;
                 }
@@ -3510,6 +3643,14 @@ document.addEventListener('keydown', (e) => {
         }
     }
     
+    if (e.key === 'l' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        if (!loadExistingBtn.disabled) {
+            loadExistingBtn.click();
+        }
+    }
+    
+    
     if (e.key === 'Escape' && pdfSearchSection.style.display === 'block') {
         pdfSearchSection.style.display = 'none';
         pdfSearchBox.value = '';
@@ -3780,7 +3921,5 @@ function initializeColorMode() {
 initializeColorMode();
 
     </script>
-</body>
-</html>
 </body>
 </html>
