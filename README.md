@@ -27,6 +27,7 @@
 
 ![](pdfbookmarkeditor.jpg)
 ![](pdfbookmarkpages.jpg)
+![](pdfbookmarksearch.jpg)
 
  There should be a free PDF editor for bookmarks without ads, freemium or a subscription.  I looked but never could find one.  Just a few python command line ones that work great for advanced users. This app is all local.  No cdn (content delivery networks) either just 5 files loaded ~3MB total.
  ```

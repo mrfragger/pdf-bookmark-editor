@@ -172,7 +172,7 @@
         }
         
         .bookmarks-panel {
-            width: 400px;
+            width: 300px;
             display: flex;
             flex-direction: column;
             background: #1a1a2e;
@@ -1774,6 +1774,13 @@ async function loadPdfFile(file) {
 
         bookmarks = [];
         renderBookmarks();
+        
+        pdfSearchChunks = [];
+        pdfSearchIndex = null;
+        pdfSearchBox.value = '';
+        searchResults.innerHTML = '';
+        searchStatus.textContent = '';
+        pdfSearchSection.style.display = 'none';
         
         pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
         
