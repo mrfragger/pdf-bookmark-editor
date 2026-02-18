@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pdf-editor-v2';
+const CACHE_NAME = 'pdf-editor-v3';
 const urlsToCache = [
   './',
   './index.html',

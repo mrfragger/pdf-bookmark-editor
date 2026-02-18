@@ -1860,6 +1860,19 @@ compressBtn.addEventListener('click', () => {
 
 async function loadPdfFile(file) {
     try {
+        if (pdfJsDoc) {
+            pdfJsDoc.destroy();
+            pdfJsDoc = null;
+        }
+        pdfDoc = null;
+        pdfBytes = null;
+        pageCache.clear();
+        visiblePages.clear();
+        renderedPagesQueue = [];
+        pdfSearchIndex = null;
+        pdfSearchChunks = [];
+        pdfViewerContainer.innerHTML = '';
+        
         originalFile = file;
         pdfFileName = file.name;
         const arrayBuffer = await file.arrayBuffer();

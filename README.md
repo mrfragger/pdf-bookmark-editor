@@ -27,7 +27,7 @@
 ![](pdfbookmarkpages.jpg)
 ![](pdfbookmarksearch.jpg)
 
- There should be a free PDF editor for bookmarks without ads, freemium or a subscription.  I looked but never could find one.  Just a few python command line ones that work great for advanced users. This app is all local.  No cdn (content delivery networks) either just 5 files loaded ~3MB total (index.html 120KB, pdf.worker.min.js 1.1MB, pdf-lib.min.js 525KB, pdf.min.js 320KB, index.min.js 19KB)
+ There should be a free PDF editor for bookmarks without ads, freemium or a subscription.  I looked but never could find one.  Just a few python command line ones that work great for advanced users. This app is all local.  No cdn (content delivery networks) either just 5 files loaded ~4MB total (index.html 120KB, pdf.worker.min.js 1.1MB, pdf-lib.min.js 525KB, pdf.min.js 320KB, index.min.js 19KB)
 
 For annotation, adding text, highlighting, adding a signature just open PDF in Firefox / Librewolf.
 
