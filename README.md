@@ -9,9 +9,7 @@
 - import or export bookmarks to a text file
 - grayscale (default), dark and light modes
 - zoom in/out and zooms to page width by default
-- Titlelize chapter titles Aa (see example below)
-- Who is the author of the treatise?
-- Who Is the Author of the Treatise?
+- Titlelize chapter titles Aa
 - merge PDFS retaining existing bookmarks
 - rearrange order of PDFs to merge
 - rotate, delete pages
@@ -29,18 +27,13 @@
 ![](pdfbookmarkpages.jpg)
 ![](pdfbookmarksearch.jpg)
 
- There should be a free PDF editor for bookmarks without ads, freemium or a subscription.  I looked but never could find one.  Just a few python command line ones that work great for advanced users. This app is all local.  No cdn (content delivery networks) either just 5 files loaded ~3MB total.
- ```
-index.html 120KB
-pdf.worker.min.js 1.1MB
-pdf-lib.min.js 525KB
-pdf.min.js 320KB
-index.min.js 19KB
-```
+ There should be a free PDF editor for bookmarks without ads, freemium or a subscription.  I looked but never could find one.  Just a few python command line ones that work great for advanced users. This app is all local.  No cdn (content delivery networks) either just 5 files loaded ~3MB total (index.html 120KB, pdf.worker.min.js 1.1MB, pdf-lib.min.js 525KB, pdf.min.js 320KB, index.min.js 19KB)
+
 For annotation, adding text, highlighting, adding a signature just open PDF in Firefox / Librewolf.
 
-Doesn't do vertical position (jumping to exact location of text in a page) within PDFs (as that requires pymupdf and python) but allows one to easily modify bookmarks for pages. Crop function isn't practical in this app nor is a compression function since that requires ghostscript (gs).
+Doesn't do vertical position (jumping to exact location of text in a page) within PDFs (as that requires pymupdf and python) but allows one to easily modify bookmarks for pages. Crop function isn't practical in this app.
 
+Click Compress icon,  to copy to terminal,  open terminal where pdf is located then paste command to compress PDF
 Use Ghostscript (free AGPL) for PDF compression: [Windows](https://www.ghostscript.com/download/gsdnld.html)
 ```bash
 brew install gs         sudo apt install gs      choco install gs 

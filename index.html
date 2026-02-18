@@ -1244,6 +1244,9 @@
                         <button id="applyBookmarksBtn" class="btn-icon-header" disabled title="Create PDF with Bookmarks">
                             💾
                         </button>
+                        <button id="compressBtn" class="btn-icon-header" disabled title="Compress PDF with Ghostscript">
+                            📦
+                        </button>
                     </div>
                     <a href="https://github.com/mrfragger/pdf-bookmark-editor" target="_blank" rel="noopener noreferrer" class="github-link" title="View on GitHub">
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
@@ -1765,6 +1768,96 @@ mergeModal.addEventListener('click', (e) => {
     }
 });
 
+const compressBtn = document.getElementById('compressBtn');
+
+compressBtn.addEventListener('click', () => {
+    if (!pdfFileName) {
+        showToast('No PDF loaded', 'error');
+        return;
+    }
+
+    const options = [
+        { label: 'screen 72 dpi', settings: '/screen', subset: false },
+        { label: 'ebook 150 dpi', settings: '/ebook', subset: false },
+        { label: 'printer 300 dpi', settings: '/printer', subset: false },
+        { label: 'screen 72 dpi + subset fonts', settings: '/screen', subset: true },
+        { label: 'ebook 150 dpi + subset fonts', settings: '/ebook', subset: true },
+        { label: 'printer 300 dpi + subset fonts', settings: '/printer', subset: true },
+    ];
+
+    const outputName = pdfFileName.replace('.pdf', '_compressed.pdf');
+
+    let html = '<div style="padding: 20px;">';
+    html += '<p style="color: #aaa; margin-bottom: 8px; font-size: 13px;">Requires Ghostscript installed:<br><code style="color: #667eea; font-size: 11px;">brew install gs &nbsp; sudo apt install ghostscript &nbsp; choco install ghostscript</code></p>';
+    html += '<p style="color: #888; margin-bottom: 15px; font-size: 12px; line-height: 1.5;">Subset fonts removes unused glyphs from embedded fonts, further reducing file size. Safe for most documents but may affect editing later.</p>';
+    
+    options.forEach((opt, i) => {
+        const subset = opt.subset ? ' -dSubsetFonts=true' : '';
+        const cmd = `gs -sDEVICE=pdfwrite -dPDFSETTINGS=${opt.settings}${subset} -dNOPAUSE -dBATCH -sOutputFile="${outputName}" "${pdfFileName}"`;
+        
+        html += `
+            <div class="compress-option" data-cmd="${cmd.replace(/"/g, '&quot;')}" style="
+                background: rgba(255,255,255,0.05);
+                padding: 12px;
+                margin-bottom: 8px;
+                border-radius: 6px;
+                cursor: pointer;
+                border-left: 3px solid ${opt.subset ? '#38ef7d' : '#667eea'};
+                transition: all 0.2s;
+            ">
+                <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">${opt.label}</div>
+                <code style="font-size: 11px; color: #888; word-break: break-all;">${cmd}</code>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3>📦 Compress PDF</h3>
+                <button class="btn-close" id="closeCompressModal">✕</button>
+            </div>
+            ${html}
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+
+    modal.querySelectorAll('.compress-option').forEach(opt => {
+        opt.addEventListener('mouseenter', () => {
+            opt.style.background = 'rgba(255,255,255,0.08)';
+        });
+        opt.addEventListener('mouseleave', () => {
+            opt.style.background = 'rgba(255,255,255,0.05)';
+        });
+        opt.addEventListener('click', () => {
+            const cmd = opt.dataset.cmd;
+            navigator.clipboard.writeText(cmd).then(() => {
+                showToast('Command copied to clipboard!', 'success');
+                modal.remove();
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = cmd;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                textarea.remove();
+                showToast('Command copied to clipboard!', 'success');
+                modal.remove();
+            });
+        });
+    });
+
+    modal.querySelector('#closeCompressModal').addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+});
+
 async function loadPdfFile(file) {
     try {
         originalFile = file;
@@ -1795,6 +1888,7 @@ async function loadPdfFile(file) {
         
         pdfName.textContent = file.name;
         applyBookmarksBtn.disabled = false;
+        compressBtn.disabled = false;
         zoomControls.style.display = 'flex';
         openPageEditorBtn.disabled = false;
         
