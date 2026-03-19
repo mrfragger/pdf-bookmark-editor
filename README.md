@@ -22,7 +22,6 @@
 - since most PDF viewers only allow searching on one term
 - PWA (progressive web app), installs offline
 - Librewolf/Firefox bookmark and it'll be cached
-- Font conversions from/to otf, ttf, woff or woff2 (single or batch)
 
 ![](pdfbookmarkeditor.jpg)
 ![](pdfbookmarkpages.jpg)
