@@ -1649,14 +1649,6 @@ confirmMergeBtn.addEventListener('click', async () => {
             
             
             const existingBookmarks = await extractExistingBookmarks(sourcePdf);
-
-            const fileBookmarkTitle = `[[[ ${fileData.name.replace('.pdf', '').replace(/[_-]/g, ' ')} ]]]`;
-            allBookmarks.push({
-                id: Date.now() + Math.random(),
-                title: fileBookmarkTitle,
-                page: currentPageOffset + 1,
-                level: 1
-            });
             
             existingBookmarks.forEach(bookmark => {
                 allBookmarks.push({
