@@ -1925,8 +1925,19 @@ function toTitleCase(str) {
     const words = str.toLowerCase().split(' ');
     let firstWordIdx = 0;
 
-    if (words[0].match(/^\d+([.\)]\d*)*[.\)]?$/) && words.length > 1) {
-        firstWordIdx = 1;
+    // Skip a leading chapter prefix so the word right after it is capitalized:
+    // "Chapter #1 the", "Ch. 1.2 the", "#1.3 the", "1. the" ...
+    const labelRe = /^(chapter|ch|section|sec|part|appendix)\.?$/;
+    const numberRe = /^#?\d+([.\)]\d*)*[.\)]?:?$/;
+    let prefixEnd = 0;
+    const joinedRe = /^(chapter|ch|section|sec|part|appendix)\.?#?\d+([.\)]\d*)*[.\)]?:?$/; // "Ch#1", "Ch.#1", "Chapter1.2"
+    if (labelRe.test(words[0]) && words.length > 1 && numberRe.test(words[1])) {
+        prefixEnd = 2;
+    } else if (numberRe.test(words[0]) || joinedRe.test(words[0])) {
+        prefixEnd = 1;
+    }
+    if (prefixEnd > 0 && words.length > prefixEnd) {
+        firstWordIdx = prefixEnd;
     }
 
     for (let i = 0; i < words.length; i++) {
@@ -2792,7 +2803,7 @@ function titleCaseBookmark(id) {
         bookmark.title === lastTitleCaseOperation.newTitle) {
         bookmark.title = lastTitleCaseOperation.oldTitle;
         lastTitleCaseOperation = null;
-        showToast('Title case undone', 'info');
+        showToast('Titleize undone', 'info');
     } else {
         const oldTitle = bookmark.title;
         const newTitle = toTitleCase(bookmark.title);
@@ -2804,7 +2815,7 @@ function titleCaseBookmark(id) {
             newTitle: newTitle
         };
 
-        showToast('Title case applied', 'success');
+        showToast('Titleized', 'success');
     }
 
     renderBookmarks();
@@ -2869,7 +2880,7 @@ function renderBookmarks() {
                     <span style="color: #888; font-size: 12px;">${levelLabels[bookmark.level]}</span>
                 </div>
                 <div class="bookmark-actions">
-                    <button class="btn btn-secondary btn-small ${lastTitleCaseOperation && lastTitleCaseOperation.id === bookmark.id ? 'undo-available' : ''}" data-id="${bookmark.id}" data-action="titlecase" title="${lastTitleCaseOperation && lastTitleCaseOperation.id === bookmark.id ? 'Click to undo' : 'Apply title case'}">Aa</button>
+                    <button class="btn btn-secondary btn-small ${lastTitleCaseOperation && lastTitleCaseOperation.id === bookmark.id ? 'undo-available' : ''}" data-id="${bookmark.id}" data-action="titlecase" title="${lastTitleCaseOperation && lastTitleCaseOperation.id === bookmark.id ? 'Click to undo' : 'Titleize'}">Aa</button>
                     <button class="btn btn-delete btn-small" data-id="${bookmark.id}" data-action="delete">🗑️</button>
                 </div>
             </div>
