@@ -9,1202 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="PDF Editor">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #1a1a2e;
-            color: #fff;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .app-layout {
-            display: flex;
-            height: 100vh;
-        }
-
-        .pdf-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #16213e;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 80vw;
-        }
-
-        .pdf-header {
-            padding: 8px 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .file-input-wrapper {
-            display: inline-block;
-        }
-
-        .file-input-wrapper label {
-            margin: 0;
-            display: inline-block;
-            line-height: normal;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #e8e8e8;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .pdf-info {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: #aaa;
-            font-size: 13px;
-            margin-left: 10px;
-        }
-
-        #pdfName {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .page-nav {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #zoomControls {
-            display: none;
-            gap: 6px;
-        }
-
-        .page-nav button {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .page-nav button:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .page-nav button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .page-nav input {
-            width: 60px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 6px;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-       .pdf-page.dark-mode {
-           filter: invert(1) hue-rotate(180deg);
-       }
-
-       .pdf-page.grayscale-mode {
-           filter: grayscale(85%) invert(85%);
-       }
-
-        .pdf-viewer-container {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            background: #0f1419;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-        }
-
-        #pdfViewer {
-            max-width: 100%;
-            display: none;
-        }
-
-        #pdfViewer.active {
-            display: block;
-        }
-
-        .pdf-page {
-            margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .bookmarks-panel {
-            width: 300px;
-            display: flex;
-            flex-direction: column;
-            background: #1a1a2e;
-        }
-
-        .bookmarks-header {
-            padding: 12px 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .bookmarks-header h2 {
-            margin-bottom: 8px;
-            font-size: 1.2em;
-        }
-
-        .keyboard-shortcuts {
-            background: rgba(102, 126, 234, 0.1);
-            padding: 8px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            line-height: 1.5;
-            color: #aaa;
-        }
-
-        .keyboard-shortcuts kbd {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: monospace;
-            color: #fff;
-            font-size: 11px;
-        }
-
-        .keyboard-shortcuts .level-1-text {
-            color: #667eea;
-        }
-
-        .keyboard-shortcuts .level-2-text {
-            color: #38ef7d;
-        }
-
-        .keyboard-shortcuts .level-3-text {
-            color: #f39c12;
-        }
-
-        .bookmarks-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .bookmarks-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .bookmarks-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .bookmarks-list::-webkit-scrollbar-thumb {
-            background: rgba(102, 126, 234, 0.5);
-            border-radius: 4px;
-        }
-
-        .bookmark-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px 10px;
-            margin-bottom: 6px;
-            border-radius: 6px;
-            border-left: 3px solid #667eea;
-            transition: all 0.2s;
-            min-width: 0;
-            overflow: hidden;
-        }
-
-        .bookmark-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .bookmark-item.level-2 {
-            border-left-color: #38ef7d;
-            margin-left: 14px;
-        }
-
-        .bookmark-item.level-3 {
-            border-left-color: #f39c12;
-            margin-left: 28px;
-        }
-
-        .bookmark-item-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-
-        .bookmark-item textarea {
-            width: 100%;
-            min-width: 0;
-            box-sizing: border-box;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 6px;
-            border-radius: 4px;
-            font-size: 12px;
-            resize: none;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: pre-wrap;
-            font-family: inherit;
-            line-height: 1.4;
-            overflow: hidden;
-            display: block;
-        }
-
-        .bookmark-item textarea:focus {
-            outline: none;
-            border-color: rgba(102, 126, 234, 0.5);
-        }
-
-        .bookmark-page {
-            background: rgba(102, 126, 234, 0.2);
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .bookmark-page.clickable {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .bookmark-page.clickable:hover {
-            background: rgba(102, 126, 234, 0.4);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-        }
-
-        .bookmark-page.clickable:active {
-            transform: translateY(0);
-        }
-
-        .bookmark-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px 10px;
-            margin-bottom: 6px;
-            border-radius: 6px;
-            border-left: 3px solid #667eea;
-            transition: all 0.2s;
-        }
-
-        .bookmark-item input:focus {
-            outline: none;
-            border-color: rgba(102, 126, 234, 0.5);
-        }
-
-        .bookmark-item input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 6px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-
-        .bookmark-actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        .bookmark-actions .btn.btn-small {
-            padding: 2px 6px;
-            font-size: 11px;
-        }
-
-        .pdf-page {
-            display: block;
-        }
-
-        .page-editor-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(5px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            animation: fadeIn 0.2s ease;
-            padding: 10px 0;
-            overflow: hidden;
-        }
-
-        .page-editor-modal.hidden {
-            display: none;
-        }
-
-        .page-editor-content {
-            background: #1a1a2e;
-            border-radius: 12px;
-            width: 95%;
-            height: calc(100vh - 20px);
-            max-width: 1400px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.3s ease;
-            overflow: hidden;
-        }
-
-        .page-editor-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 25px;
-            background: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .page-editor-toolbar {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            padding: 10px 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            flex-wrap: wrap;
-        }
-
-        #closeSearch {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        #closeSearch:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-        }
-
-        .toolbar-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            padding-right: 15px;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .toolbar-group:last-child {
-            border-right: none;
-        }
-
-        .toolbar-label {
-            font-size: 12px;
-            color: #888;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .page-grid-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            background: #0f1419;
-        }
-
-        .page-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .page-thumbnail {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 12px;
-            cursor: pointer;
-            border: 3px solid transparent;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .page-thumbnail:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .page-thumbnail.selected {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        .page-thumbnail.dragging {
-            opacity: 0.5;
-        }
-
-        .page-thumbnail.drag-over {
-            border-color: #38ef7d;
-            background: rgba(56, 239, 125, 0.1);
-        }
-
-        .page-thumbnail-canvas {
-            width: 100%;
-            height: auto;
-            border-radius: 4px;
-            background: white;
-            display: block;
-        }
-
-        .page-thumbnail-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-            font-size: 13px;
-        }
-
-        .page-number {
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .page-size {
-            color: #888;
-            font-size: 11px;
-        }
-
-        .page-checkbox {
-            position: absolute;
-            top: 18px;
-            left: 18px;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .page-thumbnail.deleted {
-            pointer-events: none;
-            opacity: 0.4;
-            position: relative;
-        }
-
-        .page-thumbnail.deleted::before {
-            content: '🗑️';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 72px;
-            z-index: 100;
-            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-            pointer-events: none;
-        }
-
-        .page-thumbnail.deleted::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 8px;
-            z-index: 99;
-            pointer-events: none;
-        }
-
-        .rotation-indicator {
-            position: absolute;
-            top: 18px;
-            right: 18px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .page-editor-actions {
-            display: flex;
-            gap: 12px;
-            padding: 12px 25px;
-            background: rgba(0, 0, 0, 0.2);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            align-items: center;
-        }
-
-       .page-editor-actions .btn {
-           padding: 10px 16px;
-           font-size: 14px;
-           white-space: nowrap;
-       }
-
-        .selection-info {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            color: #888;
-            font-size: 13px;
-            white-space: nowrap;
-        }
-
-        .selection-info strong {
-            color: #667eea;
-            margin: 0 4px;
-        }
-
-        .btn-icon {
-            padding: 8px 16px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-icon-only {
-            padding: 8px 12px;
-            font-size: 18px;
-            line-height: 1;
-            min-width: auto;
-            background: transparent !important;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-icon-only:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.1) !important;
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-icon-only:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .btn-icon-header {
-            background: transparent;
-            border: 1px solid rgba(102, 126, 234, 0.4);
-            color: #667eea;
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.2s;
-            line-height: 1;
-        }
-
-        .btn-icon-header:hover:not(:disabled) {
-            background: rgba(102, 126, 234, 0.2);
-            border-color: rgba(102, 126, 234, 0.6);
-            transform: translateY(-1px);
-        }
-
-        .btn-icon-header:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .bookmarks-header h2 {
-            margin: 0;
-            font-size: 1.2em;
-        }
-
-        .split-range-input {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 13px;
-            width: 200px;
-        }
-
-        .split-range-input:focus {
-            outline: none;
-            border-color: rgba(102, 126, 234, 0.5);
-        }
-
-        .split-range-input::placeholder {
-            color: #666;
-        }
-
-        .title-diff {
-            font-size: 12px;
-            font-family: inherit;
-            padding: 4px 6px;
-            letter-spacing: normal;
-            color: #ccc;
-            background: rgba(56, 239, 125, 0.05);
-            border-radius: 4px;
-            border-left: 2px solid rgba(56, 239, 125, 0.3);
-            display: none;
-            margin-top: 4px;
-        }
-
-        .title-diff.visible {
-            display: block;
-        }
-
-        .textLayer {
-            position: absolute;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            overflow: hidden;
-            opacity: 0.4;
-            line-height: 1;
-            --scale-factor: 1.5;
-        }
-
-        .textLayer > span {
-            color: transparent;
-            position: absolute;
-            white-space: pre;
-            cursor: text;
-            transform-origin: 0% 0%;
-        }
-
-        .textLayer ::selection {
-            background: rgba(255, 235, 59, 0.6);
-            color: inherit;
-        }
-
-        .textLayer ::-moz-selection {
-            background: rgba(255, 235, 59, 0.6);
-            color: inherit;
-        }
-
-        .btn-small {
-            padding: 4px 8px;
-            font-size: 12px;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .btn-delete {
-            background: transparent;
-            color: #e74c3c;
-            border: 1px solid rgba(231, 76, 60, 0.3);
-        }
-
-        .btn-delete:hover {
-            background: rgba(231, 76, 60, 0.2);
-            border-color: rgba(231, 76, 60, 0.5);
-        }
-
-
-        .bookmarks-footer {
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .footer-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .footer-buttons .btn {
-            flex: 1;
-            font-size: 11px;
-            padding: 8px 10px;
-        }
-
-        .footer-buttons label.btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #e8e8e8;
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-        }
-
-        .btn-success:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success:disabled {
-            background: #555;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            animation: fadeIn 0.2s ease;
-        }
-
-        .modal.hidden {
-            display: none;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes highlight-pulse {
-            0%, 100% {
-                opacity: 0.4;
-            }
-            50% {
-                opacity: 0.7;
-            }
-        }
-
-        .search-highlight-overlay {
-            animation: highlight-pulse 1.5s ease-in-out infinite;
-        }
-
-        .modal-content {
-            background: #1a1a2e;
-            padding: 0;
-            border-radius: 12px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 25px;
-            background: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            font-size: 1.3em;
-        }
-
-        .btn-close {
-            background: transparent;
-            border: none;
-            color: #aaa;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-        .btn-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-
-        .modal-content > p {
-            color: #aaa;
-            margin: 0;
-            padding: 15px 25px;
-            font-size: 14px;
-            background: rgba(102, 126, 234, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .merge-file-list {
-            padding: 20px 25px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .merge-file-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .merge-file-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .merge-file-list::-webkit-scrollbar-thumb {
-            background: rgba(102, 126, 234, 0.5);
-            border-radius: 4px;
-        }
-
-        .merge-file-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: grab;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .merge-file-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(102, 126, 234, 0.3);
-        }
-
-        .merge-file-item.dragging {
-            opacity: 0.5;
-            cursor: grabbing;
-        }
-
-        .merge-file-item.drag-over {
-            border-color: rgba(102, 126, 234, 0.8);
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        .drag-handle {
-            color: #666;
-            font-size: 20px;
-            cursor: grab;
-            user-select: none;
-        }
-
-        .merge-file-item.dragging .drag-handle {
-            cursor: grabbing;
-        }
-
-        .file-order {
-            background: rgba(102, 126, 234, 0.3);
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-
-        .file-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .file-name {
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .file-pages {
-            font-size: 12px;
-            color: #888;
-        }
-
-        .remove-file {
-            background: transparent;
-            border: 1px solid rgba(231, 76, 60, 0.3);
-            color: #e74c3c;
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .remove-file:hover {
-            background: rgba(231, 76, 60, 0.2);
-            border-color: rgba(231, 76, 60, 0.5);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            padding: 20px 25px;
-            background: rgba(0, 0, 0, 0.2);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-actions .btn {
-            flex: 1;
-            padding: 12px;
-        }
-
-        .empty-merge-list {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-        }
-
-        .pdf-search-section {
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 10px;
-            flex-shrink: 0;
-        }
-
-        .search-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .search-header h3 {
-            margin: 0;
-            font-size: 1.1em;
-            color: #fff;
-        }
-
-        .search-result-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-left: 3px solid #667eea;
-        }
-
-        .search-result-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateX(3px);
-        }
-
-        .search-result-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-            font-size: 12px;
-        }
-
-        .search-result-page {
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .search-result-score {
-            color: #888;
-        }
-
-        .search-result-text {
-            font-size: 13px;
-            line-height: 1.5;
-            color: #ddd;
-        }
-
-        .search-result-text mark {
-            background: #ffeb3b;
-            color: #000;
-            padding: 0;
-            border-radius: 2px;
-            font-weight: 600;
-        }
-
-        #pdfSearchBox:focus {
-            outline: none;
-            border-color: rgba(102, 126, 234, 0.8);
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: rgba(102, 126, 234, 0.95);
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            z-index: 10000; /* Increased z-index */
-            max-width: 350px;
-            word-wrap: break-word;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.error {
-            background: rgba(231, 76, 60, 0.95);
-        }
-
-        .toast.success {
-            background: rgba(17, 153, 142, 0.95);
-        }
-
-        .toast.info {
-            background: rgba(102, 126, 234, 0.95);
-        }
-
-        @keyframes bookmark-highlight {
-            0% {
-                background: rgba(102, 126, 234, 0.4);
-                transform: scale(1.02);
-            }
-            100% {
-                background: rgba(255, 255, 255, 0.05);
-                transform: scale(1);
-            }
-        }
-
-        .bookmark-item.newly-added {
-            animation: bookmark-highlight 0.6s ease-out;
-        }
-
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #aaa;
-            font-size: 18px;
-            pointer-events: none;
-        }
-
-        .pdf-viewer-container.drop-active {
-            outline: 3px dashed rgba(102, 126, 234, 0.9);
-            outline-offset: -8px;
-            background: #151b2b;
-        }
-
-        .loading.hidden {
-            display: none;
-        }
-
-        @media (max-width: 1024px) {
-            .app-layout {
-                flex-direction: column;
-            }
-
-            .bookmarks-panel {
-                width: 300px;
-                display: flex;
-                flex-direction: column;
-                background: #1a1a2e;
-                height: 100vh;
-                overflow: hidden;
-            }
-
-            .bookmarks-list {
-                flex: 1;
-                overflow-y: auto;
-                padding: 15px;
-                min-height: 0;
-            }
-
-            .github-link {
-                color: #aaa;
-                transition: all 0.2s;
-                display: flex;
-                align-items: center;
-                padding: 4px;
-                border-radius: 4px;
-            }
-
-            .github-link:hover {
-                color: #667eea;
-                background: rgba(102, 126, 234, 0.1);
-            }
-
-            .github-link svg {
-                display: block;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <div class="app-layout">
@@ -1246,9 +51,12 @@
             <div class="bookmarks-header">
                 <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <h2>Add / Edit Bookmarks</h2>
+                        <h2>Bookmarks</h2>
                         <button id="applyBookmarksBtn" class="btn-icon-header" disabled title="Create PDF with Bookmarks">
                             💾
+                        </button>
+                        <button id="clearBookmarksBtn" class="btn-icon-header" disabled title="Clear all bookmarks">
+                            🗑️
                         </button>
                         <button id="compressBtn" class="btn-icon-header" disabled title="Compress PDF with Ghostscript">
                             📦
@@ -1313,7 +121,11 @@
                             Load Existing
                         </button>
                 </div>
-                <button id="headingsBtn" class="btn btn-secondary btn-small" disabled style="width: 100%; margin-top: 8px; font-size: 11px; padding: 8px 10px;" title="Select a heading in the PDF first, then click to find every heading with the same font size / font">Generate from Headings</button>
+                <div class="generate-row">
+                    <span class="generate-label">Generate from:</span>
+                    <button id="headingsBtn" class="btn btn-secondary btn-small" disabled title="Select a heading in the PDF first, then click to find every heading with the same font size / font">Headings</button>
+                    <button id="tocBtn" class="btn btn-secondary btn-small" disabled title="Build bookmarks from the printed Table of Contents pages (with page offset)">TOC</button>
+                </div>
             </div>
 
             <div id="pageEditorModal" class="page-editor-modal hidden">
@@ -1395,7 +207,7 @@
     <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
-const { PDFDocument, PDFName, PDFString, PDFNumber } = PDFLib;
+const { PDFDocument, PDFName, PDFString, PDFHexString, PDFNumber } = PDFLib;
 
 // Load the WASM Ghostscript worker dynamically
 let gsWorkerPromise = null;
@@ -1693,6 +505,8 @@ confirmMergeBtn.addEventListener('click', async () => {
             writeOutlines(mergedPdf, allBookmarks);
         }
 
+        stampCreator(mergedPdf);
+
         const mergedPdfBytes = await mergedPdf.save();
 
         const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
@@ -1887,6 +701,7 @@ async function loadPdfFile(file) {
         const loadExistingBtn = document.getElementById('loadExistingBtn');
         loadExistingBtn.disabled = false;
         document.getElementById('headingsBtn').disabled = false;
+        document.getElementById('tocBtn').disabled = false;
 
         await renderAllPages();
 
@@ -2608,6 +1423,54 @@ const fontFamilyKey = name => name.toLowerCase()
     .replace(/[^a-z0-9]/g, '');
 const fontIsBold = name => /bold|black|heavy|demi/i.test(name);
 
+// ---- colour sampling (pdf.js text content has no colour, so sample the rendered page) ----
+const COLOR_TOLERANCE = 48;   // RGB distance
+const colorDist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+const colorHex = c => '#' + c.map(v => v.toString(16).padStart(2, '0')).join('');
+const colorIsChromatic = c => Math.max(...c) - Math.min(...c) > 40;
+
+// Renders the page once and returns a function: text item -> [r,g,b] ink colour (or null)
+async function makePageColorSampler(page) {
+    const viewport = page.getViewport({ scale: 1.5 });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    await page.render({ canvasContext: ctx, viewport }).promise;
+
+    return it => {
+        const size = itemFontSize(it);
+        const w = (it.width || size * 0.5 * it.str.length);
+        const pts = [[it.transform[4], it.transform[5] - size * 0.2], [it.transform[4] + w, it.transform[5] + size * 0.9]]
+            .map(([x, y]) => viewport.convertToViewportPoint(x, y));
+        const x0 = Math.max(0, Math.floor(Math.min(pts[0][0], pts[1][0])));
+        const y0 = Math.max(0, Math.floor(Math.min(pts[0][1], pts[1][1])));
+        const x1 = Math.min(canvas.width, Math.ceil(Math.max(pts[0][0], pts[1][0])));
+        const y1 = Math.min(canvas.height, Math.ceil(Math.max(pts[0][1], pts[1][1])));
+        if (x1 - x0 < 1 || y1 - y0 < 1) return null;
+        const d = ctx.getImageData(x0, y0, x1 - x0, y1 - y0).data;
+
+        // background = most common (quantised) colour in the box; ink = pixel farthest from it
+        const counts = new Map();
+        for (let i = 0; i < d.length; i += 4) {
+            const k = ((d[i] >> 4) << 8) | ((d[i + 1] >> 4) << 4) | (d[i + 2] >> 4);
+            counts.set(k, (counts.get(k) || 0) + 1);
+        }
+        let bgKey = 0, bgN = -1;
+        for (const [k, n] of counts) if (n > bgN) { bgN = n; bgKey = k; }
+        const bg = [((bgKey >> 8) & 15) * 17, ((bgKey >> 4) & 15) * 17, (bgKey & 15) * 17];
+        let best = null, bestD = 30;
+        for (let i = 0; i < d.length; i += 4) {
+            const px = [d[i], d[i + 1], d[i + 2]];
+            const dist = colorDist(px, bg);
+            if (dist > bestD) { bestD = dist; best = px; }
+        }
+        return best;
+    };
+}
+
 async function getHeadingSignature(selText, pageNum) {
     const target = normText(selText);
     if (!target) return null;
@@ -2626,7 +1489,10 @@ async function getHeadingSignature(selText, pageNum) {
     if (!best) return null;
     let real = realFontName(page, best.it.fontName);
     if (!real) { try { await page.getOperatorList(); } catch (e) {} real = realFontName(page, best.it.fontName); }
+    let color = null;
+    try { color = (await makePageColorSampler(page))(best.it); } catch (e) { console.warn('colour sampling failed', e); }
     return {
+        color,
         fontId: best.it.fontName,
         fontLabel: real || readableFontName(page, content, best.it.fontName),
         family: real ? { key: fontFamilyKey(real), bold: fontIsBold(real) } : null,
@@ -2645,6 +1511,7 @@ async function scanHeadings(opts, onProgress) {
         const pageTop = page.view[3];
 
         const matched = [];
+        let sampler = null;
         let fontsLoaded = false;
         const variantCache = new Map();
         const isVariant = async fontName => {
@@ -2663,6 +1530,11 @@ async function scanHeadings(opts, onProgress) {
             if (opts.fontId && it.fontName !== opts.fontId) {
                 // optionally accept style variants (e.g. bold-italic words inside a bold heading)
                 if (!(opts.family && await isVariant(it.fontName))) continue;
+            }
+            if (opts.color) {
+                if (!sampler) sampler = await makePageColorSampler(page);
+                const c = sampler(it);
+                if (!c || colorDist(c, opts.color) > COLOR_TOLERANCE) continue;
             }
             matched.push({ str: it.str, x: it.transform[4], y: it.transform[5], w: it.width || 0, size });
         }
@@ -2745,7 +1617,7 @@ async function openHeadingsModal() {
             <div style="padding: 16px 25px; overflow-y: auto;">
                 <p style="color: #aaa; font-size: 12px; line-height: 1.5; margin-bottom: 12px;">
                     ${sig
-                        ? `Based on your selection “<span style="color:#fff">${esc(sig.sample)}</span>”: <b>${esc(sig.fontLabel)}</b>, ${sig.size} pt.`
+                        ? `Based on your selection “<span style="color:#fff">${esc(sig.sample)}</span>”: <b>${esc(sig.fontLabel)}</b>, ${sig.size} pt${sig.color ? `, color <span style="display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;border:1px solid rgba(255,255,255,0.4);background:${colorHex(sig.color)}"></span> ${colorHex(sig.color)}` : ''}.`
                         : `Tip: select a heading in the PDF first, then click Generate from Headings to copy its font size and font. Or set a size range / “starts with” text below.`}
                 </p>
                 <div style="${rowStyle}">
@@ -2757,6 +1629,9 @@ async function openHeadingsModal() {
                 </div>
                 <label style="${rowStyle} cursor: ${sig ? 'pointer' : 'not-allowed'}; opacity: ${sig ? 1 : 0.5};">
                     <input id="hgFont" type="checkbox" ${sig ? 'checked' : 'disabled'}> Same font only${sig ? ' (' + esc(sig.fontLabel) + ')' : ''}
+                </label>
+                <label style="${rowStyle} cursor: ${sig && sig.color ? 'pointer' : 'not-allowed'}; opacity: ${sig && sig.color ? 1 : 0.5};" title="Match the text colour too. Slower, since each page with candidate text has to be rendered.">
+                    <input id="hgColor" type="checkbox" ${sig && sig.color ? (colorIsChromatic(sig.color) ? 'checked' : '') : 'disabled'}> Same color only${sig && sig.color ? ' (' + colorHex(sig.color) + ')' : ''}
                 </label>
                 <label style="${rowStyle} margin-left: 22px; cursor: ${sig && sig.family ? 'pointer' : 'not-allowed'}; opacity: ${sig && sig.family ? 1 : 0.5};">
                     <input id="hgVariants" type="checkbox" ${sig && sig.family ? 'checked' : 'disabled'}> Also include italic / style variants of this font (keeps bold-only if the heading is bold)
@@ -2827,10 +1702,11 @@ async function openHeadingsModal() {
             maxSize: isNaN(maxV) ? null : maxV,
             fontId: sig && $('hgFont').checked ? sig.fontId : null,
             family: sig && sig.family && $('hgFont').checked && $('hgVariants').checked ? sig.family : null,
+            color: sig && sig.color && $('hgColor').checked ? sig.color : null,
             prefix: $('hgPrefix').value,
             joinLines: $('hgJoin').checked
         };
-        if (opts.minSize == null && opts.maxSize == null && !opts.fontId && !opts.prefix) {
+        if (opts.minSize == null && opts.maxSize == null && !opts.fontId && !opts.prefix && !opts.color) {
             showToast('Set a font size, same font, or starts-with text first', 'error');
             return;
         }
@@ -2870,6 +1746,469 @@ async function openHeadingsModal() {
 }
 
 headingsBtn.addEventListener('click', openHeadingsModal);
+
+// ---- TOC parsing (pure functions) ----
+const TOC_LEADER_CHARS = '._\u00b7\u2026\u22ef\u2022\u2027\u2219\u2025';
+const TOC_LEADER_RE = new RegExp('^(.*?\\S)\\s*(?:[' + TOC_LEADER_CHARS.replace(/[\\\]\-^]/g, '\\$&') + ']\\s*){2,}(\\d{1,5}|[ivxlcIVXLC]{1,7})\\s*$');
+const TOC_JUNK_RE = /^(table of contents|contents|page|pages|index)$/i;
+const TOC_LABEL_ONLY_RE = /^(chapter|part|section|appendix|unit|lesson|book|volume)\s+[\divxlcIVXLC]+[.:)]?$/i;
+const TOC_NEW_ENTRY_RE = /^(chapter|part|section|appendix|unit|lesson|book|volume)\b|^\d+(\.\d+)*[.)]?\s/i;
+const TOC_LABEL_WORDS = /(chapter|part|section|appendix|fig|figure|table|page|vol|volume|book|lesson|unit|step|week|day|no|number|article|item|question|ch|sec|version|v|level|grade)\.?$/i;
+
+// Split one raw line into { indent, title, page, roman }. page is null when the line has no page number.
+function tocSplitLine(raw) {
+    const s0 = raw.replace(/\t/g, '    ').replace(/[\u00a0\u2000-\u200b]/g, ' ');
+    const indent = s0.match(/^ */)[0].length;
+    const s = s0.trim();
+    if (!s) return null;
+
+    let title = null, pageStr = null, m;
+    if ((m = s.match(TOC_LEADER_RE))) {                 // "Title ........ 12", "Title _ _ _ 12", "Title ___ iv"
+        title = m[1]; pageStr = m[2];
+    } else if ((m = s.match(/^(.*\S)\s{2,}(\d{1,5})$/))) { // "Title      12" (big gap)
+        title = m[1]; pageStr = m[2];
+    } else if ((m = s.match(/^(.*[^\d\s._\u2026-])\s(\d{1,5})$/)) && m[1].length >= 3 && !TOC_LABEL_WORDS.test(m[1].trim())) {
+        title = m[1]; pageStr = m[2];                   // "Title 12" (single space; guarded against "Chapter 1")
+    }
+
+    if (title === null) {                               // no page number on this line
+        title = s;
+        pageStr = null;
+    }
+    // strip leftover leaders / underscores / dashes from the end of the title
+    title = title.replace(new RegExp('[\\s' + TOC_LEADER_CHARS.replace(/[\\\]\-^]/g, '\\$&') + '\\-\u2013\u2014]+$'), '').trim();
+    title = cleanBookmarkTitle(title);
+
+    if (!title || /^[\d\s._\-\u2013\u2014]+$/.test(title) || /^[ivxlc]{1,7}$/i.test(title) && pageStr === null) return null; // bare page numbers / rules
+    if (TOC_JUNK_RE.test(title) && pageStr === null) return null;
+
+    const roman = pageStr !== null && !/^\d+$/.test(pageStr);
+    return { indent, title, page: pageStr !== null && !roman ? parseInt(pageStr, 10) : null, roman };
+}
+
+function tocShouldJoin(cur, next, joinAll) {
+    if (TOC_NEW_ENTRY_RE.test(next.title) && !TOC_LABEL_ONLY_RE.test(cur.title)) {
+        // next line clearly starts a new entry; only continue when cur obviously dangles
+        return /[,\-\u2013\u2014:&(]$|\b(and|of|the|to|for|in|on|a|an|with|or|by|from)$/i.test(cur.title);
+    }
+    if (TOC_LABEL_ONLY_RE.test(cur.title) && !TOC_NEW_ENTRY_RE.test(next.title)) return true; // "Chapter 3" / "Title ... 45"
+    if (/^[a-z(]/.test(next.title)) return true;                                                // continues in lower case
+    if (/[,\-\u2013\u2014:&(]$|\b(and|of|the|to|for|in|on|a|an|with|or|by|from)$/i.test(cur.title)) return true;
+    return !!joinAll;
+}
+
+function tocJoinTitle(a, b) {
+    return /[a-z]-$/.test(a) && /^[a-z]/.test(b) ? a.slice(0, -1) + b : a + ' ' + b;
+}
+
+function tocAssignLevels(entries) {
+    const uniq = [...new Set(entries.map(e => e.indent))].sort((x, y) => x - y);
+    const clusters = [];
+    for (const u of uniq) {
+        const last = clusters[clusters.length - 1];
+        if (last && u - last.max <= 1) last.max = u; else clusters.push({ min: u, max: u });
+    }
+    for (const e of entries) {
+        if (clusters.length > 1) {
+            e.level = Math.min(3, clusters.findIndex(c => e.indent >= c.min && e.indent <= c.max) + 1);
+        } else {
+            const m = e.title.match(/^(\d+(?:\.\d+)*)[.)]?\s/);   // numbering depth: 1 / 1.2 / 1.2.3
+            e.level = m ? Math.min(3, m[1].split('.').length) : 1;
+        }
+    }
+}
+
+// text -> { entries: [{title, printed, indent, level, noPage}], skippedRoman }
+function parseTocText(text, opts = {}) {
+    const items = [];
+    for (const raw of text.split(/\r?\n/)) {
+        const r = tocSplitLine(raw);
+        if (r) items.push(r);
+    }
+
+    // merge wrapped entries
+    const merged = [];
+    for (let i = 0; i < items.length; i++) {
+        let cur = { ...items[i] };
+        while (cur.page == null && !cur.roman && i + 1 < items.length && tocShouldJoin(cur, items[i + 1], opts.joinAll)) {
+            const nx = items[++i];
+            cur = { indent: cur.indent, title: tocJoinTitle(cur.title, nx.title), page: nx.page, roman: nx.roman };
+        }
+        merged.push(cur);
+    }
+
+    let skippedRoman = 0;
+    const entries = [];
+    for (const it of merged) {
+        if (it.roman) { skippedRoman++; continue; }
+        entries.push({ title: it.title.length > 100 ? it.title.slice(0, 100) : it.title, printed: it.page, indent: it.indent, noPage: it.page == null });
+    }
+
+    // page-less headings (e.g. "Part I") borrow the next entry's page
+    for (let i = entries.length - 1, next = null; i >= 0; i--) {
+        if (entries[i].printed != null) next = entries[i].printed;
+        else entries[i].printed = next;
+    }
+    const kept = entries.filter(e => e.printed != null && (opts.includePageless !== false || !e.noPage));
+    tocAssignLevels(kept);
+    return { entries: kept, skippedRoman };
+}
+// ---- end TOC parsing ----
+// ---- Generate bookmarks from a printed Table of Contents ----
+const tocBtn = document.getElementById('tocBtn');
+let tocTextCache = { doc: null, pages: new Map() };
+
+// Lines of text for a page, with leading spaces that reflect indentation (used to infer levels)
+async function extractTocPageText(pageNum, minXOverride) {
+    const page = await pdfJsDoc.getPage(pageNum);
+    const content = await page.getTextContent();
+    const items = content.items.filter(it => it.str && it.str.trim());
+    if (!items.length) return '';
+    const rows = [];
+    for (const it of items.slice().sort((a, b) => b.transform[5] - a.transform[5])) {
+        const size = itemFontSize(it);
+        const row = rows.find(r => Math.abs(r.y - it.transform[5]) <= size * 0.3);
+        const entry = { str: it.str, x: it.transform[4], w: it.width || 0, size };
+        if (row) row.items.push(entry); else rows.push({ y: it.transform[5], items: [entry] });
+    }
+    rows.sort((a, b) => b.y - a.y);
+    const minX = Math.min(...rows.map(r => Math.min(...r.items.map(i => i.x))));
+    return rows.map(r => {
+        r.items.sort((a, b) => a.x - b.x);
+        let text = '', prev = null;
+        for (const it of r.items) {
+            if (prev) {
+                const gap = it.x - (prev.x + prev.w);
+                if (!prev.str.endsWith(' ') && !it.str.startsWith(' ')) {
+                    if (gap > it.size * 0.8) text += '  ';
+                    else if (gap > it.size * 0.15) text += ' ';
+                }
+            }
+            text += it.str;
+            prev = it;
+        }
+        const lead = Math.max(0, Math.round((r.items[0].x - minX) / (r.items[0].size * 0.25)));
+        return ' '.repeat(lead) + text.trim();
+    }).join('\n');
+}
+
+async function getTocPageSearchText(p) {
+    if (tocTextCache.doc !== pdfJsDoc) tocTextCache = { doc: pdfJsDoc, pages: new Map() };
+    if (!tocTextCache.pages.has(p)) {
+        const page = await pdfJsDoc.getPage(p);
+        const content = await page.getTextContent();
+        tocTextCache.pages.set(p, content.items.map(i => i.str).join('').toLowerCase().replace(/[^a-z0-9]/g, ''));
+    }
+    return tocTextCache.pages.get(p);
+}
+
+// Find the offset (real page - printed page) by locating TOC titles in the PDF body text
+async function detectTocOffset(entries, tocEnd, onProgress) {
+    const key = t => t.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const cands = entries.map(e => {
+        const full = key(e.title);
+        const bare = key(e.title.replace(/^(chapter|part|section|appendix)?\s*[\divxlc]+(\.\d+)*[.):]?\s+/i, ''));
+        return { e, keys: [...new Set([full, bare].filter(k => k.length >= 6))] };
+    }).filter(c => c.keys.length);
+    if (!cands.length) return null;
+
+    const step = Math.max(1, Math.floor(cands.length / 30));
+    const samples = cands.filter((_, i) => i % step === 0).slice(0, 30);
+
+    const start = Math.max(1, tocEnd + 1);
+    const pageTexts = [];
+    for (let p = start; p <= totalPages; p++) {
+        if (onProgress) onProgress(p);
+        pageTexts[p] = await getTocPageSearchText(p);
+    }
+
+    const votes = new Map();   // offset -> { weight, samples }
+    for (const s of samples) {
+        const hits = [];
+        for (let p = start; p <= totalPages; p++) {
+            if (s.keys.some(k => pageTexts[p].includes(k))) hits.push(p);
+        }
+        if (!hits.length || hits.length > 8) continue;      // missing, or too generic to trust
+        for (const p of hits) {
+            const off = p - s.e.printed;
+            if (s.e.printed + off < 1) continue;
+            const v = votes.get(off) || { weight: 0, samples: 0 };
+            v.weight += 1 / hits.length; v.samples++;
+            votes.set(off, v);
+        }
+    }
+    let best = null;
+    for (const [off, v] of votes) {
+        if (!best || v.weight > best.weight + 1e-9 || (Math.abs(v.weight - best.weight) < 1e-9 && Math.abs(off) < Math.abs(best.offset))) {
+            best = { offset: off, weight: v.weight, samples: v.samples };
+        }
+    }
+    return best && { offset: best.offset, matched: best.samples, tested: samples.length };
+}
+
+let tocLineCache = { doc: null, pages: new Map() };
+
+// Text lines of a page with their PDF-space baseline y (cached)
+async function getTocPageLines(p) {
+    if (tocLineCache.doc !== pdfJsDoc) tocLineCache = { doc: pdfJsDoc, pages: new Map() };
+    if (tocLineCache.pages.has(p)) return tocLineCache.pages.get(p);
+    const page = await pdfJsDoc.getPage(p);
+    const content = await page.getTextContent();
+    const rows = [];
+    for (const it of content.items.filter(i => i.str && i.str.trim()).sort((a, b) => b.transform[5] - a.transform[5])) {
+        const size = itemFontSize(it);
+        const row = rows.find(r => Math.abs(r.y - it.transform[5]) <= size * 0.3);
+        if (row) { row.items.push({ str: it.str, x: it.transform[4] }); row.size = Math.max(row.size, size); }
+        else rows.push({ y: it.transform[5], size, items: [{ str: it.str, x: it.transform[4] }] });
+    }
+    rows.sort((a, b) => b.y - a.y);
+    const info = {
+        pageTop: page.view[3],
+        rotated: (page.rotate || 0) % 360 !== 0,
+        lines: rows.map(r => ({
+            y: r.y, size: r.size,
+            key: r.items.sort((a, b) => a.x - b.x).map(i => i.str).join('').toLowerCase().replace(/[^a-z0-9]/g, '')
+        })).filter(l => l.key)
+    };
+    tocLineCache.pages.set(p, info);
+    return info;
+}
+
+// Find where a TOC title sits on a page. Returns { y } (y may be null on rotated pages) or null if not found.
+async function locateTocTitle(title, p) {
+    const info = await getTocPageLines(p);
+    const tk = title.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const bk = title.replace(/^(chapter|part|section|appendix)?\s*[\divxlc]+(\.\d+)*[.):]?\s+/i, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const keys = [...new Set([tk, bk].filter(k => k.length >= 3))];
+    if (!keys.length) return null;
+    for (let i = 0; i < info.lines.length; i++) {
+        let acc = info.lines[i].key;
+        for (let j = i + 1; j < Math.min(i + 3, info.lines.length) && acc.length < tk.length + 8; j++) acc += info.lines[j].key;  // wrapped titles
+        if (keys.some(k => { const at = acc.indexOf(k); return at >= 0 && at <= 8 && info.lines[i].key.length >= Math.min(k.length, 3); })) {
+            const l = info.lines[i];
+            return { y: info.rotated ? null : Math.round(Math.min(l.y + l.size + Y_PADDING, info.pageTop) * 100) / 100 };
+        }
+    }
+    return null;
+}
+
+function openTocModal() {
+    if (!pdfJsDoc) { showToast('No PDF loaded', 'error'); return; }
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content toc-modal">
+            <div class="modal-header">
+                <h3>Generate from TOC</h3>
+                <button class="btn-close" data-act="close">✕</button>
+            </div>
+            <div class="toc-body">
+                <p class="toc-help">Open the PDF's Table of Contents pages, enter the page range and extract. Dot / underscore leaders are removed and indentation sets the level. You can also paste or edit the text below.</p>
+                <div class="toc-row">
+                    TOC pages
+                    <input id="tocFrom" type="number" min="1" max="${totalPages}" class="toc-input toc-num" value="${currentPage}">
+                    to
+                    <input id="tocTo" type="number" min="1" max="${totalPages}" class="toc-input toc-num" value="${currentPage}">
+                    <button class="btn btn-primary btn-small" data-act="extract">Extract text</button>
+                </div>
+                <textarea id="tocText" class="toc-textarea" spellcheck="false" placeholder="Chapter 1  Introduction ........ 1&#10;   1.1  Background ........ 3"></textarea>
+                <div class="toc-row">
+                    <label class="toc-check"><input id="tocJoinAll" type="checkbox"> Join every page-less line with the next (wrapped titles)</label>
+                </div>
+                <div class="toc-row">
+                    <label class="toc-check"><input id="tocPageless" type="checkbox" checked> Keep headings without a page number (use next entry's page)</label>
+                </div>
+                <div class="toc-row">
+                    Page offset
+                    <input id="tocOffset" type="number" class="toc-input toc-num" value="0" title="Real PDF page = printed page + offset. Printed 22 but really page 25 → +3">
+                    <button class="btn btn-secondary btn-small" data-act="detect" title="Searches the PDF for the TOC titles to work out the offset">Detect offset</button>
+                    <span id="tocOffsetStatus" class="toc-status"></span>
+                </div>
+                <div id="tocStatus" class="toc-status toc-status-block"></div>
+                <div class="toc-row">
+                    <span id="tocLocateStatus" class="toc-status"></span>
+                    <button class="btn btn-secondary btn-small" data-act="uncheck-missing" style="margin-left: auto;" disabled title="Untick entries whose title wasn't found on the expected page">Uncheck not found</button>
+                </div>
+                <div id="tocList" class="toc-list"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" data-act="close">Cancel</button>
+                <button class="btn btn-success" data-act="add" disabled>Add bookmarks</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+
+    const $ = id => modal.querySelector('#' + id);
+    const addBtn = modal.querySelector('[data-act="add"]');
+    let entries = [];
+    const offsetVal = () => parseInt($('tocOffset').value, 10) || 0;
+    const finalPage = e => e.printed + offsetVal();
+    const inRange = e => finalPage(e) >= 1 && finalPage(e) <= totalPages;
+
+    const updateAddBtn = () => {
+        const n = entries.filter(e => e.checked).length;
+        addBtn.disabled = n === 0;
+        addBtn.textContent = n ? `Add ${n} bookmark${n === 1 ? '' : 's'}` : 'Add bookmarks';
+    };
+
+    const renderList = () => {
+        const list = $('tocList');
+        list.innerHTML = '';
+        entries.forEach(e => {
+            const ok = inRange(e);
+            if (!ok) e.checked = false;
+            const row = document.createElement('div');
+            row.className = 'toc-item level-' + e.level + (ok ? '' : ' out-of-range');
+
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = e.checked;
+            cb.disabled = !ok;
+            cb.addEventListener('change', () => { e.checked = cb.checked; updateAddBtn(); });
+
+            const lvl = document.createElement('select');
+            lvl.className = 'toc-level';
+            [1, 2, 3].forEach(n => {
+                const o = document.createElement('option');
+                o.value = n; o.textContent = 'L' + n; o.selected = n === e.level;
+                lvl.appendChild(o);
+            });
+            lvl.addEventListener('change', () => { e.level = parseInt(lvl.value, 10); row.className = row.className.replace(/level-\d/, 'level-' + e.level); });
+
+            const pg = document.createElement('span');
+            pg.className = 'toc-page';
+            pg.textContent = 'p. ' + finalPage(e);
+            pg.title = `Printed page ${e.printed}` + (ok ? '' : ' — outside the PDF');
+
+            const t = document.createElement('span');
+            t.className = 'toc-title';
+            t.textContent = e.title + (e.noPage ? '  (no page number)' : '');
+
+            const mark = document.createElement('span');
+            mark.className = 'toc-mark' + (e.found === true ? ' found' : e.found === false ? ' missing' : '');
+            mark.textContent = e.found === true ? '✓' : e.found === false ? '?' : '';
+            mark.title = e.found === true ? 'Title found on this page — position set'
+                : e.found === false ? 'Title not found on this page — bookmark will go to the top of the page' : '';
+
+            row.append(cb, lvl, mark, pg, t);
+            list.appendChild(row);
+        });
+        updateAddBtn();
+    };
+
+    let locateToken = 0, locateTimer = null;
+    const missingBtn = modal.querySelector('[data-act="uncheck-missing"]');
+    const locate = async () => {
+        const token = ++locateToken;
+        const st = $('tocLocateStatus');
+        entries.forEach(e => { e.found = null; e.y = null; });
+        missingBtn.disabled = true;
+        if (!entries.length) { st.textContent = ''; return; }
+        let ok = 0, miss = 0, done = 0;
+        for (const e of entries) {
+            if (token !== locateToken) return;           // offset/text changed meanwhile
+            if (!inRange(e)) { e.found = false; miss++; continue; }
+            try {
+                const r = await locateTocTitle(e.title, finalPage(e));
+                e.found = !!r; e.y = r ? r.y : null;
+            } catch (err) { e.found = false; }
+            e.found ? ok++ : miss++;
+            if (++done % 10 === 0) st.textContent = `Locating titles… ${done} / ${entries.length}`;
+        }
+        if (token !== locateToken) return;
+        st.textContent = `Positions found for ${ok} of ${entries.length}` + (miss ? ` — ${miss} not on the expected page (offset wrong? or title differs)` : ' ✓');
+        missingBtn.disabled = miss === 0;
+        renderList();
+    };
+    const scheduleLocate = () => { clearTimeout(locateTimer); locateTimer = setTimeout(locate, 350); };
+
+    missingBtn.addEventListener('click', () => {
+        entries.forEach(e => { if (e.found === false) e.checked = false; });
+        renderList();
+    });
+
+    const parse = () => {
+        const res = parseTocText($('tocText').value, { joinAll: $('tocJoinAll').checked, includePageless: $('tocPageless').checked });
+        entries = res.entries.map(e => ({ ...e, checked: true }));
+        $('tocStatus').textContent = entries.length
+            ? `Found ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}` + (res.skippedRoman ? ` (skipped ${res.skippedRoman} with roman-numeral pages)` : '') + '. Untick or change the level of any you don\'t want.'
+            : ($('tocText').value.trim() ? 'No entries with page numbers found.' : '');
+        renderList();
+        scheduleLocate();
+    };
+
+    modal.querySelector('[data-act="extract"]').addEventListener('click', async e => {
+        const btn = e.currentTarget;
+        let from = parseInt($('tocFrom').value, 10), to = parseInt($('tocTo').value, 10);
+        if (isNaN(from) || from < 1 || from > totalPages) { showToast('Enter a valid TOC start page', 'error'); return; }
+        if (isNaN(to) || to < from) to = from;
+        to = Math.min(to, totalPages);
+        btn.disabled = true;
+        try {
+            const parts = [];
+            for (let p = from; p <= to; p++) {
+                $('tocStatus').textContent = `Reading page ${p}…`;
+                parts.push(await extractTocPageText(p));
+            }
+            $('tocText').value = parts.join('\n');
+            parse();
+        } catch (err) {
+            console.error(err);
+            $('tocStatus').textContent = 'Error: ' + err.message;
+        }
+        btn.disabled = false;
+    });
+
+    modal.querySelector('[data-act="detect"]').addEventListener('click', async e => {
+        const btn = e.currentTarget;
+        if (!entries.length) { showToast('Extract or paste a TOC first', 'error'); return; }
+        const to = parseInt($('tocTo').value, 10);
+        const tocEnd = isNaN(to) ? 0 : to;
+        btn.disabled = true;
+        const st = $('tocOffsetStatus');
+        try {
+            const res = await detectTocOffset(entries, tocEnd, p => { st.textContent = `Scanning page ${p} / ${totalPages}…`; });
+            if (res) {
+                $('tocOffset').value = res.offset;
+                st.textContent = `Detected ${res.offset > 0 ? '+' : ''}${res.offset} (${res.matched} of ${res.tested} titles agree)`;
+                renderList();
+                scheduleLocate();
+            } else {
+                st.textContent = 'Could not detect — enter it manually.';
+            }
+        } catch (err) {
+            console.error(err);
+            st.textContent = 'Error: ' + err.message;
+        }
+        btn.disabled = false;
+    });
+
+    $('tocText').addEventListener('input', parse);
+    $('tocJoinAll').addEventListener('change', parse);
+    $('tocPageless').addEventListener('change', parse);
+    $('tocOffset').addEventListener('input', () => { entries.forEach(e => { e.found = null; }); renderList(); scheduleLocate(); });
+
+    addBtn.addEventListener('click', () => {
+        let added = 0;
+        entries.filter(e => e.checked && inRange(e)).forEach(e => {
+            const page = finalPage(e);
+            if (bookmarks.some(b => b.page === page && b.title === e.title && b.level === e.level)) return;
+            bookmarks.push({ id: Date.now() + Math.random(), title: e.title, page, level: e.level, y: e.y ?? null });
+            added++;
+        });
+        bookmarks.sort(compareBookmarks);
+        renderBookmarks();
+        modal.remove();
+        showToast(`Added ${added} bookmark${added === 1 ? '' : 's'}`, 'success');
+    });
+
+    modal.querySelectorAll('[data-act="close"]').forEach(b => b.addEventListener('click', () => modal.remove()));
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+tocBtn.addEventListener('click', openTocModal);
+
 
 // Drag a single PDF onto the viewer to open it
 (function setupPdfDrop() {
@@ -3007,6 +2346,9 @@ function getSelectionPdfY() {
 }
 
 // One flat outline writer shared by apply, merge and page-editor save
+const APP_URL = 'https://mrfragger.github.io/pdf-bookmark-editor';
+function stampCreator(doc) { doc.setCreator(APP_URL); }
+
 function writeOutlines(doc, list) {
     if (list.length === 0) return;
     const context = doc.context;
@@ -3035,7 +2377,8 @@ function writeOutlines(doc, list) {
         const idx = siblings.indexOf(node);
         const page = doc.getPage(node.bm.page - 1);
         const item = {
-            Title: PDFString.of(cleanBookmarkTitle(node.bm.title)),
+            // Hex string: PDFString.of() doesn't escape, so an unbalanced "(" or a backslash in a title corrupts the file
+            Title: PDFHexString.fromText(cleanBookmarkTitle(node.bm.title)),
             Parent: node.parent ? node.parent.ref : outlinesRef,
             Dest: [page.ref, 'XYZ', 0, node.bm.y ?? null, 0]
         };
@@ -3191,7 +2534,17 @@ function scrollToPage(pageNumber, y = null) {
     showToast(`Navigated to page ${pageNumber}`, 'info', 5000);
 }
 
+document.getElementById('clearBookmarksBtn').addEventListener('click', () => {
+    if (!bookmarks.length) return;
+    if (!confirm(`Clear all ${bookmarks.length} bookmark${bookmarks.length === 1 ? '' : 's'}? This can't be undone (Export first if you want a backup).`)) return;
+    bookmarks = [];
+    renderBookmarks();
+    showToast('All bookmarks cleared', 'info');
+});
+
 function renderBookmarks() {
+    const clearBtn = document.getElementById('clearBookmarksBtn');
+    if (clearBtn) clearBtn.disabled = bookmarks.length === 0;
     if (bookmarks.length === 0) {
         bookmarksList.innerHTML = `
             <div class="empty-state">
@@ -3371,6 +2724,8 @@ applyBookmarksBtn.addEventListener('click', async () => {
         const sortedBookmarks = [...bookmarks].sort(compareBookmarks);
 
         writeOutlines(newPdfDoc, sortedBookmarks);
+
+        stampCreator(newPdfDoc);
 
         const pdfBytesWithBookmarks = await newPdfDoc.save();
 
@@ -3894,6 +3249,8 @@ document.getElementById('splitExtract').addEventListener('click', async () => {
             newPdf.addPage(copiedPage);
         }
 
+        stampCreator(newPdf);
+
         const pdfBytes = await newPdf.save();
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
@@ -3986,6 +3343,8 @@ document.getElementById('applyPageChanges').addEventListener('click', async () =
             dropped = bookmarks.length - adjustedBookmarks.length;
             writeOutlines(newPdf, adjustedBookmarks);
         }
+
+        stampCreator(newPdf);
 
         const pdfBytes = await newPdf.save();
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });

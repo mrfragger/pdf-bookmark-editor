@@ -2,6 +2,7 @@
 
  https://mrfragger.github.io/pdf-bookmark-editor
 
+- PDF and all data stays local, no data uploaded
 - Add / Edit bookmarks with vertical position (jumping to exact location of text in a page)
 - add chapter, section or subsection bookmarks
 - select text in pdf to use for bookmark title
