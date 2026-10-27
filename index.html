@@ -15,7 +15,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #1a1a2e;
@@ -23,12 +23,12 @@
             height: 100vh;
             overflow: hidden;
         }
-        
+
         .app-layout {
             display: flex;
             height: 100vh;
         }
-        
+
         .pdf-panel {
             flex: 1;
             display: flex;
@@ -37,7 +37,7 @@
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             max-width: 80vw;
         }
-        
+
         .pdf-header {
             padding: 8px 15px;
             background: rgba(0, 0, 0, 0.2);
@@ -46,7 +46,7 @@
             align-items: center;
             gap: 8px;
         }
-        
+
         .file-input-wrapper {
             display: inline-block;
         }
@@ -56,11 +56,11 @@
             display: inline-block;
             line-height: normal;
         }
-        
+
         input[type="file"] {
             display: none;
         }
-        
+
         .btn {
             padding: 10px 20px;
             border: none;
@@ -70,17 +70,17 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #e8e8e8;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
-        
+
         .pdf-info {
             flex: 1;
             display: flex;
@@ -96,7 +96,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .page-nav {
             display: flex;
             align-items: center;
@@ -107,7 +107,7 @@
             display: none;
             gap: 6px;
         }
-        
+
         .page-nav button {
             background: rgba(255, 255, 255, 0.1);
             border: none;
@@ -117,16 +117,16 @@
             cursor: pointer;
             font-size: 16px;
         }
-        
+
         .page-nav button:hover:not(:disabled) {
             background: rgba(255, 255, 255, 0.2);
         }
-        
+
         .page-nav button:disabled {
             opacity: 0.3;
             cursor: not-allowed;
         }
-        
+
         .page-nav input {
             width: 60px;
             background: rgba(0, 0, 0, 0.3);
@@ -140,11 +140,11 @@
        .pdf-page.dark-mode {
            filter: invert(1) hue-rotate(180deg);
        }
-       
+
        .pdf-page.grayscale-mode {
            filter: grayscale(85%) invert(85%);
        }
-        
+
         .pdf-viewer-container {
             flex: 1;
             overflow-y: auto;
@@ -156,39 +156,39 @@
             padding: 20px;
             position: relative;
         }
-        
+
         #pdfViewer {
             max-width: 100%;
             display: none;
         }
-        
+
         #pdfViewer.active {
             display: block;
         }
-        
+
         .pdf-page {
             margin-bottom: 20px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
-        
+
         .bookmarks-panel {
             width: 300px;
             display: flex;
             flex-direction: column;
             background: #1a1a2e;
         }
-        
+
         .bookmarks-header {
             padding: 12px 20px;
             background: rgba(0, 0, 0, 0.2);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .bookmarks-header h2 {
             margin-bottom: 8px;
             font-size: 1.2em;
         }
-        
+
         .keyboard-shortcuts {
             background: rgba(102, 126, 234, 0.1);
             padding: 8px 10px;
@@ -197,7 +197,7 @@
             line-height: 1.5;
             color: #aaa;
         }
-        
+
         .keyboard-shortcuts kbd {
             background: rgba(0, 0, 0, 0.3);
             padding: 2px 6px;
@@ -210,29 +210,29 @@
         .keyboard-shortcuts .level-1-text {
             color: #667eea;
         }
-        
+
         .keyboard-shortcuts .level-2-text {
             color: #38ef7d;
         }
-        
+
         .keyboard-shortcuts .level-3-text {
             color: #f39c12;
         }
-        
+
         .bookmarks-list {
             flex: 1;
             overflow-y: auto;
             padding: 15px;
         }
-        
+
         .bookmarks-list::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         .bookmarks-list::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.05);
         }
-        
+
         .bookmarks-list::-webkit-scrollbar-thumb {
             background: rgba(102, 126, 234, 0.5);
             border-radius: 4px;
@@ -248,21 +248,21 @@
             min-width: 0;
             overflow: hidden;
         }
-        
+
         .bookmark-item:hover {
             background: rgba(255, 255, 255, 0.08);
         }
-        
+
         .bookmark-item.level-2 {
             border-left-color: #38ef7d;
             margin-left: 5px;
         }
-        
+
         .bookmark-item.level-3 {
             border-left-color: #f39c12;
             margin-left: 10px;
         }
-        
+
         .bookmark-item-header {
             display: flex;
             align-items: center;
@@ -289,12 +289,12 @@
             overflow: hidden;
             display: block;
         }
-        
+
         .bookmark-item textarea:focus {
             outline: none;
             border-color: rgba(102, 126, 234, 0.5);
         }
-        
+
         .bookmark-page {
             background: rgba(102, 126, 234, 0.2);
             padding: 3px 6px;
@@ -302,22 +302,22 @@
             font-size: 11px;
             font-weight: 600;
         }
-        
+
         .bookmark-page.clickable {
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         .bookmark-page.clickable:hover {
             background: rgba(102, 126, 234, 0.4);
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
-        
+
         .bookmark-page.clickable:active {
             transform: translateY(0);
         }
-        
+
         .bookmark-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 8px 10px;
@@ -326,7 +326,7 @@
             border-left: 3px solid #667eea;
             transition: all 0.2s;
         }
-        
+
         .bookmark-item input:focus {
             outline: none;
             border-color: rgba(102, 126, 234, 0.5);
@@ -341,7 +341,7 @@
             border-radius: 4px;
             font-size: 12px;
         }
-        
+
         .bookmark-actions {
             display: flex;
             gap: 6px;
@@ -351,7 +351,7 @@
             padding: 2px 6px;
             font-size: 11px;
         }
-        
+
         .pdf-page {
             display: block;
         }
@@ -372,11 +372,11 @@
             padding: 10px 0;
             overflow: hidden;
         }
-        
+
         .page-editor-modal.hidden {
             display: none;
         }
-        
+
         .page-editor-content {
             background: #1a1a2e;
             border-radius: 12px;
@@ -389,7 +389,7 @@
             animation: slideUp 0.3s ease;
             overflow: hidden;
         }
-        
+
         .page-editor-header {
             display: flex;
             justify-content: space-between;
@@ -398,7 +398,7 @@
             background: rgba(0, 0, 0, 0.2);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .page-editor-toolbar {
             display: flex;
             gap: 10px;
@@ -419,12 +419,12 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         #closeSearch:hover {
             background: rgba(255, 255, 255, 0.2);
             color: #fff;
         }
-        
+
         .toolbar-group {
             display: flex;
             gap: 8px;
@@ -432,11 +432,11 @@
             padding-right: 15px;
             border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .toolbar-group:last-child {
             border-right: none;
         }
-        
+
         .toolbar-label {
             font-size: 12px;
             color: #888;
@@ -444,20 +444,20 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+
         .page-grid-container {
             flex: 1;
             overflow-y: auto;
             padding: 15px;
             background: #0f1419;
         }
-        
+
         .page-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
         }
-        
+
         .page-thumbnail {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
@@ -467,27 +467,27 @@
             transition: all 0.2s;
             position: relative;
         }
-        
+
         .page-thumbnail:hover {
             background: rgba(255, 255, 255, 0.08);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
-        
+
         .page-thumbnail.selected {
             border-color: #667eea;
             background: rgba(102, 126, 234, 0.1);
         }
-        
+
         .page-thumbnail.dragging {
             opacity: 0.5;
         }
-        
+
         .page-thumbnail.drag-over {
             border-color: #38ef7d;
             background: rgba(56, 239, 125, 0.1);
         }
-        
+
         .page-thumbnail-canvas {
             width: 100%;
             height: auto;
@@ -495,7 +495,7 @@
             background: white;
             display: block;
         }
-        
+
         .page-thumbnail-info {
             display: flex;
             justify-content: space-between;
@@ -503,17 +503,17 @@
             margin-top: 10px;
             font-size: 13px;
         }
-        
+
         .page-number {
             color: #667eea;
             font-weight: 600;
         }
-        
+
         .page-size {
             color: #888;
             font-size: 11px;
         }
-        
+
         .page-checkbox {
             position: absolute;
             top: 18px;
@@ -529,7 +529,7 @@
             opacity: 0.4;
             position: relative;
         }
-        
+
         .page-thumbnail.deleted::before {
             content: '🗑️';
             position: absolute;
@@ -541,7 +541,7 @@
             text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
             pointer-events: none;
         }
-        
+
         .page-thumbnail.deleted::after {
             content: '';
             position: absolute;
@@ -554,7 +554,7 @@
             z-index: 99;
             pointer-events: none;
         }
-        
+
         .rotation-indicator {
             position: absolute;
             top: 18px;
@@ -581,7 +581,7 @@
            font-size: 14px;
            white-space: nowrap;
        }
-        
+
         .selection-info {
             flex: 1;
             display: flex;
@@ -590,12 +590,12 @@
             font-size: 13px;
             white-space: nowrap;
         }
-        
+
         .selection-info strong {
             color: #667eea;
             margin: 0 4px;
         }
-        
+
         .btn-icon {
             padding: 8px 16px;
             font-size: 13px;
@@ -612,12 +612,12 @@
             background: transparent !important;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .btn-icon-only:hover:not(:disabled) {
             background: rgba(255, 255, 255, 0.1) !important;
             border-color: rgba(255, 255, 255, 0.3);
         }
-        
+
         .btn-icon-only:disabled {
             opacity: 0.3;
             cursor: not-allowed;
@@ -634,23 +634,23 @@
             transition: all 0.2s;
             line-height: 1;
         }
-        
+
         .btn-icon-header:hover:not(:disabled) {
             background: rgba(102, 126, 234, 0.2);
             border-color: rgba(102, 126, 234, 0.6);
             transform: translateY(-1px);
         }
-        
+
         .btn-icon-header:disabled {
             opacity: 0.3;
             cursor: not-allowed;
         }
-        
+
         .bookmarks-header h2 {
             margin: 0;
             font-size: 1.2em;
         }
-        
+
         .split-range-input {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -660,12 +660,12 @@
             font-size: 13px;
             width: 200px;
         }
-        
+
         .split-range-input:focus {
             outline: none;
             border-color: rgba(102, 126, 234, 0.5);
         }
-        
+
         .split-range-input::placeholder {
             color: #666;
         }
@@ -682,11 +682,11 @@
             display: none;
             margin-top: 4px;
         }
-        
+
         .title-diff.visible {
             display: block;
         }
-        
+
         .textLayer {
             position: absolute;
             left: 0;
@@ -698,7 +698,7 @@
             line-height: 1;
             --scale-factor: 1.5;
         }
-        
+
         .textLayer > span {
             color: transparent;
             position: absolute;
@@ -706,54 +706,54 @@
             cursor: text;
             transform-origin: 0% 0%;
         }
-        
+
         .textLayer ::selection {
             background: rgba(255, 235, 59, 0.6);
             color: inherit;
         }
-        
+
         .textLayer ::-moz-selection {
             background: rgba(255, 235, 59, 0.6);
             color: inherit;
         }
-        
+
         .btn-small {
             padding: 4px 8px;
             font-size: 12px;
         }
-        
+
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             color: white;
         }
-        
+
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.15);
         }
-        
+
         .btn-delete {
             background: transparent;
             color: #e74c3c;
             border: 1px solid rgba(231, 76, 60, 0.3);
         }
-        
+
         .btn-delete:hover {
             background: rgba(231, 76, 60, 0.2);
             border-color: rgba(231, 76, 60, 0.5);
         }
-        
-        
+
+
         .bookmarks-footer {
             padding: 15px;
             background: rgba(0, 0, 0, 0.2);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .footer-buttons {
             display: flex;
             gap: 8px;
         }
-        
+
         .footer-buttons .btn {
             flex: 1;
             font-size: 11px;
@@ -765,7 +765,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .btn-success {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #e8e8e8;
@@ -773,24 +773,24 @@
             padding: 14px;
             font-size: 16px;
         }
-        
+
         .btn-success:hover:not(:disabled) {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
-        
+
         .btn-success:disabled {
             background: #555;
             cursor: not-allowed;
             opacity: 0.5;
         }
-        
+
         .empty-state {
             text-align: center;
             padding: 40px 20px;
             color: #666;
         }
-        
+
         .modal {
             position: fixed;
             top: 0;
@@ -805,11 +805,11 @@
             z-index: 10000;
             animation: fadeIn 0.2s ease;
         }
-        
+
         .modal.hidden {
             display: none;
         }
-        
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -827,11 +827,11 @@
                 opacity: 0.7;
             }
         }
-        
+
         .search-highlight-overlay {
             animation: highlight-pulse 1.5s ease-in-out infinite;
         }
-        
+
         .modal-content {
             background: #1a1a2e;
             padding: 0;
@@ -843,7 +843,7 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             animation: slideUp 0.3s ease;
         }
-        
+
         @keyframes slideUp {
             from {
                 transform: translateY(30px);
@@ -854,7 +854,7 @@
                 opacity: 1;
             }
         }
-        
+
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -863,12 +863,12 @@
             background: rgba(0, 0, 0, 0.2);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .modal-header h3 {
             margin: 0;
             font-size: 1.3em;
         }
-        
+
         .btn-close {
             background: transparent;
             border: none;
@@ -884,12 +884,12 @@
             border-radius: 4px;
             transition: all 0.2s;
         }
-        
+
         .btn-close:hover {
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
         }
-        
+
         .modal-content > p {
             color: #aaa;
             margin: 0;
@@ -898,26 +898,26 @@
             background: rgba(102, 126, 234, 0.05);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
+
         .merge-file-list {
             padding: 20px 25px;
             max-height: 400px;
             overflow-y: auto;
         }
-        
+
         .merge-file-list::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         .merge-file-list::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.05);
         }
-        
+
         .merge-file-list::-webkit-scrollbar-thumb {
             background: rgba(102, 126, 234, 0.5);
             border-radius: 4px;
         }
-        
+
         .merge-file-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 15px;
@@ -930,33 +930,33 @@
             border: 2px solid transparent;
             transition: all 0.2s;
         }
-        
+
         .merge-file-item:hover {
             background: rgba(255, 255, 255, 0.08);
             border-color: rgba(102, 126, 234, 0.3);
         }
-        
+
         .merge-file-item.dragging {
             opacity: 0.5;
             cursor: grabbing;
         }
-        
+
         .merge-file-item.drag-over {
             border-color: rgba(102, 126, 234, 0.8);
             background: rgba(102, 126, 234, 0.1);
         }
-        
+
         .drag-handle {
             color: #666;
             font-size: 20px;
             cursor: grab;
             user-select: none;
         }
-        
+
         .merge-file-item.dragging .drag-handle {
             cursor: grabbing;
         }
-        
+
         .file-order {
             background: rgba(102, 126, 234, 0.3);
             color: white;
@@ -970,12 +970,12 @@
             font-size: 13px;
             flex-shrink: 0;
         }
-        
+
         .file-info {
             flex: 1;
             min-width: 0;
         }
-        
+
         .file-name {
             font-weight: 600;
             color: #fff;
@@ -984,12 +984,12 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .file-pages {
             font-size: 12px;
             color: #888;
         }
-        
+
         .remove-file {
             background: transparent;
             border: 1px solid rgba(231, 76, 60, 0.3);
@@ -1001,12 +1001,12 @@
             transition: all 0.2s;
             flex-shrink: 0;
         }
-        
+
         .remove-file:hover {
             background: rgba(231, 76, 60, 0.2);
             border-color: rgba(231, 76, 60, 0.5);
         }
-        
+
         .modal-actions {
             display: flex;
             gap: 12px;
@@ -1014,12 +1014,12 @@
             background: rgba(0, 0, 0, 0.2);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .modal-actions .btn {
             flex: 1;
             padding: 12px;
         }
-        
+
         .empty-merge-list {
             text-align: center;
             padding: 40px 20px;
@@ -1033,20 +1033,20 @@
             margin-bottom: 10px;
             flex-shrink: 0;
         }
-        
+
         .search-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-        
+
         .search-header h3 {
             margin: 0;
             font-size: 1.1em;
             color: #fff;
         }
-        
+
         .search-result-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 10px;
@@ -1056,34 +1056,34 @@
             transition: all 0.2s;
             border-left: 3px solid #667eea;
         }
-        
+
         .search-result-item:hover {
             background: rgba(255, 255, 255, 0.08);
             transform: translateX(3px);
         }
-        
+
         .search-result-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 6px;
             font-size: 12px;
         }
-        
+
         .search-result-page {
             color: #667eea;
             font-weight: 600;
         }
-        
+
         .search-result-score {
             color: #888;
         }
-        
+
         .search-result-text {
             font-size: 13px;
             line-height: 1.5;
             color: #ddd;
         }
-        
+
         .search-result-text mark {
             background: #ffeb3b;
             color: #000;
@@ -1091,12 +1091,12 @@
             border-radius: 2px;
             font-weight: 600;
         }
-        
+
         #pdfSearchBox:focus {
             outline: none;
             border-color: rgba(102, 126, 234, 0.8);
         }
-        
+
         .toast {
             position: fixed;
             bottom: 30px;
@@ -1113,23 +1113,23 @@
             max-width: 350px;
             word-wrap: break-word;
         }
-        
+
         .toast.show {
             transform: translateX(0);
         }
-        
+
         .toast.error {
             background: rgba(231, 76, 60, 0.95);
         }
-        
+
         .toast.success {
             background: rgba(17, 153, 142, 0.95);
         }
-        
+
         .toast.info {
             background: rgba(102, 126, 234, 0.95);
         }
-        
+
         @keyframes bookmark-highlight {
             0% {
                 background: rgba(102, 126, 234, 0.4);
@@ -1140,11 +1140,11 @@
                 transform: scale(1);
             }
         }
-        
+
         .bookmark-item.newly-added {
             animation: bookmark-highlight 0.6s ease-out;
         }
-        
+
         .loading {
             position: absolute;
             top: 50%;
@@ -1154,16 +1154,16 @@
             font-size: 18px;
             pointer-events: none;
         }
-        
+
         .loading.hidden {
             display: none;
         }
-        
+
         @media (max-width: 1024px) {
             .app-layout {
                 flex-direction: column;
             }
-        
+
             .bookmarks-panel {
                 width: 300px;
                 display: flex;
@@ -1172,7 +1172,7 @@
                 height: 100vh;
                 overflow: hidden;
             }
-            
+
             .bookmarks-list {
                 flex: 1;
                 overflow-y: auto;
@@ -1188,12 +1188,12 @@
                 padding: 4px;
                 border-radius: 4px;
             }
-            
+
             .github-link:hover {
                 color: #667eea;
                 background: rgba(102, 126, 234, 0.1);
             }
-            
+
             .github-link svg {
                 display: block;
             }
@@ -1270,7 +1270,7 @@
                         <button id="closeSearch" title="Close search (Esc)">✕</button>
                     </div>
                 </div>
-                <input type="text" id="pdfSearchBox" placeholder="Search for multiple terms..." 
+                <input type="text" id="pdfSearchBox" placeholder="Search for multiple terms..."
                        style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(102,126,234,0.5); color: white; border-radius: 4px; margin-bottom: 10px; font-size: 14px;">
                 <div class="search-options" style="margin-bottom: 10px; font-size: 11px; line-height: 1.6;">
                     <label style="display: block; margin: 4px 0; cursor: pointer;">
@@ -1283,7 +1283,7 @@
                 <div id="searchStatus" style="color: #888; font-size: 12px; margin-bottom: 10px;"></div>
                 <div id="searchResults" style="max-height: 400px; overflow-y: auto;"></div>
             </div>
-            
+
             <div class="bookmarks-list" id="bookmarksList">
                 <div class="empty-state">
                     <p>No bookmarks yet</p>
@@ -1320,35 +1320,35 @@
                             <button id="selectOddPages" class="btn btn-secondary btn-small">Odd</button>
                             <button id="selectInvertPages" class="btn btn-secondary btn-small">Invert</button>
                         </div>
-                        
+
                         <div class="toolbar-group">
                             <span class="toolbar-label">Rotate</span>
                             <button id="rotateLeft" class="btn btn-secondary btn-small btn-icon" title="Rotate 90° Left">↺ 90°</button>
                             <button id="rotateRight" class="btn btn-secondary btn-small btn-icon" title="Rotate 90° Right">↻ 90°</button>
                             <button id="rotate180" class="btn btn-secondary btn-small btn-icon" title="Rotate 180°">↻ 180°</button>
                         </div>
-                        
+
                         <div class="toolbar-group">
                             <span class="toolbar-label">Actions</span>
                             <button id="deleteSelected" class="btn btn-delete btn-small btn-icon">🗑️ Delete</button>
                         </div>
-                        
+
                         <div class="toolbar-group">
                             <span class="toolbar-label">Range</span>
                             <input type="text" id="splitRangeInput" class="split-range-input" placeholder="e.g., 1-5, 10, 15-20">
                             <button id="selectRange" class="btn btn-secondary btn-small">Select</button>
                             <button id="splitExtract" class="btn btn-primary btn-small">Extract</button>
                         </div>
-            
+
                         <div style="flex: 1;"></div>
-                        
+
                         <button id="closePageEditor" class="btn btn-secondary btn-small">✕ Close</button>
                     </div>
-            
+
                     <div class="page-grid-container" id="pageGridContainer">
                         <div id="pageGrid" class="page-grid"></div>
                     </div>
-            
+
                     <div class="page-editor-actions">
                         <div class="selection-info">
                             <span id="selectionCount">0 pages selected</span>
@@ -1389,6 +1389,17 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
 const { PDFDocument, PDFName, PDFString, PDFNumber } = PDFLib;
+
+// Load the WASM Ghostscript worker dynamically
+let gsWorkerPromise = null;
+function loadGsWorker() {
+    if (!gsWorkerPromise) {
+        gsWorkerPromise = import('./worker-init.js').then(module => {
+            window._GSPS2PDF = module._GSPS2PDF;
+        });
+    }
+    return gsWorkerPromise;
+}
 
 let pdfDoc = null;
 let pdfBytes = null;
@@ -1433,13 +1444,13 @@ function saveUndoState(action) {
         selectedPages: new Set(pageEditorState.selectedPages),
         timestamp: Date.now()
     };
-    
+
     undoStack.push(state);
-    
+
     if (undoStack.length > MAX_UNDO_STACK) {
         undoStack.shift();
     }
-    
+
     updateUndoButton();
 }
 
@@ -1448,23 +1459,23 @@ function undo() {
         showToast('Nothing to undo', 'info');
         return;
     }
-    
+
     const previousState = undoStack.pop();
-    
+
     pageEditorState.reorderedPages = JSON.parse(JSON.stringify(previousState.pages));
     pageEditorState.selectedPages = new Set(previousState.selectedPages);
-    
+
     const container = document.getElementById('pageGridContainer');
     const scrollPos = container.scrollTop;
-    
+
     renderPageGrid().then(() => {
         container.scrollTop = scrollPos;
         syncCheckboxes();
         updateSelectionInfo();
     });
-    
+
     showToast(`Undid: ${previousState.action}`, 'success');
-    
+
     updateUndoButton();
 }
 
@@ -1477,7 +1488,7 @@ document.getElementById('undoButton').addEventListener('click', undo);
 
 document.addEventListener('keydown', (e) => {
     const modifier = (navigator.platform.toUpperCase().indexOf('MAC') >= 0) ? e.metaKey : e.ctrlKey;
-    
+
     if (modifier && e.key === 'z' && !pageEditorModal.classList.contains('hidden')) {
         e.preventDefault();
         undo();
@@ -1494,13 +1505,13 @@ mergePdfInput.addEventListener('change', async (e) => {
 
     try {
         showToast('Loading PDFs...', 'info');
-        
+
         mergeFiles = [];
         for (const file of files) {
             const arrayBuffer = await file.arrayBuffer();
             const bytes = new Uint8Array(arrayBuffer);
             const pdf = await PDFDocument.load(bytes, { ignoreEncryption: true });
-            
+
             mergeFiles.push({
                 file: file,
                 name: file.name,
@@ -1531,13 +1542,13 @@ function renderMergeFileList() {
     }
 
     mergeFileList.innerHTML = '';
-    
+
     mergeFiles.forEach((fileData, index) => {
         const div = document.createElement('div');
         div.className = 'merge-file-item';
         div.draggable = true;
         div.dataset.index = index;
-        
+
         div.innerHTML = `
             <span class="drag-handle">⋮⋮</span>
             <div class="file-order">${index + 1}</div>
@@ -1547,7 +1558,7 @@ function renderMergeFileList() {
             </div>
             <button class="remove-file" data-index="${index}">Remove</button>
         `;
-        
+
         mergeFileList.appendChild(div);
     });
 
@@ -1567,7 +1578,7 @@ function renderMergeFileList() {
             const index = parseInt(e.target.dataset.index);
             mergeFiles.splice(index, 1);
             renderMergeFileList();
-            
+
             if (mergeFiles.length < 2) {
                 showToast('Need at least 2 PDFs to merge', 'error');
                 if (mergeFiles.length === 0) {
@@ -1642,14 +1653,14 @@ confirmMergeBtn.addEventListener('click', async () => {
 
         for (let i = 0; i < mergeFiles.length; i++) {
             const fileData = mergeFiles[i];
-            
+
             showToast(`Processing ${i + 1}/${mergeFiles.length}: ${fileData.name}`, 'info');
-            
+
             const sourcePdf = await PDFDocument.load(fileData.bytes, { ignoreEncryption: true });
-            
-            
+
+
             const existingBookmarks = await extractExistingBookmarks(sourcePdf);
-            
+
             existingBookmarks.forEach(bookmark => {
                 allBookmarks.push({
                     ...bookmark,
@@ -1657,14 +1668,14 @@ confirmMergeBtn.addEventListener('click', async () => {
                     id: Date.now() + Math.random()
                 });
             });
-            
+
             const pageIndices = sourcePdf.getPageIndices();
             const copiedPages = await mergedPdf.copyPages(sourcePdf, pageIndices);
-            
+
             copiedPages.forEach((page) => {
                 mergedPdf.addPage(page);
             });
-            
+
             currentPageOffset += sourcePdf.getPageCount();
         }
 
@@ -1672,57 +1683,7 @@ confirmMergeBtn.addEventListener('click', async () => {
 
         if (allBookmarks.length > 0) {
             showToast('Adding bookmarks to merged PDF...', 'info');
-            
-            const context = mergedPdf.context;
-            const outlinesRef = context.nextRef();
-            const outlines = context.obj({
-                Type: 'Outlines',
-            });
-
-            const itemRefs = [];
-            const items = [];
-
-            allBookmarks.forEach((bookmark) => {
-                const page = mergedPdf.getPage(bookmark.page - 1);
-                const itemRef = context.nextRef();
-                itemRefs.push(itemRef);
-
-                const item = {
-                    Title: PDFString.of(cleanBookmarkTitle(bookmark.title)),
-                    Parent: outlinesRef,
-                    Dest: [
-                        page.ref,
-                        'XYZ',
-                        null,
-                        null,
-                        null
-                    ]
-                };
-
-                items.push(item);
-            });
-
-            items.forEach((item, index) => {
-                if (index > 0) {
-                    item.Prev = itemRefs[index - 1];
-                }
-                if (index < items.length - 1) {
-                    item.Next = itemRefs[index + 1];
-                }
-            });
-
-            items.forEach((item, index) => {
-                context.assign(itemRefs[index], context.obj(item));
-            });
-
-            if (itemRefs.length > 0) {
-                outlines.set(PDFName.of('First'), itemRefs[0]);
-                outlines.set(PDFName.of('Last'), itemRefs[itemRefs.length - 1]);
-                outlines.set(PDFName.of('Count'), PDFNumber.of(itemRefs.length));
-            }
-
-            context.assign(outlinesRef, outlines);
-            mergedPdf.catalog.set(PDFName.of('Outlines'), outlinesRef);
+            writeOutlines(mergedPdf, allBookmarks);
         }
 
         const mergedPdfBytes = await mergedPdf.save();
@@ -1776,10 +1737,12 @@ compressBtn.addEventListener('click', () => {
         return;
     }
 
+    // We are keeping your built-in presets, plus adding the custom aggressive one at the top
     const options = [
+        { label: 'Aggressive Printer (Recommended)', settings: '/printer', aggressive: true },
         { label: 'screen 72 dpi', settings: '/screen', subset: false },
         { label: 'ebook 150 dpi', settings: '/ebook', subset: false },
-        { label: 'printer 300 dpi', settings: '/printer', subset: false },
+        { label: 'printer 300 dpi (Standard)', settings: '/printer', subset: false },
         { label: 'screen 72 dpi + subset fonts', settings: '/screen', subset: true },
         { label: 'ebook 150 dpi + subset fonts', settings: '/ebook', subset: true },
         { label: 'printer 300 dpi + subset fonts', settings: '/printer', subset: true },
@@ -1789,28 +1752,42 @@ compressBtn.addEventListener('click', () => {
 
     let html = '<div style="padding: 20px;">';
     html += '<p style="color: #aaa; margin-bottom: 8px; font-size: 13px;">Requires Ghostscript installed:<br><code style="color: #667eea; font-size: 11px;">brew install gs &nbsp; sudo apt install ghostscript &nbsp; choco install ghostscript</code></p>';
-    html += '<p style="color: #888; margin-bottom: 15px; font-size: 12px; line-height: 1.5;">Subset fonts removes unused glyphs from embedded fonts, further reducing file size. Safe for most documents but may affect editing later.</p>';
-    
+    html += '<p style="color: #888; margin-bottom: 15px; font-size: 12px; line-height: 1.5;">Click an option below to copy the command. Paste it into your terminal in the same folder as your PDF.</p>';
+
     options.forEach((opt, i) => {
-        const subset = opt.subset ? ' -dSubsetFonts=true' : '';
-        const cmd = `gs -sDEVICE=pdfwrite -dPDFSETTINGS=${opt.settings}${subset} -dNOPAUSE -dBATCH -sOutputFile="${outputName}" "${pdfFileName}"`;
-        
+        let cmd;
+
+        if (opt.aggressive) {
+            // Your exact command that achieved the 11.4MB compression
+            // Note: Using /ebook and 96 dpi for aggressive size reduction
+            cmd = `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/ebook -dDownsampleColorImages=true -dColorImageResolution=96 -dColorImageDownsampleType=/Bicubic -dDownsampleGrayImages=true -dGrayImageResolution=96 -dGrayImageDownsampleType=/Bicubic -dDownsampleMonoImages=true -dMonoImageResolution=150 -dSubsetFonts=true -dEmbedAllFonts=false -dNOPAUSE -dBATCH -sOutputFile="${outputName}" "${pdfFileName}"`;
+        } else {
+            // The standard presets
+            const subset = opt.subset ? ' -dSubsetFonts=true' : '';
+            cmd = `gs -sDEVICE=pdfwrite -dPDFSETTINGS=${opt.settings}${subset} -dNOPAUSE -dBATCH -sOutputFile="${outputName}" "${pdfFileName}"`;
+        }
+
+        // Highlight the aggressive option
+        const borderColor = opt.aggressive ? '#f39c12' : (opt.subset ? '#38ef7d' : '#667eea');
+        const bgColor = opt.aggressive ? 'rgba(243, 156, 18, 0.1)' : 'rgba(255,255,255,0.05)';
+        const hoverColor = opt.aggressive ? 'rgba(243, 156, 18, 0.2)' : 'rgba(255,255,255,0.08)';
+
         html += `
             <div class="compress-option" data-cmd="${cmd.replace(/"/g, '&quot;')}" style="
-                background: rgba(255,255,255,0.05);
+                background: ${bgColor};
                 padding: 12px;
                 margin-bottom: 8px;
                 border-radius: 6px;
                 cursor: pointer;
-                border-left: 3px solid ${opt.subset ? '#38ef7d' : '#667eea'};
+                border-left: 3px solid ${borderColor};
                 transition: all 0.2s;
-            ">
-                <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">${opt.label}</div>
+            " onmouseover="this.style.background='${hoverColor}'" onmouseout="this.style.background='${bgColor}'">
+                <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: ${opt.aggressive ? '#f39c12' : '#fff'};">${opt.label}</div>
                 <code style="font-size: 11px; color: #888; word-break: break-all;">${cmd}</code>
             </div>
         `;
     });
-    
+
     html += '</div>';
 
     const modal = document.createElement('div');
@@ -1824,22 +1801,17 @@ compressBtn.addEventListener('click', () => {
             ${html}
         </div>
     `;
-    
+
     document.body.appendChild(modal);
 
     modal.querySelectorAll('.compress-option').forEach(opt => {
-        opt.addEventListener('mouseenter', () => {
-            opt.style.background = 'rgba(255,255,255,0.08)';
-        });
-        opt.addEventListener('mouseleave', () => {
-            opt.style.background = 'rgba(255,255,255,0.05)';
-        });
         opt.addEventListener('click', () => {
             const cmd = opt.dataset.cmd;
             navigator.clipboard.writeText(cmd).then(() => {
                 showToast('Command copied to clipboard!', 'success');
                 modal.remove();
             }).catch(() => {
+                // Fallback for older browsers
                 const textarea = document.createElement('textarea');
                 textarea.value = cmd;
                 document.body.appendChild(textarea);
@@ -1872,7 +1844,7 @@ async function loadPdfFile(file) {
         pdfSearchIndex = null;
         pdfSearchChunks = [];
         pdfViewerContainer.innerHTML = '';
-        
+
         originalFile = file;
         pdfFileName = file.name;
         const arrayBuffer = await file.arrayBuffer();
@@ -1880,16 +1852,16 @@ async function loadPdfFile(file) {
 
         bookmarks = [];
         renderBookmarks();
-        
+
         pdfSearchChunks = [];
         pdfSearchIndex = null;
         pdfSearchBox.value = '';
         searchResults.innerHTML = '';
         searchStatus.textContent = '';
         pdfSearchSection.style.display = 'none';
-        
+
         pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
-        
+
         const loadingTask = pdfjsLib.getDocument({ data: pdfBytes });
         pdfJsDoc = await loadingTask.promise;
         totalPages = pdfJsDoc.numPages;
@@ -1898,22 +1870,22 @@ async function loadPdfFile(file) {
         const viewport = firstPage.getViewport({ scale: 1 });
         const containerWidth = pdfViewerContainer.clientWidth - 40;
         currentZoomScale = containerWidth / viewport.width;
-        
+
         pdfName.textContent = file.name;
         applyBookmarksBtn.disabled = false;
         compressBtn.disabled = false;
         zoomControls.style.display = 'flex';
         openPageEditorBtn.disabled = false;
-        
+
         const loadExistingBtn = document.getElementById('loadExistingBtn');
         loadExistingBtn.disabled = false;
-        
+
         await renderAllPages();
-        
+
         renderBookmarks();
 
         await buildSearchIndex();
-        
+
         showToast('PDF loaded successfully', 'success');
     } catch (error) {
         showToast('Error loading PDF: ' + error.message, 'error');
@@ -1923,18 +1895,18 @@ async function loadPdfFile(file) {
 
 function showToast(message, type = 'info', duration = 3000) {
     const toast = document.getElementById('toast');
-    
+
     if (toastTimeout) {
         clearTimeout(toastTimeout);
     }
-    
+
     toast.classList.remove('show');
-    
+
     setTimeout(() => {
         toast.textContent = message;
         toast.className = `toast ${type}`;
         toast.classList.add('show');
-        
+
         toastTimeout = setTimeout(() => {
             toast.classList.remove('show');
             toastTimeout = null;
@@ -1944,45 +1916,45 @@ function showToast(message, type = 'info', duration = 3000) {
 
 function toTitleCase(str) {
     str = str.replace(/ {2,}/g, (match) => ' '.repeat(match.length - 1));
-    
-    const smallWords = ['the', 'and', 'of', 'in', 'on', 'at', 'by', 'to', 'for', 
+
+    const smallWords = ['the', 'and', 'of', 'in', 'on', 'at', 'by', 'to', 'for',
                         'with', 'from', 'or', 'a', 'an', 'but', 'nor', 'as', 'if'];
-    
+
     const romanNumeralRegex = /^(M{0,3})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/i;
-    
+
     const words = str.toLowerCase().split(' ');
     let firstWordIdx = 0;
-    
+
     if (words[0].match(/^\d+([.\)]\d*)*[.\)]?$/) && words.length > 1) {
         firstWordIdx = 1;
     }
-    
+
     for (let i = 0; i < words.length; i++) {
         const word = words[i];
-        
+
         const previousWordEndsWithColon = i > 0 && words[i - 1].endsWith(':');
         const previousWordIsDash = i > 0 && words[i - 1] === '-';
         const startsWithOpenParen = word.startsWith('(');
         const isRomanNumeral = word.length > 0 && romanNumeralRegex.test(word) && word !== 'i';
-        
+
         if (i === firstWordIdx || i === words.length - 1 || previousWordEndsWithColon || previousWordIsDash || startsWithOpenParen || !smallWords.includes(word)) {
             words[i] = word.charAt(0).toUpperCase() + word.slice(1);
         }
-        
+
         if (isRomanNumeral) {
             words[i] = word.toUpperCase();
         }
     }
-    
+
     return words.join(' ').replace(/\(([a-z])/g, (_, c) => '(' + c.toUpperCase());
 }
 
 function renderTitleDiff(originalTitle, newTitle, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    
+
     const normalizedOriginal = originalTitle.replace(/ {2,}/g, (match) => ' '.repeat(match.length - 1));
-    
+
     let html = '';
     for (let i = 0; i < newTitle.length; i++) {
         if (i < normalizedOriginal.length && normalizedOriginal[i] !== newTitle[i]) {
@@ -1993,7 +1965,7 @@ function renderTitleDiff(originalTitle, newTitle, containerId) {
             html += `<span>${newTitle[i]}</span>`;
         }
     }
-    
+
     container.innerHTML = html;
 }
 
@@ -2001,43 +1973,44 @@ async function extractExistingBookmarks(pdfLibDoc) {
     try {
         const catalog = pdfLibDoc.catalog;
         const outlinesRef = catalog.lookup(PDFName.of('Outlines'));
-        
+
         if (!outlinesRef) {
             return [];
         }
 
         const existingBookmarks = [];
         const pages = pdfLibDoc.getPages();
-        
+
         const pageRefToNum = new Map();
         pages.forEach((page, index) => {
             const refStr = page.ref.toString();
             pageRefToNum.set(refStr, index + 1);
         });
-        
+
         const firstItemRef = outlinesRef.get(PDFName.of('First'));
-        
+
         if (!firstItemRef) {
             return [];
         }
-        
+
         function traverseOutline(itemRef, level = 1) {
             if (!itemRef) return;
-            
+
             const item = pdfLibDoc.context.lookup(itemRef);
             if (!item) return;
 
             const titleObj = item.get(PDFName.of('Title'));
-            
+
             if (!titleObj) {
                 const nextRef = item.get(PDFName.of('Next'));
                 if (nextRef) traverseOutline(nextRef, level);
                 return;
             }
-            
+
             const title = titleObj.decodeText ? titleObj.decodeText() : titleObj.toString();
-            
+
             let pageNum = 1;
+            let yVal = null;
             let destArray = null;
 
             const destObj = item.get(PDFName.of('Dest'));
@@ -2060,12 +2033,12 @@ async function extractExistingBookmarks(pdfLibDoc) {
                     if (typeof destArray === 'string' || (destArray.constructor && destArray.constructor.name === 'PDFString')) {
                     } else if (destArray.array && destArray.array.length > 0) {
                         const pageRefObj = destArray.array[0];
-                        
+
                         let resolvedRef = pageRefObj;
                         if (pageRefObj && pageRefObj.objectNumber !== undefined) {
                             resolvedRef = pdfLibDoc.context.lookup(pageRefObj);
                         }
-                        
+
                         let matched = false;
                         for (const [refStr, num] of pageRefToNum) {
                             if (pageRefObj && pageRefObj.toString && pageRefObj.toString() === refStr) {
@@ -2074,16 +2047,21 @@ async function extractExistingBookmarks(pdfLibDoc) {
                                 break;
                             }
                         }
-                        
+
                         if (!matched && resolvedRef) {
                             pages.forEach((page, index) => {
-                                if (page.ref === pageRefObj || 
+                                if (page.ref === pageRefObj ||
                                     (pageRefObj && page.ref.objectNumber === pageRefObj.objectNumber)) {
                                     pageNum = index + 1;
                                     matched = true;
                                 }
                             });
                         }
+
+                        const kind = destArray.array[1] && destArray.array[1].toString();
+                        const yObj = kind === '/XYZ' ? destArray.array[3]
+                                   : (kind === '/FitH' || kind === '/FitBH') ? destArray.array[2] : null;
+                        if (yObj && typeof yObj.asNumber === 'function') yVal = yObj.asNumber();
                     }
                 } catch (e) {
                     console.warn('Error extracting page number for bookmark:', title, e);
@@ -2094,7 +2072,8 @@ async function extractExistingBookmarks(pdfLibDoc) {
                 id: Date.now() + Math.random(),
                 title: title,
                 page: pageNum,
-                level: Math.min(level, 3)
+                level: Math.min(level, 3),
+                y: yVal
             });
 
             const firstRef = item.get(PDFName.of('First'));
@@ -2111,7 +2090,7 @@ async function extractExistingBookmarks(pdfLibDoc) {
         traverseOutline(firstItemRef, 1);
 
         return existingBookmarks;
-        
+
     } catch (error) {
         console.warn('Could not extract bookmarks:', error);
         return [];
@@ -2131,7 +2110,7 @@ zoomInBtn.addEventListener('click', () => {
     if (currentZoomScale < MAX_SCALE) {
         const container = pdfViewerContainer;
         const scrollRatio = container.scrollTop / container.scrollHeight;
-        
+
         currentZoomScale = Math.min(MAX_SCALE, currentZoomScale + SCALE_STEP);
         reRenderAllPages().then(() => {
             container.scrollTop = scrollRatio * container.scrollHeight;
@@ -2143,7 +2122,7 @@ zoomOutBtn.addEventListener('click', () => {
     if (currentZoomScale > MIN_SCALE) {
         const container = pdfViewerContainer;
         const scrollRatio = container.scrollTop / container.scrollHeight;
-        
+
         currentZoomScale = Math.max(MIN_SCALE, currentZoomScale - SCALE_STEP);
         reRenderAllPages().then(() => {
             container.scrollTop = scrollRatio * container.scrollHeight;
@@ -2169,20 +2148,21 @@ async function renderAllPages() {
         const pageContainer = document.createElement('div');
         pageContainer.className = 'pdf-page-container';
         pageContainer.dataset.pageNumber = pageNumber;
+        pageContainer._viewport = viewport;
         pageContainer.style.marginBottom = '20px';
         pageContainer.style.position = 'relative';
         pageContainer.style.minHeight = viewport.height + 'px';
         pageContainer.style.width = viewport.width + 'px';
 
         pdfViewerContainer.appendChild(pageContainer);
-        
+
         if (pageNumber % 50 === 0) {
             await new Promise(resolve => setTimeout(resolve, 0));
         }
     }
-    
+
     setupSmartRendering();
-    
+
     updateCurrentPage();
     pdfViewerContainer.removeEventListener('scroll', updateCurrentPage);
     pdfViewerContainer.addEventListener('scroll', updateCurrentPage);
@@ -2208,7 +2188,7 @@ function setupSmartRendering() {
                     Math.abs(rect.top),
                     Math.abs(rect.bottom - viewportHeight)
                 );
-                
+
                 if (distance > 2000) {
                     unrenderSinglePage(pageNumber);
                 }
@@ -2228,6 +2208,7 @@ async function renderSinglePage(pageNumber) {
     try {
         const page = await pdfJsDoc.getPage(pageNumber);
         const viewport = page.getViewport({ scale: currentZoomScale });
+        pageContainer._viewport = viewport;
 
         const canvas = document.createElement('canvas');
         canvas.className = 'pdf-page';
@@ -2263,11 +2244,11 @@ async function renderSinglePage(pageNumber) {
         });
 
         renderedPagesQueue.push(pageNumber);
-        
+
         if (renderedPagesQueue.length > MAX_RENDERED_PAGES) {
             const oldestPage = renderedPagesQueue.shift();
             const currentPage = getCurrentVisiblePage();
-            
+
             if (Math.abs(oldestPage - currentPage) > 5) {
                 unrenderSinglePage(oldestPage);
             }
@@ -2284,7 +2265,7 @@ function unrenderSinglePage(pageNumber) {
 
     const canvas = pageContainer.querySelector('canvas');
     const textLayer = pageContainer.querySelector('.textLayer');
-    
+
     if (canvas) {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -2292,9 +2273,9 @@ function unrenderSinglePage(pageNumber) {
         canvas.height = 0;
         canvas.remove();
     }
-    
+
     if (textLayer) textLayer.remove();
-    
+
     renderedPagesQueue = renderedPagesQueue.filter(p => p !== pageNumber);
 }
 
@@ -2303,11 +2284,11 @@ async function reRenderAllPages() {
 
     const container = pdfViewerContainer;
     const currentPageNum = getCurrentVisiblePage();
-    
+
     renderedPagesQueue = [];
-    
+
     container.innerHTML = '';
-    
+
     const scale = currentZoomScale;
 
     for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
@@ -2317,31 +2298,32 @@ async function reRenderAllPages() {
         const pageContainer = document.createElement('div');
         pageContainer.className = 'pdf-page-container';
         pageContainer.dataset.pageNumber = pageNumber;
+        pageContainer._viewport = viewport;
         pageContainer.style.marginBottom = '20px';
         pageContainer.style.position = 'relative';
         pageContainer.style.minHeight = viewport.height + 'px';
         pageContainer.style.width = viewport.width + 'px';
 
         container.appendChild(pageContainer);
-        
+
         if (pageNumber % 50 === 0) {
             await new Promise(resolve => setTimeout(resolve, 0));
         }
     }
-    
+
     setupSmartRendering();
-    
+
     const pageToScrollTo = document.querySelector(`.pdf-page-container[data-page-number="${currentPageNum}"]`);
     if (pageToScrollTo) {
         pageToScrollTo.scrollIntoView({ block: 'start' });
     }
-    
+
     updateCurrentPage();
 }
 
 async function renderPage(pageNumber, scale) {
     const actualScale = scale !== undefined ? scale : currentZoomScale;
-    
+
     if (pageCache.has(pageNumber)) {
         return;
     }
@@ -2352,6 +2334,7 @@ async function renderPage(pageNumber, scale) {
     try {
         const page = await pdfJsDoc.getPage(pageNumber);
         const viewport = page.getViewport({ scale: actualScale });
+        pageContainer._viewport = viewport;
 
         pageContainer.innerHTML = '';
 
@@ -2402,7 +2385,7 @@ function unrenderPage(pageNumber) {
 
     const canvas = pageContainer.querySelector('canvas');
     const textLayer = pageContainer.querySelector('.textLayer');
-    
+
     if (canvas) canvas.remove();
     if (textLayer) textLayer.remove();
 
@@ -2423,7 +2406,7 @@ function setupLazyLoading(scale) {
 
             if (entry.isIntersecting) {
                 renderPage(pageNumber, scale);
-                
+
                 for (let i = 1; i <= PAGES_TO_RENDER_AHEAD; i++) {
                     if (pageNumber + i <= totalPages) {
                         renderPage(pageNumber + i, scale);
@@ -2435,7 +2418,7 @@ function setupLazyLoading(scale) {
             } else {
                 const currentPage = getCurrentVisiblePage();
                 const distance = Math.abs(pageNumber - currentPage);
-                
+
                 if (distance > PAGES_TO_RENDER_AHEAD + 3) {
                     unrenderPage(pageNumber);
                 }
@@ -2456,17 +2439,17 @@ function getCurrentVisiblePage() {
 
     let currentPageNum = 1;
     let closestDistance = Infinity;
-    
+
     const pages = document.querySelectorAll('.pdf-page-container');
-    
+
     pages.forEach(page => {
         const pageNum = parseInt(page.dataset.pageNumber);
         const pageTop = page.offsetTop;
         const pageHeight = page.offsetHeight;
         const pageCenter = pageTop + (pageHeight / 2);
-        
+
         const distance = Math.abs(scrollCenter - pageCenter);
-        
+
         if (distance < closestDistance) {
             closestDistance = distance;
             currentPageNum = pageNum;
@@ -2477,11 +2460,11 @@ function getCurrentVisiblePage() {
 }
 function updateCurrentPage() {
     currentPage = getCurrentVisiblePage();
-    
+
     const pageDisplay = document.getElementById('currentPageDisplay');
     if (pageDisplay) {
         pageDisplay.innerHTML = `<span id="currentPageLink" style="cursor: pointer; text-decoration: underline; text-decoration-style: dotted;">Page ${currentPage}</span><br>of ${totalPages}`;
-        
+
         document.getElementById('currentPageLink').addEventListener('click', () => {
             const input = document.createElement('input');
             input.type = 'number';
@@ -2489,24 +2472,24 @@ function updateCurrentPage() {
             input.max = totalPages;
             input.value = currentPage;
             input.style.cssText = 'width: 60px; background: rgba(0,0,0,0.3); border: 1px solid rgba(102,126,234,0.5); color: #667eea; padding: 4px; border-radius: 4px; text-align: center; font-size: 13px; font-weight: 600;';
-            
+
             pageDisplay.innerHTML = '';
             pageDisplay.appendChild(input);
-            
+
             const label = document.createElement('span');
             label.innerHTML = `<br>of ${totalPages}`;
             pageDisplay.appendChild(label);
-            
+
             input.focus();
             input.select();
-            
+
             const navigate = () => {
                 const pageNum = parseInt(input.value);
                 if (pageNum >= 1 && pageNum <= totalPages) {
                     scrollToPage(pageNum);
                 }
             };
-            
+
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -2515,13 +2498,13 @@ function updateCurrentPage() {
                     updateCurrentPage();
                 }
             });
-            
+
             input.addEventListener('blur', () => {
                 updateCurrentPage();
             });
         });
     }
-    
+
     const searchIndicator = document.getElementById('searchPageIndicator');
     const searchSection = document.getElementById('pdfSearchSection');
     if (searchIndicator && searchSection && searchSection.style.display === 'block') {
@@ -2549,13 +2532,13 @@ function getPageFromSelection() {
 
 document.getElementById('selectInvertPages').addEventListener('click', () => {
     const newSelection = new Set();
-    
+
     pageEditorState.reorderedPages.forEach((page, index) => {
         if (!page.deleted && !pageEditorState.selectedPages.has(index)) {
             newSelection.add(index);
         }
     });
-    
+
     pageEditorState.selectedPages = newSelection;
     syncCheckboxes();
     updateSelectionInfo();
@@ -2564,7 +2547,7 @@ document.getElementById('selectInvertPages').addEventListener('click', () => {
 document.getElementById('clearSearch').addEventListener('click', () => {
     pdfSearchBox.value = '';
     searchResults.innerHTML = '';
-    searchStatus.textContent = pdfSearchChunks.length ? 
+    searchStatus.textContent = pdfSearchChunks.length ?
         `${pdfSearchChunks.length} chunks indexed • ${totalPages} pages` : '';
     pdfSearchBox.focus();
 });
@@ -2572,7 +2555,7 @@ document.getElementById('clearSearch').addEventListener('click', () => {
 pdfInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     await loadPdfFile(file);
 });
 
@@ -2586,25 +2569,25 @@ loadExistingBtn.addEventListener('click', async () => {
 
     try {
         const existingBookmarks = await extractExistingBookmarks(pdfDoc);
-        
+
         if (existingBookmarks.length === 0) {
             showToast('No existing bookmarks found in PDF', 'info');
             return;
         }
-        
+
         const shouldReplace = confirm(
             `Found ${existingBookmarks.length} existing bookmarks.\n\n` +
             `Click OK to REPLACE current bookmarks (${bookmarks.length})\n` +
             `Click Cancel to MERGE with current bookmarks`
         );
-        
+
         if (shouldReplace) {
             bookmarks = existingBookmarks;
             showToast(`Loaded ${existingBookmarks.length} bookmarks`, 'success');
         } else {
             let addedCount = 0;
             existingBookmarks.forEach(existing => {
-                const duplicate = bookmarks.find(b => 
+                const duplicate = bookmarks.find(b =>
                     b.page === existing.page && b.title === existing.title
                 );
                 if (!duplicate) {
@@ -2612,13 +2595,13 @@ loadExistingBtn.addEventListener('click', async () => {
                     addedCount++;
                 }
             });
-            bookmarks.sort((a, b) => a.page - b.page);
+            bookmarks.sort(compareBookmarks);
             const skipped = existingBookmarks.length - addedCount;
             showToast(`Merged ${addedCount} bookmarks${skipped > 0 ? ` (${skipped} duplicates skipped)` : ''}`, 'success');
         }
-        
+
         renderBookmarks();
-        
+
     } catch (error) {
         showToast('Error loading bookmarks: ' + error.message, 'error');
         console.error(error);
@@ -2627,7 +2610,7 @@ loadExistingBtn.addEventListener('click', async () => {
 
 function cleanBookmarkTitle(title) {
     return title
-        .replace(/➝|→|➔|➞|➟|➠|➡|➢|➣|➤|➥|➦|➧|➨/g, '->') 
+        .replace(/➝|→|➔|➞|➟|➠|➡|➢|➣|➤|➥|➦|➧|➨/g, '->')
         .replace(/š/g, 's')
         .replace(/ž/g, 'z')
         .replace(/['']/g, "'")
@@ -2640,16 +2623,69 @@ function cleanBookmarkTitle(title) {
             // For any remaining non-ASCII, try to keep if it's common
             const code = char.charCodeAt(0);
             if (code < 256) return char;  // Keep Latin-1 supplement
-            return ''; 
+            return '';
         })
         .replace(/\s+/g, ' ')
         .trim();
 }
 
+const Y_PADDING = 8; // points above the selected text so the heading isn't glued to the window edge
+
+// page, then top-to-bottom within the page (higher y = higher on page; null = top of page)
+function compareBookmarks(a, b) {
+    if (a.page !== b.page) return a.page - b.page;
+    const ay = a.y ?? Infinity, by = b.y ?? Infinity;
+    return ay === by ? 0 : by - ay;
+}
+
+// PDF-space Y of the top of the current selection (null if unknown or page is rotated)
+function getSelectionPdfY() {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return null;
+    const range = sel.getRangeAt(0);
+    const node = range.startContainer.nodeType === 1 ? range.startContainer : range.startContainer.parentElement;
+    const pageContainer = node && node.closest('.pdf-page-container');
+    const vp = pageContainer && pageContainer._viewport;
+    if (!vp || vp.rotation % 360 !== 0) return null;
+    const rects = range.getClientRects();
+    const rect = rects.length ? rects[0] : range.getBoundingClientRect();
+    const box = pageContainer.getBoundingClientRect();
+    const [, pdfY] = vp.convertToPdfPoint(0, rect.top - box.top);
+    return Math.round(Math.min(pdfY + Y_PADDING, vp.viewBox[3]) * 100) / 100;
+}
+
+// One flat outline writer shared by apply, merge and page-editor save
+function writeOutlines(doc, list) {
+    if (list.length === 0) return;
+    const context = doc.context;
+    const outlinesRef = context.nextRef();
+    const outlines = context.obj({ Type: 'Outlines' });
+    const itemRefs = list.map(() => context.nextRef());
+
+    list.forEach((bm, i) => {
+        const page = doc.getPage(bm.page - 1);
+        const item = {
+            Title: PDFString.of(cleanBookmarkTitle(bm.title)),
+            Parent: outlinesRef,
+            Dest: [page.ref, 'XYZ', null, bm.y ?? null, null]
+        };
+        if (i > 0) item.Prev = itemRefs[i - 1];
+        if (i < list.length - 1) item.Next = itemRefs[i + 1];
+        context.assign(itemRefs[i], context.obj(item));
+    });
+
+    outlines.set(PDFName.of('First'), itemRefs[0]);
+    outlines.set(PDFName.of('Last'), itemRefs[itemRefs.length - 1]);
+    outlines.set(PDFName.of('Count'), PDFNumber.of(itemRefs.length));
+    context.assign(outlinesRef, outlines);
+    doc.catalog.set(PDFName.of('Outlines'), outlinesRef);
+}
+
 function addBookmark(level = 1) {
     let title = '';
     let selectedText = window.getSelection().toString().trim();
-    
+    const y = selectedText ? getSelectionPdfY() : null;
+
     if (selectedText) {
         title = selectedText.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
         if (title.length > 100) {
@@ -2667,32 +2703,33 @@ function addBookmark(level = 1) {
         id: Date.now() + Math.random(),
         title: title,
         page: pageNumber,
-        level: level
+        level: level,
+        y: y
     };
-    
+
     bookmarks.push(bookmark);
-    
-    bookmarks.sort((a, b) => a.page - b.page);
-    
+
+    bookmarks.sort(compareBookmarks);
+
     renderBookmarks();
-    
+
     scrollToBookmark(bookmark.id);
-    
+
     showToast(`Added ${level === 1 ? 'Chapter' : level === 2 ? 'Section' : 'Subsection'} on page ${pageNumber}`, 'success');
 }
 
 function scrollToBookmark(bookmarkId) {
     setTimeout(() => {
         const bookmarkElements = bookmarksList.querySelectorAll('.bookmark-item');
-        
+
         bookmarkElements.forEach(el => {
             const textarea = el.querySelector('textarea[data-id]');
             if (textarea && parseFloat(textarea.dataset.id) === bookmarkId) {
-                el.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
+                el.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
                 });
-                
+
                 el.classList.add('newly-added');
                 setTimeout(() => {
                     el.classList.remove('newly-added');
@@ -2726,9 +2763,9 @@ function deleteBookmark(id) {
 function titleCaseBookmark(id) {
     const bookmark = bookmarks.find(b => b.id === id);
     if (!bookmark || !bookmark.title) return;
-    
-    if (lastTitleCaseOperation && 
-        lastTitleCaseOperation.id === id && 
+
+    if (lastTitleCaseOperation &&
+        lastTitleCaseOperation.id === id &&
         bookmark.title === lastTitleCaseOperation.newTitle) {
         bookmark.title = lastTitleCaseOperation.oldTitle;
         lastTitleCaseOperation = null;
@@ -2737,37 +2774,46 @@ function titleCaseBookmark(id) {
         const oldTitle = bookmark.title;
         const newTitle = toTitleCase(bookmark.title);
         bookmark.title = newTitle;
-        
+
         lastTitleCaseOperation = {
             id: id,
             oldTitle: oldTitle,
             newTitle: newTitle
         };
-        
+
         showToast('Title case applied', 'success');
     }
-    
+
     renderBookmarks();
 }
 
-function scrollToPage(pageNumber) {
-    const pageContainer = document.querySelector(`.pdf-page-container[data-page-number="${pageNumber}"]`);
-    if (pageContainer) {
-        pageContainer.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
-        
-        currentPage = pageNumber;
-        updateCurrentPage();
-        
-        pageContainer.style.outline = '3px solid rgba(102, 126, 234, 0.6)';
-        setTimeout(() => {
-            pageContainer.style.outline = '';
-        }, 1000);
-        
-        showToast(`Navigated to page ${pageNumber}`, 'info', 5000);
+function scrollToPage(pageNumber, y = null) {
+    const pc = document.querySelector(`.pdf-page-container[data-page-number="${pageNumber}"]`);
+    if (!pc) return;
+
+    let top = pc.offsetTop, markerY = null;
+    if (y != null && pc._viewport) {
+        markerY = pc._viewport.convertToViewportPoint(0, y)[1];
+        top += Math.max(0, markerY - 40);
     }
+    pdfViewerContainer.scrollTo({ top, behavior: 'smooth' });
+
+    currentPage = pageNumber;
+    updateCurrentPage();
+
+    if (markerY !== null) {
+        // thin line showing exactly where the bookmark points
+        const line = document.createElement('div');
+        line.style.cssText = `position:absolute;left:0;right:0;top:${markerY}px;height:2px;` +
+            `background:rgba(102,126,234,.9);pointer-events:none;z-index:100;transition:opacity .5s`;
+        pc.appendChild(line);
+        setTimeout(() => { line.style.opacity = '0'; setTimeout(() => line.remove(), 500); }, 2500);
+    } else {
+        pc.style.outline = '3px solid rgba(102, 126, 234, 0.6)';
+        setTimeout(() => { pc.style.outline = ''; }, 1000);
+    }
+
+    showToast(`Navigated to page ${pageNumber}`, 'info', 5000);
 }
 
 function renderBookmarks() {
@@ -2783,20 +2829,20 @@ function renderBookmarks() {
         return;
     }
 
-    bookmarks.sort((a, b) => a.page - b.page);
+    bookmarks.sort(compareBookmarks);
 
     bookmarksList.innerHTML = '';
-    
+
     bookmarks.forEach(bookmark => {
         const div = document.createElement('div');
         div.className = `bookmark-item level-${bookmark.level}`;
-        
+
         const levelLabels = { 1: 'Chapter', 2: 'Section', 3: 'Subsection' };
-        
+
         div.innerHTML = `
             <div class="bookmark-item-header">
                 <div class="bookmark-header-left">
-                    <span class="bookmark-page clickable" data-page="${bookmark.page}">Page ${bookmark.page}</span>
+                    <span class="bookmark-page clickable" data-page="${bookmark.page}" data-y="${bookmark.y ?? ''}">Page ${bookmark.page}${bookmark.y != null ? ' · y ' + Math.round(bookmark.y) : ''}</span>
                     <span style="color: #888; font-size: 12px;">${levelLabels[bookmark.level]}</span>
                 </div>
                 <div class="bookmark-actions">
@@ -2804,38 +2850,38 @@ function renderBookmarks() {
                     <button class="btn btn-delete btn-small" data-id="${bookmark.id}" data-action="delete">🗑️</button>
                 </div>
             </div>
-            <textarea 
-                placeholder="Bookmark title" 
+            <textarea
+                placeholder="Bookmark title"
                 data-id="${bookmark.id}"
                 data-field="title"
                 rows="1"
             >${bookmark.title}</textarea>
             <div class="title-diff" id="diff-${bookmark.id}"></div>
         `;
-        
+
         bookmarksList.appendChild(div);
-        
+
         if (lastTitleCaseOperation && lastTitleCaseOperation.id === bookmark.id) {
             renderTitleDiff(lastTitleCaseOperation.oldTitle, lastTitleCaseOperation.newTitle, `diff-${bookmark.id}`);
             document.getElementById(`diff-${bookmark.id}`).classList.add('visible');
         }
     });
-    
+
     bookmarksList.querySelectorAll('.bookmark-page.clickable').forEach(pageEl => {
         pageEl.addEventListener('click', (e) => {
-            const pageNumber = parseInt(e.target.dataset.page);
-            scrollToPage(pageNumber);
+            const el = e.currentTarget;
+            scrollToPage(parseInt(el.dataset.page), el.dataset.y === '' ? null : parseFloat(el.dataset.y));
         });
     });
-    
+
     bookmarksList.querySelectorAll('textarea[data-field]').forEach(textarea => {
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + 'px';
-        
+
         textarea.addEventListener('input', (e) => {
             e.target.style.height = 'auto';
             e.target.style.height = e.target.scrollHeight + 'px';
-            
+
             const id = parseFloat(e.target.dataset.id);
             const bookmark = bookmarks.find(b => b.id === id);
             if (bookmark) {
@@ -2846,12 +2892,12 @@ function renderBookmarks() {
             }
         });
     });
-    
+
     bookmarksList.querySelectorAll('button[data-action]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = parseFloat(e.target.dataset.id);
             const action = e.target.dataset.action;
-            
+
             if (action === 'delete') {
                 deleteBookmark(id);
             } else if (action === 'titlecase') {
@@ -2868,24 +2914,25 @@ importInput.addEventListener('change', async (e) => {
     try {
         const text = await file.text();
         const lines = text.split('\n');
-        
+
         bookmarks = [];
-        
+
         lines.forEach(line => {
             line = line.trim();
             if (!line) return;
-            
-            const match = line.match(/"([^"]+)"\s+(\d+)\s+(\d+)/);
+
+            const match = line.match(/"([^"]+)"\s+(\d+)\s+(\d+)(?:\s+(-?\d+(?:\.\d+)?))?/);
             if (match) {
                 bookmarks.push({
                     id: Date.now() + Math.random(),
                     title: match[1],
                     page: parseInt(match[2]),
-                    level: parseInt(match[3])
+                    level: parseInt(match[3]),
+                    y: match[4] !== undefined ? parseFloat(match[4]) : null
                 });
             }
         });
-        
+
         renderBookmarks();
         showToast(`Imported ${bookmarks.length} bookmarks`, 'success');
     } catch (error) {
@@ -2903,9 +2950,9 @@ exportBtn.addEventListener('click', () => {
     }
 
     const content = bookmarks
-        .map(b => `"${b.title}" ${b.page} ${b.level}`)
+        .map(b => `"${b.title}" ${b.page} ${b.level}${b.y != null ? ' ' + b.y : ''}`)
         .join('\n');
-    
+
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -2913,7 +2960,7 @@ exportBtn.addEventListener('click', () => {
     a.download = 'bookmarks.txt';
     a.click();
     URL.revokeObjectURL(url);
-    
+
     showToast('Bookmarks exported', 'success');
 });
 
@@ -2934,70 +2981,21 @@ applyBookmarksBtn.addEventListener('click', async () => {
         const freshArrayBuffer = await originalFile.arrayBuffer();
         const freshPdfBytes = new Uint8Array(freshArrayBuffer);
         const newPdfDoc = await PDFDocument.load(freshPdfBytes, { ignoreEncryption: true });
-        
+
 
         let maxLevel = 1;
         for (let bookmark of bookmarks) {
             bookmark.title = cleanBookmarkTitle(bookmark.title);
-            
+
             if (bookmark.level > maxLevel + 1) {
                 bookmark.level = maxLevel + 1;
             }
             maxLevel = Math.max(maxLevel, bookmark.level);
         }
 
-        const sortedBookmarks = [...bookmarks].sort((a, b) => a.page - b.page);
+        const sortedBookmarks = [...bookmarks].sort(compareBookmarks);
 
-        const context = newPdfDoc.context;
-        const outlinesRef = context.nextRef();
-        const outlines = context.obj({
-            Type: 'Outlines',
-        });
-
-        const itemRefs = [];
-        const items = [];
-
-        sortedBookmarks.forEach((bookmark) => {
-            const page = newPdfDoc.getPage(bookmark.page - 1);
-            const itemRef = context.nextRef();
-            itemRefs.push(itemRef);
-
-            const item = {
-                Title: PDFString.of(bookmark.title),
-                Parent: outlinesRef,
-                Dest: [
-                    page.ref,
-                    'XYZ',
-                    null,
-                    null,
-                    null
-                ]
-            };
-
-            items.push(item);
-        });
-
-        items.forEach((item, index) => {
-            if (index > 0) {
-                item.Prev = itemRefs[index - 1];
-            }
-            if (index < items.length - 1) {
-                item.Next = itemRefs[index + 1];
-            }
-        });
-
-        items.forEach((item, index) => {
-            context.assign(itemRefs[index], context.obj(item));
-        });
-
-        if (itemRefs.length > 0) {
-            outlines.set(PDFName.of('First'), itemRefs[0]);
-            outlines.set(PDFName.of('Last'), itemRefs[itemRefs.length - 1]);
-            outlines.set(PDFName.of('Count'), PDFNumber.of(itemRefs.length));
-        }
-
-        context.assign(outlinesRef, outlines);
-        newPdfDoc.catalog.set(PDFName.of('Outlines'), outlinesRef);
+        writeOutlines(newPdfDoc, sortedBookmarks);
 
         const pdfBytesWithBookmarks = await newPdfDoc.save();
 
@@ -3040,7 +3038,7 @@ openPageEditorBtn.addEventListener('click', async () => {
     }
 
     showToast('Loading page editor...', 'info');
-    
+
     pageEditorState = {
         pages: [],
         selectedPages: new Set(),
@@ -3048,7 +3046,7 @@ openPageEditorBtn.addEventListener('click', async () => {
         deletedPages: new Set(),
         reorderedPages: []
     };
-    
+
     undoStack = [];
     updateUndoButton();
 
@@ -3113,12 +3111,12 @@ async function renderPageGrid() {
         div.className = pageData.deleted ? 'page-thumbnail deleted' : 'page-thumbnail';
         div.dataset.index = index;
         div.draggable = !pageData.deleted;
-    
+
         const rotation = pageData.rotation !== 0 ? `<span class="rotation-indicator">${pageData.rotation}°</span>` : '';
-        
+
         const actualWidth = Math.round(viewport.width * 2);
         const actualHeight = Math.round(viewport.height * 2);
-        
+
         div.innerHTML = `
             <input type="checkbox" class="page-checkbox" data-index="${index}" ${pageData.deleted ? 'disabled' : ''}>
             ${rotation}
@@ -3128,13 +3126,13 @@ async function renderPageGrid() {
                 <span class="page-size">${actualWidth} × ${actualHeight}</span>
             </div>
         `;
-    
+
         const thumbnailCanvas = div.querySelector('.page-thumbnail-canvas');
         const ctx = thumbnailCanvas.getContext('2d');
         thumbnailCanvas.width = canvas.width;
         thumbnailCanvas.height = canvas.height;
         ctx.drawImage(canvas, 0, 0);
-    
+
         pageGrid.appendChild(div);
     });
 
@@ -3218,7 +3216,7 @@ function handlePageDrop(e) {
 
         const fromElement = pageGrid.querySelector(`[data-index="${fromIndex}"]`);
         const toElement = pageGrid.querySelector(`[data-index="${toIndex}"]`);
-        
+
         if (fromIndex < toIndex) {
             toElement.parentNode.insertBefore(fromElement, toElement.nextSibling);
         } else {
@@ -3335,7 +3333,7 @@ document.getElementById('selectRange').addEventListener('click', () => {
 
         syncCheckboxes();
         updateSelectionInfo();
-        
+
         showToast(`Selected ${pageEditorState.selectedPages.size} page(s)`, 'success');
 
     } catch (error) {
@@ -3360,17 +3358,17 @@ document.getElementById('rotateLeft').addEventListener('click', async () => {
         showToast('No pages selected', 'error');
         return;
     }
-    
+
     saveUndoState('Rotate Left');
-    
+
     const indicesToUpdate = Array.from(pageEditorState.selectedPages);
-    
+
     for (const index of indicesToUpdate) {
         const page = pageEditorState.reorderedPages[index];
         page.rotation = (page.rotation - 90 + 360) % 360;
         await updateSingleThumbnail(index);
     }
-    
+
     showToast(`Rotated ${pageEditorState.selectedPages.size} page(s) left`, 'success');
 });
 
@@ -3379,17 +3377,17 @@ document.getElementById('rotateRight').addEventListener('click', async () => {
         showToast('No pages selected', 'error');
         return;
     }
-    
+
     saveUndoState('Rotate Right');
-    
+
     const indicesToUpdate = Array.from(pageEditorState.selectedPages);
-    
+
     for (const index of indicesToUpdate) {
         const page = pageEditorState.reorderedPages[index];
         page.rotation = (page.rotation + 90) % 360;
         await updateSingleThumbnail(index);
     }
-    
+
     showToast(`Rotated ${pageEditorState.selectedPages.size} page(s) right`, 'success');
 });
 
@@ -3398,17 +3396,17 @@ document.getElementById('rotate180').addEventListener('click', async () => {
         showToast('No pages selected', 'error');
         return;
     }
-    
+
     saveUndoState('Rotate 180°');
-    
+
     const indicesToUpdate = Array.from(pageEditorState.selectedPages);
-    
+
     for (const index of indicesToUpdate) {
         const page = pageEditorState.reorderedPages[index];
         page.rotation = (page.rotation + 180) % 360;
         await updateSingleThumbnail(index);
     }
-    
+
     showToast(`Rotated ${pageEditorState.selectedPages.size} page(s) 180°`, 'success');
 });
 
@@ -3439,7 +3437,7 @@ async function updateSingleThumbnail(index) {
 
     const oldIndicator = thumbnail.querySelector('.rotation-indicator');
     if (oldIndicator) oldIndicator.remove();
-    
+
     if (pageData.rotation !== 0) {
         const indicator = document.createElement('span');
         indicator.className = 'rotation-indicator';
@@ -3460,7 +3458,7 @@ document.getElementById('deleteSelected').addEventListener('click', () => {
         showToast('No pages selected', 'error');
         return;
     }
-    
+
     const remainingPages = pageEditorState.reorderedPages.filter(p => !p.deleted).length - pageEditorState.selectedPages.size;
     if (remainingPages === 0) {
         showToast('Cannot delete all pages', 'error');
@@ -3476,7 +3474,7 @@ document.getElementById('deleteSelected').addEventListener('click', () => {
     const indicesToDelete = Array.from(pageEditorState.selectedPages);
     indicesToDelete.forEach(index => {
         pageEditorState.reorderedPages[index].deleted = true;
-        
+
         const thumbnail = pageGrid.querySelector(`[data-index="${index}"]`);
         if (thumbnail) {
             thumbnail.classList.add('deleted');
@@ -3490,7 +3488,7 @@ document.getElementById('deleteSelected').addEventListener('click', () => {
 
     pageEditorState.selectedPages.clear();
     updateSelectionInfo();
-    
+
     showToast(`Marked ${indicesToDelete.length} page(s) for deletion`, 'success');
 });
 
@@ -3511,7 +3509,7 @@ document.getElementById('splitExtract').addEventListener('click', async () => {
         showToast('Extracting pages...', 'info');
 
         const newPdf = await PDFDocument.create();
-        
+
         for (const pageNum of pageNumbers) {
             if (pageNum < 1 || pageNum > totalPages) {
                 showToast(`Page ${pageNum} out of range`, 'error');
@@ -3542,7 +3540,7 @@ document.getElementById('splitExtract').addEventListener('click', async () => {
 function parsePageRange(rangeStr) {
     const pages = new Set();
     const parts = rangeStr.split(',');
-    
+
     for (const part of parts) {
         const trimmed = part.trim();
         if (trimmed.includes('-')) {
@@ -3558,14 +3556,14 @@ function parsePageRange(rangeStr) {
             }
         }
     }
-    
+
     return Array.from(pages).sort((a, b) => a - b);
 }
 
 function updateSelectionInfo() {
     const count = pageEditorState.selectedPages.size;
-    selectionCount.textContent = count === 0 ? 'No pages selected' : 
-                                 count === 1 ? '1 page selected' : 
+    selectionCount.textContent = count === 0 ? 'No pages selected' :
+                                 count === 1 ? '1 page selected' :
                                  `${count} pages selected`;
 }
 
@@ -3574,9 +3572,9 @@ document.getElementById('applyPageChanges').addEventListener('click', async () =
         showToast('Applying changes...', 'info');
 
         const newPdf = await PDFDocument.create();
-        
+
         const finalPages = pageEditorState.reorderedPages.filter(p => !p.deleted);
-        
+
         if (finalPages.length === 0) {
             showToast('Cannot create PDF with no pages', 'error');
             return;
@@ -3584,65 +3582,34 @@ document.getElementById('applyPageChanges').addEventListener('click', async () =
 
         for (const pageData of finalPages) {
             const [copiedPage] = await newPdf.copyPages(pdfDoc, [pageData.number - 1]);
-            
+
             if (pageData.rotation !== 0) {
                 copiedPage.setRotation({ angle: pageData.rotation, type: 'degrees' });
             }
-            
+
             newPdf.addPage(copiedPage);
         }
 
+        let dropped = 0;
         if (bookmarks.length > 0) {
+            // old page number -> new page number, and whether Y is still meaningful there
             const pageMapping = new Map();
             finalPages.forEach((pageData, newIndex) => {
-                pageMapping.set(pageData.number, newIndex + 1);
+                const nativeRot = pdfDoc.getPage(pageData.number - 1).getRotation().angle;
+                const effectiveRot = pageData.rotation !== 0 ? pageData.rotation : nativeRot;
+                pageMapping.set(pageData.number, { newPage: newIndex + 1, keepY: effectiveRot % 360 === 0 });
             });
 
             const adjustedBookmarks = bookmarks
                 .filter(b => pageMapping.has(b.page))
-                .map(b => ({
-                    ...b,
-                    page: pageMapping.get(b.page)
-                }));
+                .map(b => {
+                    const m = pageMapping.get(b.page);
+                    return { ...b, page: m.newPage, y: m.keepY ? b.y : null };
+                })
+                .sort(compareBookmarks);
 
-            if (adjustedBookmarks.length > 0) {
-                const context = newPdf.context;
-                const outlinesRef = context.nextRef();
-                const outlines = context.obj({ Type: 'Outlines' });
-
-                const itemRefs = [];
-                const items = [];
-
-                adjustedBookmarks.forEach((bookmark) => {
-                    const page = newPdf.getPage(bookmark.page - 1);
-                    const itemRef = context.nextRef();
-                    itemRefs.push(itemRef);
-
-                    items.push({
-                        Title: PDFString.of(cleanBookmarkTitle(bookmark.title)),
-                        Parent: outlinesRef,
-                        Dest: [page.ref, 'XYZ', null, null, null]
-                    });
-                });
-
-                items.forEach((item, index) => {
-                    if (index > 0) item.Prev = itemRefs[index - 1];
-                    if (index < items.length - 1) item.Next = itemRefs[index + 1];
-                });
-
-                items.forEach((item, index) => {
-                    context.assign(itemRefs[index], context.obj(item));
-                });
-
-                if (itemRefs.length > 0) {
-                    outlines.set(PDFName.of('First'), itemRefs[0]);
-                    outlines.set(PDFName.of('Last'), itemRefs[itemRefs.length - 1]);
-                    outlines.set(PDFName.of('Count'), PDFNumber.of(itemRefs.length));
-                }
-
-                context.assign(outlinesRef, outlines);
-                newPdf.catalog.set(PDFName.of('Outlines'), outlinesRef);
-            }
+            dropped = bookmarks.length - adjustedBookmarks.length;
+            writeOutlines(newPdf, adjustedBookmarks);
         }
 
         const pdfBytes = await newPdf.save();
@@ -3654,7 +3621,8 @@ document.getElementById('applyPageChanges').addEventListener('click', async () =
         a.click();
         URL.revokeObjectURL(url);
 
-        showToast(`PDF saved with ${finalPages.length} page(s)`, 'success');
+        showToast(`PDF saved with ${finalPages.length} page(s)` +
+            (dropped ? `, ${dropped} bookmark(s) on deleted pages removed` : ''), 'success');
         pageEditorModal.classList.add('hidden');
 
     } catch (error) {
@@ -3689,7 +3657,7 @@ const searchStatus = document.getElementById('searchStatus');
 openSearchBtn.addEventListener('click', () => {
     pdfSearchSection.style.display = 'block';
     pdfSearchBox.focus();
-    
+
     const searchIndicator = document.getElementById('searchPageIndicator');
     if (searchIndicator) {
         searchIndicator.textContent = `${currentPage}/${totalPages}`;
@@ -3708,7 +3676,7 @@ async function buildSearchIndex() {
 
     searchStatus.textContent = 'Building search index...';
     pdfSearchChunks = [];
-    
+
     pdfSearchIndex = new MiniSearch({
         fields: ['text'],
         storeFields: ['page', 'text', 'preview'],
@@ -3724,13 +3692,13 @@ async function buildSearchIndex() {
     for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
         const page = await pdfJsDoc.getPage(pageNum);
         const textContent = await page.getTextContent();
-        
+
         let pageText = textContent.items.map(item => item.str).join(' ');
         pageText = pageText.replace(/\s+/g, ' ').trim();
 
         const chunkSize = 200;
         const overlap = 50;
-        
+
         for (let i = 0; i < pageText.length; i += chunkSize - overlap) {
             const chunk = pageText.substring(i, i + chunkSize);
             if (chunk.trim().length > 30) {
@@ -3758,10 +3726,10 @@ async function buildSearchIndex() {
 pdfSearchBox.addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     const query = e.target.value.trim();
-    
+
     if (query.length < 3) {
         searchResults.innerHTML = '';
-        searchStatus.textContent = pdfSearchChunks.length ? 
+        searchStatus.textContent = pdfSearchChunks.length ?
             `${pdfSearchChunks.length} chunks indexed • ${totalPages} pages` : '';
         return;
     }
@@ -3775,13 +3743,13 @@ pdfSearchBox.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
         const query = pdfSearchBox.value.trim();
-        
+
         if (query.length >= 3) {
             clearTimeout(searchTimeout);
             performSearch(query);
         } else {
             searchResults.innerHTML = '';
-            searchStatus.textContent = pdfSearchChunks.length ? 
+            searchStatus.textContent = pdfSearchChunks.length ?
                 `${pdfSearchChunks.length} chunks indexed • ${totalPages} pages` : '';
         }
     }
@@ -3790,21 +3758,21 @@ pdfSearchBox.addEventListener('keydown', (e) => {
 document.addEventListener('keydown', (e) => {
     if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
         e.preventDefault();
-        
+
         if (!openSearchBtn.disabled) {
             pdfSearchSection.style.display = 'block';
             pdfSearchBox.focus();
         }
     }
-    
+
     if (e.key === 'l' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
         e.preventDefault();
         if (!loadExistingBtn.disabled) {
             loadExistingBtn.click();
         }
     }
-    
-    
+
+
     if (e.key === 'Escape' && pdfSearchSection.style.display === 'block') {
         pdfSearchSection.style.display = 'none';
         pdfSearchBox.value = '';
@@ -3816,21 +3784,21 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keydown', (e) => {
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const modifier = isMac ? e.metaKey : e.ctrlKey;
-    
+
     if (modifier && e.key === '/' && pdfSearchSection.style.display === 'block') {
         e.preventDefault();
         document.getElementById('clearSearch').click();
     }
-    
+
     if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
         e.preventDefault();
-        
+
         if (!openSearchBtn.disabled) {
             pdfSearchSection.style.display = 'block';
             pdfSearchBox.focus();
         }
     }
-    
+
     if (e.key === 'Escape' && pdfSearchSection.style.display === 'block') {
         pdfSearchSection.style.display = 'none';
         pdfSearchBox.value = '';
@@ -3847,26 +3815,26 @@ function performSearch(query) {
 
     try {
         const hasQuotes = /["']/.test(query);
-        
+
         if (hasQuotes) {
             const quotedPhrases = query.match(/["']([^"']+)["']/g) || [];
             const exactPhrases = quotedPhrases.map(p => p.replace(/["']/g, '').toLowerCase());
-            
+
             const exactMatches = pdfSearchChunks.filter(chunk => {
                 return exactPhrases.every(phrase => chunk.text.includes(phrase));
             });
-            
+
             const results = exactMatches.map((chunk, index) => ({
                 id: chunk.id,
                 score: 100 - index,
                 page: chunk.page,
                 preview: chunk.preview
             }));
-            
+
             displaySearchResults(results, query);
             return;
         }
-        
+
         const results = pdfSearchIndex.search(query.toLowerCase(), {
             fuzzy: fuzzy,
             prefix: prefix,
@@ -3877,7 +3845,7 @@ function performSearch(query) {
         results.forEach(r => {
             const chunk = pdfSearchChunks.find(c => c.id === r.id);
             if (!chunk) return;
-            
+
             if (!bestPerPage.has(chunk.page) || bestPerPage.get(chunk.page).score < r.score) {
                 bestPerPage.set(chunk.page, {
                     ...r,
@@ -3910,19 +3878,19 @@ function displaySearchResults(results, query) {
 
     const hasQuotes = /["']/.test(query);
     let terms = [];
-    
+
     if (hasQuotes) {
         const quotedPhrases = query.match(/["']([^"']+)["']/g) || [];
         terms = quotedPhrases.map(p => p.replace(/["']/g, '').toLowerCase());
     } else {
         terms = query.toLowerCase().split(/\s+/).filter(t => t.length >= 2);
     }
-    
+
     const fuzzyEnabled = document.getElementById('searchFuzzy').checked;
 
     searchResults.innerHTML = results.map(result => {
         let displayText = result.preview || '';
-        
+
         if (hasQuotes) {
             terms.forEach(phrase => {
                 const regex = new RegExp(`(${escapeRegex(phrase)})`, 'gi');
@@ -3954,12 +3922,12 @@ function displaySearchResults(results, query) {
     searchResults.querySelectorAll('.search-result-item').forEach(item => {
         item.addEventListener('click', async () => {
             const pageNum = parseInt(item.dataset.page);
-            
+
             const scale = currentZoomScale;
             await renderPage(pageNum, scale);
-            
+
             scrollToPage(pageNum);
-            
+
             await highlightSearchTermsOnPage(pageNum, terms);
         });
     });
@@ -3973,18 +3941,18 @@ async function highlightSearchTermsOnPage(pageNum, terms) {
     if (!textLayerDiv) return;
 
     const textDivs = textLayerDiv.querySelectorAll('span');
-    
+
     const highlights = [];
-    
+
     textDivs.forEach(textDiv => {
         const text = textDiv.textContent.toLowerCase();
-        
+
         const hasMatch = terms.some(term => text.includes(term));
-        
+
         if (hasMatch) {
             const rect = textDiv.getBoundingClientRect();
             const containerRect = pageContainer.getBoundingClientRect();
-            
+
             const highlight = document.createElement('div');
             highlight.style.position = 'absolute';
             highlight.style.left = (rect.left - containerRect.left) + 'px';
@@ -3997,7 +3965,7 @@ async function highlightSearchTermsOnPage(pageNum, terms) {
             highlight.style.zIndex = '100';
             highlight.style.transition = 'opacity 0.5s';
             highlight.className = 'search-highlight-overlay';
-            
+
             pageContainer.appendChild(highlight);
             highlights.push(highlight);
         }
@@ -4029,24 +3997,24 @@ togglePdfDarkModeBtn.addEventListener('click', () => {
     } else {
         pdfColorMode = 'grayscale';
     }
-    
+
     localStorage.setItem('pdfColorMode', pdfColorMode);
     applyPdfColorMode();
 });
 
 function applyPdfColorMode() {
     const allCanvases = pdfViewerContainer.querySelectorAll('.pdf-page');
-    
+
     allCanvases.forEach(canvas => {
         canvas.classList.remove('dark-mode', 'grayscale-mode');
-        
+
         if (pdfColorMode === 'dark') {
             canvas.classList.add('dark-mode');
         } else if (pdfColorMode === 'grayscale') {
             canvas.classList.add('grayscale-mode');
         }
     });
-    
+
     if (pdfColorMode === 'dark') {
         togglePdfDarkModeBtn.textContent = '🌙';
         togglePdfDarkModeBtn.title = 'Dark mode (click for light)';
