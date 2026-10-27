@@ -1313,6 +1313,7 @@
                             Load Existing
                         </button>
                 </div>
+                <button id="headingsBtn" class="btn btn-secondary btn-small" disabled style="width: 100%; margin-top: 8px; font-size: 11px; padding: 8px 10px;" title="Select a heading in the PDF first, then click to find every heading with the same font size / font">Generate from Headings</button>
             </div>
 
             <div id="pageEditorModal" class="page-editor-modal hidden">
@@ -1885,6 +1886,7 @@ async function loadPdfFile(file) {
 
         const loadExistingBtn = document.getElementById('loadExistingBtn');
         loadExistingBtn.disabled = false;
+        document.getElementById('headingsBtn').disabled = false;
 
         await renderAllPages();
 
@@ -2575,6 +2577,299 @@ pdfInput.addEventListener('change', async (e) => {
 
     await loadPdfFile(file);
 });
+
+// ---- Generate bookmarks from headings ----
+// Select a heading in the PDF, click "Generate from Headings", and every text line with the
+// same font size (and optionally the same font) is offered as a bookmark.
+const headingsBtn = document.getElementById('headingsBtn');
+let headingSelCapture = null;
+
+// Capture the selection before the click can clear it
+headingsBtn.addEventListener('pointerdown', () => {
+    headingSelCapture = { text: window.getSelection().toString(), page: getPageFromSelection() };
+});
+
+const normText = str => str.replace(/\s+/g, ' ').trim();
+const itemFontSize = it => Math.round((Math.hypot(it.transform[0], it.transform[1]) || Math.abs(it.transform[3])) * 10) / 10;
+
+function realFontName(page, fontName) {
+    try { if (page.commonObjs.has(fontName)) return (page.commonObjs.get(fontName).name || '').replace(/^[A-Z]{6}\+/, '') || null; } catch (e) {}
+    return null;
+}
+
+function readableFontName(page, content, fontName) {
+    return realFontName(page, fontName) ||
+        (content.styles && content.styles[fontName] && content.styles[fontName].fontFamily) || fontName;
+}
+
+// "TimesNewRomanPS-BoldItalicMT" -> family "timesnewromanpsmt", bold true
+const fontFamilyKey = name => name.toLowerCase()
+    .replace(/bolditalic|boldoblique|semibold|bold|italic|oblique|ital|regular|black|heavy|demi/g, '')
+    .replace(/[^a-z0-9]/g, '');
+const fontIsBold = name => /bold|black|heavy|demi/i.test(name);
+
+async function getHeadingSignature(selText, pageNum) {
+    const target = normText(selText);
+    if (!target) return null;
+    const page = await pdfJsDoc.getPage(pageNum);
+    const content = await page.getTextContent();
+    let best = null;
+    for (const it of content.items) {
+        const str = normText(it.str || '');
+        if (str && target.includes(str) && (!best || str.length > best.len)) best = { it, len: str.length };
+    }
+    if (!best) {
+        for (const it of content.items) {
+            if (normText(it.str || '').includes(target)) { best = { it, len: target.length }; break; }
+        }
+    }
+    if (!best) return null;
+    let real = realFontName(page, best.it.fontName);
+    if (!real) { try { await page.getOperatorList(); } catch (e) {} real = realFontName(page, best.it.fontName); }
+    return {
+        fontId: best.it.fontName,
+        fontLabel: real || readableFontName(page, content, best.it.fontName),
+        family: real ? { key: fontFamilyKey(real), bold: fontIsBold(real) } : null,
+        size: itemFontSize(best.it),
+        sample: target.length > 60 ? target.slice(0, 60) + '…' : target
+    };
+}
+
+async function scanHeadings(opts, onProgress) {
+    const results = [];
+    for (let p = 1; p <= totalPages; p++) {
+        if (onProgress) onProgress(p);
+        const page = await pdfJsDoc.getPage(p);
+        const content = await page.getTextContent();
+        const rotated = (page.rotate || 0) % 360 !== 0;
+        const pageTop = page.view[3];
+
+        const matched = [];
+        let fontsLoaded = false;
+        const variantCache = new Map();
+        const isVariant = async fontName => {
+            if (variantCache.has(fontName)) return variantCache.get(fontName);
+            if (!fontsLoaded) { fontsLoaded = true; try { await page.getOperatorList(); } catch (e) {} }
+            const real = realFontName(page, fontName);
+            const ok = !!real && fontFamilyKey(real) === opts.family.key && fontIsBold(real) === opts.family.bold;
+            variantCache.set(fontName, ok);
+            return ok;
+        };
+        for (const it of content.items) {
+            if (!it.str || !it.str.trim()) continue;
+            const size = itemFontSize(it);
+            if (opts.minSize != null && size < opts.minSize - 0.05) continue;
+            if (opts.maxSize != null && size > opts.maxSize + 0.05) continue;
+            if (opts.fontId && it.fontName !== opts.fontId) {
+                // optionally accept style variants (e.g. bold-italic words inside a bold heading)
+                if (!(opts.family && await isVariant(it.fontName))) continue;
+            }
+            matched.push({ str: it.str, x: it.transform[4], y: it.transform[5], w: it.width || 0, size });
+        }
+
+        // group into lines by baseline
+        const lines = [];
+        matched.sort((a, b) => b.y - a.y);
+        for (const m of matched) {
+            const line = lines.find(l => Math.abs(l.y - m.y) <= m.size * 0.3);
+            if (line) line.items.push(m); else lines.push({ y: m.y, size: m.size, items: [m] });
+        }
+        lines.sort((a, b) => b.y - a.y);
+
+        const lineText = line => {
+            line.items.sort((a, b) => a.x - b.x);
+            let text = '', prev = null;
+            for (const it of line.items) {
+                if (prev) {
+                    const gap = it.x - (prev.x + prev.w);
+                    if (!prev.str.endsWith(' ') && !it.str.startsWith(' ') && gap > it.size * 0.15) text += ' ';
+                }
+                text += it.str;
+                prev = it;
+            }
+            return normText(text);
+        };
+
+        // optionally merge wrapped heading lines
+        const headings = [];
+        for (const line of lines) {
+            const text = lineText(line);
+            const last = headings[headings.length - 1];
+            if (opts.joinLines && last && Math.abs(last.size - line.size) < 0.2 &&
+                last.lastY - line.y > line.size * 0.5 && last.lastY - line.y <= line.size * 1.8) {
+                last.text += ' ' + text;
+                last.lastY = line.y;
+            } else {
+                headings.push({ text, y: line.y, lastY: line.y, size: line.size });
+            }
+        }
+
+        for (const h of headings) {
+            if (opts.prefix && !h.text.startsWith(opts.prefix)) continue;
+            let title = cleanBookmarkTitle(h.text);
+            if (title.length > 100) title = title.substring(0, 100);
+            if (!title) continue;
+            results.push({
+                page: p,
+                title,
+                y: rotated ? null : Math.round(Math.min(h.y + h.size + Y_PADDING, pageTop) * 100) / 100,
+                checked: true
+            });
+        }
+    }
+    return results;
+}
+
+async function openHeadingsModal() {
+    if (!pdfJsDoc) { showToast('No PDF loaded', 'error'); return; }
+
+    const cap = headingSelCapture;
+    headingSelCapture = null;
+    let sig = null;
+    if (cap && normText(cap.text)) {
+        try { sig = await getHeadingSignature(cap.text, cap.page); } catch (e) { console.warn(e); }
+    }
+
+    const esc = str => str.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const inputStyle = 'background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 5px 8px; border-radius: 4px; font-size: 13px;';
+    const rowStyle = 'display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px; color: #ccc; flex-wrap: wrap;';
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 640px; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3>Generate from Headings</h3>
+                <button class="btn-close" data-act="close">✕</button>
+            </div>
+            <div style="padding: 16px 25px; overflow-y: auto;">
+                <p style="color: #aaa; font-size: 12px; line-height: 1.5; margin-bottom: 12px;">
+                    ${sig
+                        ? `Based on your selection “<span style="color:#fff">${esc(sig.sample)}</span>”: <b>${esc(sig.fontLabel)}</b>, ${sig.size} pt.`
+                        : `Tip: select a heading in the PDF first, then click Generate from Headings to copy its font size and font. Or set a size range / “starts with” text below.`}
+                </p>
+                <div style="${rowStyle}">
+                    Font size
+                    <input id="hgMin" type="number" step="0.1" min="0" style="${inputStyle} width: 80px;" value="${sig ? sig.size : ''}">
+                    to
+                    <input id="hgMax" type="number" step="0.1" min="0" style="${inputStyle} width: 80px;" value="${sig ? sig.size : ''}">
+                    pt
+                </div>
+                <label style="${rowStyle} cursor: ${sig ? 'pointer' : 'not-allowed'}; opacity: ${sig ? 1 : 0.5};">
+                    <input id="hgFont" type="checkbox" ${sig ? 'checked' : 'disabled'}> Same font only${sig ? ' (' + esc(sig.fontLabel) + ')' : ''}
+                </label>
+                <label style="${rowStyle} margin-left: 22px; cursor: ${sig && sig.family ? 'pointer' : 'not-allowed'}; opacity: ${sig && sig.family ? 1 : 0.5};">
+                    <input id="hgVariants" type="checkbox" ${sig && sig.family ? 'checked' : 'disabled'}> Also include italic / style variants of this font (keeps bold-only if the heading is bold)
+                </label>
+                <div style="${rowStyle}">
+                    Text starts with
+                    <input id="hgPrefix" type="text" placeholder="e.g. Chapter (case-sensitive, optional)" style="${inputStyle} flex: 1; min-width: 180px;">
+                </div>
+                <label style="${rowStyle} cursor: pointer;">
+                    <input id="hgJoin" type="checkbox" checked> Join wrapped heading lines
+                </label>
+                <div style="${rowStyle}">
+                    Add as
+                    <select id="hgLevel" style="${inputStyle}">
+                        <option value="1">Chapter (Level 1)</option>
+                        <option value="2">Section (Level 2)</option>
+                        <option value="3">Subsection (Level 3)</option>
+                    </select>
+                    <button class="btn btn-primary btn-small" data-act="find" style="margin-left: auto;">Find headings</button>
+                </div>
+                <div id="hgStatus" style="color: #888; font-size: 12px; margin-bottom: 8px;"></div>
+                <div id="hgList" style="max-height: 280px; overflow-y: auto;"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" data-act="close">Cancel</button>
+                <button class="btn btn-success" data-act="add" disabled>Add bookmarks</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+
+    const $ = id => modal.querySelector('#' + id);
+    const addBtn = modal.querySelector('[data-act="add"]');
+    const findBtn = modal.querySelector('[data-act="find"]');
+    let found = [];
+
+    const updateAddBtn = () => {
+        const n = found.filter(h => h.checked).length;
+        addBtn.disabled = n === 0;
+        addBtn.textContent = n ? `Add ${n} bookmark${n === 1 ? '' : 's'}` : 'Add bookmarks';
+    };
+
+    const renderList = () => {
+        const list = $('hgList');
+        list.innerHTML = '';
+        found.forEach(h => {
+            const row = document.createElement('label');
+            row.style.cssText = 'display:flex;gap:8px;align-items:flex-start;padding:6px 8px;margin-bottom:4px;background:rgba(255,255,255,0.05);border-radius:4px;font-size:12px;cursor:pointer;';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = h.checked;
+            cb.addEventListener('change', () => { h.checked = cb.checked; updateAddBtn(); });
+            const pg = document.createElement('span');
+            pg.style.cssText = 'color:#667eea;font-weight:600;min-width:42px;';
+            pg.textContent = 'p. ' + h.page;
+            const t = document.createElement('span');
+            t.style.cssText = 'flex:1;word-break:break-word;';
+            t.textContent = h.title;
+            row.append(cb, pg, t);
+            list.appendChild(row);
+        });
+        updateAddBtn();
+    };
+
+    findBtn.addEventListener('click', async () => {
+        const minV = parseFloat($('hgMin').value), maxV = parseFloat($('hgMax').value);
+        const opts = {
+            minSize: isNaN(minV) ? null : minV,
+            maxSize: isNaN(maxV) ? null : maxV,
+            fontId: sig && $('hgFont').checked ? sig.fontId : null,
+            family: sig && sig.family && $('hgFont').checked && $('hgVariants').checked ? sig.family : null,
+            prefix: $('hgPrefix').value,
+            joinLines: $('hgJoin').checked
+        };
+        if (opts.minSize == null && opts.maxSize == null && !opts.fontId && !opts.prefix) {
+            showToast('Set a font size, same font, or starts-with text first', 'error');
+            return;
+        }
+        findBtn.disabled = true;
+        try {
+            found = await scanHeadings(opts, p => { $('hgStatus').textContent = `Scanning page ${p} / ${totalPages}…`; });
+            $('hgStatus').textContent = found.length
+                ? `Found ${found.length} heading${found.length === 1 ? '' : 's'}. Untick any you don't want (running headers, page titles…).`
+                : 'No matching headings found.';
+            renderList();
+        } catch (e) {
+            console.error(e);
+            $('hgStatus').textContent = 'Error: ' + e.message;
+        }
+        findBtn.disabled = false;
+    });
+
+    addBtn.addEventListener('click', () => {
+        const level = parseInt($('hgLevel').value);
+        let added = 0;
+        found.filter(h => h.checked).forEach(h => {
+            if (bookmarks.some(b => b.page === h.page && b.title === h.title && b.level === level)) return;
+            bookmarks.push({ id: Date.now() + Math.random(), title: h.title, page: h.page, level, y: h.y });
+            added++;
+        });
+        bookmarks.sort(compareBookmarks);
+        renderBookmarks();
+        modal.remove();
+        showToast(`Added ${added} bookmark${added === 1 ? '' : 's'}`, 'success');
+    });
+
+    modal.querySelectorAll('[data-act="close"]').forEach(b => b.addEventListener('click', () => modal.remove()));
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+
+    // Selection-based signature: run the search straight away
+    if (sig) findBtn.click();
+}
+
+headingsBtn.addEventListener('click', openHeadingsModal);
 
 // Drag a single PDF onto the viewer to open it
 (function setupPdfDrop() {

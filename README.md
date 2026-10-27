@@ -7,6 +7,7 @@
 - select text in pdf to use for bookmark title
 - load existing bookmarks
 - import or export bookmarks to a text file
+- Generate Bookmarks from Headings (same font size or range, font)
 - grayscale (default), dark and light modes
 - zoom in/out and zooms to page width by default
 - Titlelize chapter titles Aa
