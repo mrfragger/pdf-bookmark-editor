@@ -255,12 +255,12 @@
 
         .bookmark-item.level-2 {
             border-left-color: #38ef7d;
-            margin-left: 5px;
+            margin-left: 14px;
         }
 
         .bookmark-item.level-3 {
             border-left-color: #f39c12;
-            margin-left: 10px;
+            margin-left: 28px;
         }
 
         .bookmark-item-header {
@@ -2629,7 +2629,7 @@ function cleanBookmarkTitle(title) {
         .trim();
 }
 
-const Y_PADDING = 8; // points above the selected text so the heading isn't glued to the window edge
+const Y_PADDING = 20; // points above the selected text so the heading isn't glued to the window edge
 
 // page, then top-to-bottom within the page (higher y = higher on page; null = top of page)
 function compareBookmarks(a, b) {
@@ -2660,23 +2660,46 @@ function writeOutlines(doc, list) {
     const context = doc.context;
     const outlinesRef = context.nextRef();
     const outlines = context.obj({ Type: 'Outlines' });
-    const itemRefs = list.map(() => context.nextRef());
 
-    list.forEach((bm, i) => {
-        const page = doc.getPage(bm.page - 1);
-        const item = {
-            Title: PDFString.of(cleanBookmarkTitle(bm.title)),
-            Parent: outlinesRef,
-            Dest: [page.ref, 'XYZ', null, bm.y ?? null, null]
-        };
-        if (i > 0) item.Prev = itemRefs[i - 1];
-        if (i < list.length - 1) item.Next = itemRefs[i + 1];
-        context.assign(itemRefs[i], context.obj(item));
+    // Build a tree from the flat, sorted list using each bookmark's level.
+    // A level can be at most one deeper than the previous item, so orphaned
+    // sub-levels (e.g. after pages are deleted) attach to the nearest ancestor.
+    const nodes = list.map(bm => ({ bm, ref: context.nextRef(), parent: null, children: [] }));
+    const roots = [];
+    const stack = [];
+    nodes.forEach(node => {
+        const level = Math.max(1, Math.min(node.bm.level || 1, 3));
+        const depth = Math.min(level, stack.length + 1);
+        stack.length = depth - 1;
+        node.parent = stack.length ? stack[stack.length - 1] : null;
+        (node.parent ? node.parent.children : roots).push(node);
+        stack.push(node);
     });
 
-    outlines.set(PDFName.of('First'), itemRefs[0]);
-    outlines.set(PDFName.of('Last'), itemRefs[itemRefs.length - 1]);
-    outlines.set(PDFName.of('Count'), PDFNumber.of(itemRefs.length));
+    const countDescendants = n => n.children.reduce((sum, c) => sum + 1 + countDescendants(c), 0);
+
+    nodes.forEach(node => {
+        const siblings = node.parent ? node.parent.children : roots;
+        const idx = siblings.indexOf(node);
+        const page = doc.getPage(node.bm.page - 1);
+        const item = {
+            Title: PDFString.of(cleanBookmarkTitle(node.bm.title)),
+            Parent: node.parent ? node.parent.ref : outlinesRef,
+            Dest: [page.ref, 'XYZ', 0, node.bm.y ?? null, 0]
+        };
+        if (idx > 0) item.Prev = siblings[idx - 1].ref;
+        if (idx < siblings.length - 1) item.Next = siblings[idx + 1].ref;
+        if (node.children.length > 0) {
+            item.First = node.children[0].ref;
+            item.Last = node.children[node.children.length - 1].ref;
+            item.Count = countDescendants(node); // positive = expanded
+        }
+        context.assign(node.ref, context.obj(item));
+    });
+
+    outlines.set(PDFName.of('First'), roots[0].ref);
+    outlines.set(PDFName.of('Last'), roots[roots.length - 1].ref);
+    outlines.set(PDFName.of('Count'), PDFNumber.of(nodes.length));
     context.assign(outlinesRef, outlines);
     doc.catalog.set(PDFName.of('Outlines'), outlinesRef);
 }
