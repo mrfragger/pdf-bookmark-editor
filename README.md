@@ -34,6 +34,8 @@ For annotation, adding text, highlighting, adding a signature just open PDF in F
 
 Crop function isn't practical in this app.
 
+![](pdfbookmarkgenerate.jpg)
+
 Click Compress icon,  to copy to terminal,  open terminal where pdf is located then paste command to compress PDF
 
 The commands below give an example of the commands you copy which already have the filename of the input and output.  Just make sure to open your terminal in the same directory as the pdf you wish to compress.
