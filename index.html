@@ -1155,6 +1155,12 @@
             pointer-events: none;
         }
 
+        .pdf-viewer-container.drop-active {
+            outline: 3px dashed rgba(102, 126, 234, 0.9);
+            outline-offset: -8px;
+            background: #151b2b;
+        }
+
         .loading.hidden {
             display: none;
         }
@@ -1231,7 +1237,7 @@
                 </div>
             </div>
             <div class="pdf-viewer-container" id="pdfViewerContainer">
-                <div class="loading" id="loading">Select a PDF to get started</div>
+                <div class="loading" id="loading">Select PDF or drag a PDF to get started</div>
                 <canvas id="pdfViewer"></canvas>
             </div>
         </div>
@@ -2569,6 +2575,46 @@ pdfInput.addEventListener('change', async (e) => {
 
     await loadPdfFile(file);
 });
+
+// Drag a single PDF onto the viewer to open it
+(function setupPdfDrop() {
+    const hasFiles = e => e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files');
+
+    // Stop the browser from navigating to a PDF dropped outside the viewer
+    ['dragover', 'drop'].forEach(type => {
+        window.addEventListener(type, e => { if (hasFiles(e)) e.preventDefault(); });
+    });
+
+    let depth = 0;
+    pdfViewerContainer.addEventListener('dragenter', e => {
+        if (!hasFiles(e)) return;
+        depth++;
+        pdfViewerContainer.classList.add('drop-active');
+    });
+    pdfViewerContainer.addEventListener('dragleave', e => {
+        if (!hasFiles(e)) return;
+        depth = Math.max(0, depth - 1);
+        if (depth === 0) pdfViewerContainer.classList.remove('drop-active');
+    });
+    pdfViewerContainer.addEventListener('drop', async e => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        depth = 0;
+        pdfViewerContainer.classList.remove('drop-active');
+
+        const files = Array.from(e.dataTransfer.files);
+        if (files.length > 1) {
+            showToast('Please drop one PDF at a time (use 🔗 to merge)', 'error');
+            return;
+        }
+        const file = files[0];
+        if (!file || !(file.type === 'application/pdf' || /\.pdf$/i.test(file.name))) {
+            showToast('That is not a PDF file', 'error');
+            return;
+        }
+        await loadPdfFile(file);
+    });
+})();
 
 const loadExistingBtn = document.getElementById('loadExistingBtn');
 
