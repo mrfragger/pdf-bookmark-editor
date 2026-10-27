@@ -1,8 +1,8 @@
- PDF Bookmark Editor (chrome, firefox, edge)
+ PDF Bookmark Editor (chrome, firefox, librewolf, edge)
 
  https://mrfragger.github.io/pdf-bookmark-editor
 
-- Add / Edit bookmarks for a PDF
+- Add / Edit bookmarks with vertical position (jumping to exact location of text in a page)
 - add chapter, section or subsection bookmarks
 - select text in pdf to use for bookmark title
 - load existing bookmarks
@@ -31,7 +31,7 @@
 
 For annotation, adding text, highlighting, adding a signature just open PDF in Firefox / Librewolf.
 
-Doesn't do vertical position (jumping to exact location of text in a page) within PDFs (as that requires pymupdf and python) but allows one to easily modify bookmarks for pages. Crop function isn't practical in this app.
+Crop function isn't practical in this app.
 
 Click Compress icon,  to copy to terminal,  open terminal where pdf is located then paste command to compress PDF
 
@@ -49,5 +49,3 @@ gs -sDEVICE=pdfwrite -dPDFSETTINGS=/screen -dNOPAUSE -dBATCH -sOutputFile=compre
 # in fonts to save even more file size
 gs -sDEVICE=pdfwrite -dSubsetFonts=true -dPDFSETTINGS=/screen -dNOPAUSE -dBATCH -sOutputFile=compressed.pdf input.pdf
 ```
-
-
